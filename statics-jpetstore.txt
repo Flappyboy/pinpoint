@@ -1,0 +1,14 @@
+org.mybatis.jpetstore.web.actions.CatalogActionBean,org.mybatis.jpetstore.service.CatalogService,25
+org.mybatis.jpetstore.web.actions.CatalogActionBean,org.mybatis.jpetstore.service.CatalogService,19
+org.mybatis.jpetstore.web.actions.CatalogActionBean,org.mybatis.jpetstore.service.CatalogService,19
+org.mybatis.jpetstore.web.actions.AccountActionBean,org.mybatis.jpetstore.service.CatalogService,5
+org.mybatis.jpetstore.web.actions.CatalogActionBean,org.mybatis.jpetstore.service.CatalogService,25
+org.mybatis.jpetstore.web.actions.CatalogActionBean,org.mybatis.jpetstore.service.CatalogService,6
+org.mybatis.jpetstore.web.actions.OrderActionBean,org.mybatis.jpetstore.service.OrderService,1
+org.mybatis.jpetstore.web.actions.OrderActionBean,org.mybatis.jpetstore.service.OrderService,3
+org.mybatis.jpetstore.web.actions.CartActionBean,org.mybatis.jpetstore.service.CatalogService,18
+org.mybatis.jpetstore.web.actions.AccountActionBean,org.mybatis.jpetstore.service.AccountService,6
+org.mybatis.jpetstore.service.OrderService,org.mybatis.jpetstore.service.OrderService,3
+org.mybatis.jpetstore.web.actions.CartActionBean,org.mybatis.jpetstore.service.CatalogService,18
+org.mybatis.jpetstore.web.actions.CatalogActionBean,org.mybatis.jpetstore.service.CatalogService,6
+org.mybatis.jpetstore.web.actions.OrderActionBean,org.mybatis.jpetstore.service.OrderService,3

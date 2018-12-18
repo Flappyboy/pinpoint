@@ -1,0 +1,14 @@
+org.mybatis.jpetstore.web.actions.CatalogActionBean.viewCategory(),org.mybatis.jpetstore.service.CatalogService.getCategory(java.lang.String),25
+org.mybatis.jpetstore.web.actions.CatalogActionBean.viewProduct(),org.mybatis.jpetstore.service.CatalogService.getItemListByProduct(java.lang.String),19
+org.mybatis.jpetstore.web.actions.CatalogActionBean.viewProduct(),org.mybatis.jpetstore.service.CatalogService.getProduct(java.lang.String),19
+org.mybatis.jpetstore.web.actions.AccountActionBean.signon(),org.mybatis.jpetstore.service.CatalogService.getProductListByCategory(java.lang.String),5
+org.mybatis.jpetstore.web.actions.CatalogActionBean.viewCategory(),org.mybatis.jpetstore.service.CatalogService.getProductListByCategory(java.lang.String),25
+org.mybatis.jpetstore.web.actions.CatalogActionBean.searchProducts(),org.mybatis.jpetstore.service.CatalogService.searchProductList(java.lang.String),6
+org.mybatis.jpetstore.web.actions.OrderActionBean.viewOrder(),org.mybatis.jpetstore.service.OrderService.getOrder(int),1
+org.mybatis.jpetstore.web.actions.OrderActionBean.listOrders(),org.mybatis.jpetstore.service.OrderService.getOrdersByUsername(java.lang.String),3
+org.mybatis.jpetstore.web.actions.CartActionBean.addItemToCart(),org.mybatis.jpetstore.service.CatalogService.isItemInStock(java.lang.String),18
+org.mybatis.jpetstore.web.actions.AccountActionBean.signon(),org.mybatis.jpetstore.service.AccountService.getAccount(java.lang.String,java.lang.String),6
+org.mybatis.jpetstore.service.OrderService.insertOrder(org.mybatis.jpetstore.domain.Order),org.mybatis.jpetstore.service.OrderService.getNextId(java.lang.String),3
+org.mybatis.jpetstore.web.actions.CartActionBean.addItemToCart(),org.mybatis.jpetstore.service.CatalogService.getItem(java.lang.String),18
+org.mybatis.jpetstore.web.actions.CatalogActionBean.viewItem(),org.mybatis.jpetstore.service.CatalogService.getItem(java.lang.String),6
+org.mybatis.jpetstore.web.actions.OrderActionBean.newOrder(),org.mybatis.jpetstore.service.OrderService.insertOrder(org.mybatis.jpetstore.domain.Order),3

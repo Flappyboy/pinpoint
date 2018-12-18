@@ -20,17 +20,23 @@ import com.navercorp.pinpoint.common.server.bo.SpanBo;
 import com.navercorp.pinpoint.common.util.DateUtils;
 import com.navercorp.pinpoint.common.util.TransactionId;
 import com.navercorp.pinpoint.common.util.TransactionIdComparator;
+import com.navercorp.pinpoint.web.applicationmap.ApplicationMap;
+import com.navercorp.pinpoint.web.calltree.span.CallTreeIterator;
 import com.navercorp.pinpoint.web.filter.Filter;
 import com.navercorp.pinpoint.web.filter.FilterBuilder;
+import com.navercorp.pinpoint.web.filter.FilterChain;
+import com.navercorp.pinpoint.web.filter.LinkFilter;
 import com.navercorp.pinpoint.web.scatter.ScatterData;
-import com.navercorp.pinpoint.web.service.FilteredMapService;
-import com.navercorp.pinpoint.web.service.ScatterChartService;
+import com.navercorp.pinpoint.web.service.*;
+import com.navercorp.pinpoint.web.statistics.Statistics;
 import com.navercorp.pinpoint.web.util.LimitUtils;
 import com.navercorp.pinpoint.web.view.ServerTime;
 import com.navercorp.pinpoint.web.view.TransactionMetaDataViewModel;
 import com.navercorp.pinpoint.web.vo.LimitedScanResult;
 import com.navercorp.pinpoint.web.vo.Range;
 import com.navercorp.pinpoint.web.vo.TransactionMetadataQuery;
+import com.navercorp.pinpoint.web.vo.callstacks.RecordSet;
+import com.navercorp.pinpoint.web.vo.scatter.Dot;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +67,15 @@ public class ScatterChartController {
     private ScatterChartService scatter;
 
     @Autowired
+    private SpanService spanService;
+
+    @Autowired
+    private TransactionInfoService transactionInfoService;
+
+    @Autowired
+    private FilteredMapService filteredMapService;
+
+    @Autowired
     private FilteredMapService flow;
 
     @Autowired
@@ -87,6 +102,8 @@ public class ScatterChartController {
         model.addAttribute("filter", filterText);
         return "scatterPopup";
     }
+
+
 
     /**
      * selected points from scatter chart data query

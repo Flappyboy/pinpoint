@@ -59,6 +59,9 @@ pinpointApp.config(['$routeProvider', '$locationProvider', '$modalProvider', fun
 	}).when('/realtime/:application/:page', {
 		templateUrl: 'pages/realtime/realtime.html',
 		controller: 'RealtimeCtrl'
+    }).when('/statistics', {
+        templateUrl: 'pages/statistics/statistics.html',
+        controller: 'MainCtrl'
     }).otherwise({
         redirectTo: '/main'
     });

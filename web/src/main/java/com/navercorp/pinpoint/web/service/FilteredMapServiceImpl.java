@@ -95,6 +95,11 @@ public class FilteredMapServiceImpl implements FilteredMapService {
     private static final Object V = new Object();
 
     @Override
+    public LimitedScanResult<List<TransactionId>> selectTraceIdsFromApplicationTraceIndex(String applicationName) {
+        return selectTraceIdsFromApplicationTraceIndex(applicationName, new Range(0, System.currentTimeMillis()), Integer.MAX_VALUE, true);
+    }
+
+    @Override
     public LimitedScanResult<List<TransactionId>> selectTraceIdsFromApplicationTraceIndex(String applicationName, Range range, int limit) {
         return selectTraceIdsFromApplicationTraceIndex(applicationName, range, limit, true);
     }

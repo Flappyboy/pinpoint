@@ -17,10 +17,15 @@
 package com.navercorp.pinpoint.web.service;
 
 import com.navercorp.pinpoint.common.util.TransactionId;
+import com.navercorp.pinpoint.web.vo.scatter.Dot;
+
+import java.util.List;
 
 /**
  * @author emeroad
  */
 public interface SpanService {
     SpanResult selectSpan(TransactionId transactionId, long selectedSpanHint);
+
+    List<SpanResult> selectSpans(List<Dot> dotList);
 }

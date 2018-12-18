@@ -54,8 +54,8 @@ public class HbaseTraceDaoV2 implements TraceDao {
     @Value("#{pinpointWebProps['web.hbase.selectSpans.limit'] ?: 500}")
     private int selectSpansLimit;
 
-    @Value("#{pinpointWebProps['web.hbase.selectAllSpans.limit'] ?: 500}")
-    private int selectAllSpansLimit;
+    // @Value("#{pinpointWebProps['web.hbase.selectAllSpans.limit'] ?: 500}")
+    private int selectAllSpansLimit = Integer.MAX_VALUE;
 
     private final Filter spanFilter = createSpanQualifierFilter();
 

@@ -42,6 +42,7 @@ import com.navercorp.pinpoint.web.dao.StringMetaDataDao;
 import com.navercorp.pinpoint.web.dao.TraceDao;
 import com.navercorp.pinpoint.web.security.MetaDataFilter;
 import com.navercorp.pinpoint.web.security.MetaDataFilter.MetaData;
+import com.navercorp.pinpoint.web.vo.scatter.Dot;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -108,6 +109,39 @@ public class SpanServiceImpl implements SpanService {
         // TODO need to at least show the row data when root span is not found. 
         return result;
     }
+
+    @Override
+    public List<SpanResult> selectSpans(List<Dot> dotList) {
+        List<TransactionId> transactionIdList = new ArrayList<>();
+
+        for (Dot dot: dotList){
+            transactionIdList.add(dot.getTransactionId());
+        }
+
+        final List<List<SpanBo>> spansList = traceDao.selectAllSpans(transactionIdList);
+        List<SpanResult> spanResultList = new ArrayList<>();
+        for (int i=0; i<spansList.size(); i++) {
+            List<SpanBo> spans = spansList.get(i);
+            if (CollectionUtils.isEmpty(spans)) {
+                spanResultList.add(new SpanResult(SpanAligner.ERROR_MATCH, new CallTreeIterator(null)));
+                continue;
+            }
+
+            SpanResult result = order(spans, dotList.get(i).getAcceptedTime());
+            CallTreeIterator callTreeIterator = result.getCallTree();
+            List<SpanAlign> values = callTreeIterator.values();
+
+            transitionDynamicApiId(values);
+            transitionSqlId(values);
+            transitionMongoJson(values);
+            transitionCachedString(values);
+            transitionException(values);
+            // TODO need to at least show the row data when root span is not found.
+            spanResultList.add(result);
+        }
+        return spanResultList;
+    }
+
 
 
     private void transitionAnnotation(List<SpanAlign> spans, AnnotationReplacementCallback annotationReplacementCallback) {

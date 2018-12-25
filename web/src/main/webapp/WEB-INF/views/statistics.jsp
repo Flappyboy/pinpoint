@@ -17,7 +17,7 @@
     </script>
 </head>
 <body>
-<h2 class="sub-header" style="text-align: center">Statistics</h2>
+<h2 class="sub-header" style="text-align: center">Statistics  aaaaakaka </h2>
 <form class="form-horizontal">
     <div class="form-group">
         <label for="inputEmail3" class="col-sm-4 control-label">App</label>

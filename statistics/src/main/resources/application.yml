@@ -1,0 +1,13 @@
+spring:
+  profiles:
+    active: dev
+
+server:
+  port: 8029
+
+#showSql
+logging:
+  level:
+    com:
+      example:
+        mapper : debug

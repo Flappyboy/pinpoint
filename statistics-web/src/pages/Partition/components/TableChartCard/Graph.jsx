@@ -13,20 +13,22 @@ const graphStyle = {
 
 class Graph extends Component {
   componentDidMount() {
-    axios.get('https://5b5e71c98e9f160014b88cc9.mockapi.io/api/v1/lists')
+    const myChart = echarts.init(document.getElementById('graph'));
+    myChart.showLoading();
+    axios.get('/api/webkit')
       .then((response) => {
-        console.log(response);
+        console.log(response.data);
+        this.loadData(myChart, response.data);
       })
       .catch((error) => {
         console.log(error);
       });
   }
 
-  loadData = (json) => {
+  loadData = (myChart, json) => {
     // 基于准备好的dom，初始化echarts实例
-    const myChart = echarts.init(document.getElementById('graph'));
     // 绘制图表
-    myChart.showLoading();
+    
     myChart.hideLoading();
 
     const option = {

@@ -1,10 +1,10 @@
-const foo = require('./foo.json');
-const bar = require('./bar');
+const webkit = require('./webkit-dep.json');
+// const bar = require('./bar');
 
 module.exports = {
   // 同时支持 GET 和 POST
-  '/api/users/1': foo,
-  '/api/foo/bar': bar(),
+  '/api/webkit': webkit,
+  // '/api/foo/bar': bar(),
 
   // 支持标准 HTTP
   'GET /api/users': { users: [1, 2] },
@@ -17,7 +17,7 @@ module.exports = {
 
   // 支持参数
   'POST /api/users/:id': (req, res) => {
-    const { id } = req.params;
-    res.send({ id: id });
+    const { ida } = req.params;
+    res.send({ id: ida });
   },
 };

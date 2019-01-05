@@ -143,6 +143,11 @@ const asideMenuConfig = [
     ],
   },
   {
+    name: '应用',
+    path: '/app',
+    icon: 'home',
+  },
+  {
     name: '\u7EDF\u8BA1\u6570\u636E',
     path: '/statistics',
     icon: 'home',

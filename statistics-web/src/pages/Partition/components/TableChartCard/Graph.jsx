@@ -4,18 +4,27 @@ import React, { Component } from 'react';
 import echarts from 'echarts/lib/echarts';
 import axios from 'axios';
 import 'echarts';
+import emitter from '../ev';
 
 const graphStyle = {
-  width: 800,
-  height: 400,
+  height: 800,
 };
 
 
 class Graph extends Component {
+
+
   componentDidMount() {
+    this.eventEmitter = emitter.addListener('query_partition_detail', this.queryPartitionDetail);
+
+
     const myChart = echarts.init(document.getElementById('graph'));
     myChart.showLoading();
-    axios.get('/api/webkit')
+    axios.get('/api/partition-detail', {
+      params: {
+        id: 2,
+      },
+    })
       .then((response) => {
         console.log(response.data);
         this.loadData(myChart, response.data);
@@ -24,11 +33,17 @@ class Graph extends Component {
         console.log(error);
       });
   }
-
+  // 组件销毁前移除事件监听
+  componentWillUnmount() {
+    emitter.removeListener('query_partition_detail', this.queryPartitionDetail);
+  }
+  queryPartitionDetail = () => {
+    console.log('queryPartitionDetail');
+  }
   loadData = (myChart, json) => {
     // 基于准备好的dom，初始化echarts实例
     // 绘制图表
-    
+
     myChart.hideLoading();
 
     const option = {
@@ -45,29 +60,47 @@ class Graph extends Component {
             formatter: '{b}',
           },
         },
-        draggable: true,
+        roam: true,
         data: json.nodes.map((node, idx) => {
-          node.id = idx;
-          return node;
+          return {
+            id: node.id,
+            name: node.name,
+            symbolSize: 10 * node.size,
+            x: null,
+            y: null,
+            draggable: true,
+          };
         }),
-        categories: json.categories,
+        // categories: json.categories,
         force: {
           // initLayout: 'circular'
           // repulsion: 20,
-          edgeLength: 5,
-          repulsion: 20,
-          gravity: 0.2,
+          // edgeLength: 20,
+          repulsion: 100,
+          // gravity: 0.2,
         },
         edges: json.links,
       }],
     };
 
     myChart.setOption(option);
+    myChart.on('click', (params) => {
+      if (params.seriesType === 'graph') {
+        if (params.dataType === 'edge') {
+          // 点击到了 graph 的 edge（边）上。
+          emitter.emit('query_partition_detail_ne', 'edge');
+        } else {
+          // 点击到了 graph 的 node（节点）上。
+          console.log(params);
+          emitter.emit('query_partition_detail_ne', 'node');
+        }
+      }
+    });
   }
 
   render() {
     return (
-      <div id="graph" style={graphStyle}></div>
+      <div id="graph" style={graphStyle} />
     );
   }
 }

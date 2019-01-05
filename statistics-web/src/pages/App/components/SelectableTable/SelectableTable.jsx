@@ -5,26 +5,25 @@ import moment from 'moment';
 import emitter from '../ev';
 import AddDialog from './components/AddDialog';
 import DeleteBalloon from './components/DeleteBalloon';
-
+import { BrowserRouter as Router, Route, Link, Redirect, withRouter } from 'react-router-dom';
 
 const getMockData = () => {
   const result = [];
-  for (let i = 0; i < 15; i += 1) {
+  for (let i = 0; i < 10; i += 1) {
     result.push({
       id: 100306660940 + i,
       app: 'hap',
-      type: '动态',
       createTime: moment(1546256554000).format('YYYY-MM-DD HH:mm:ss'),
-      algorithm: '社区发现',
-      statistics: 100306660940,
+      classCount: 100,
+      interfaceCount: 20,
+      functionCount: 1000,
+      interFaceFunctionCount: 150,
       desc: '测试',
+      status: true,
     });
   }
   return result;
 };
-
-// 注意：下载数据的功能，强烈推荐通过接口实现数据输出，并下载
-// 因为这样可以有下载鉴权和日志记录，包括当前能不能下载，以及谁下载了什么
 
 export default class SelectableTable extends Component {
   static displayName = 'SelectableTable';
@@ -37,12 +36,12 @@ export default class SelectableTable extends Component {
   componentDidMount() {
     // 声明一个自定义事件
     // 在组件装载完成以后
-    this.eventEmitter = emitter.addListener('query_partitions', this.queryPartition);
+    this.eventEmitter = emitter.addListener('query_apps', this.queryApps);
   }
 
   // 组件销毁前移除事件监听
   componentWillUnmount() {
-    emitter.removeListener('query_partitions', this.queryPartition);
+    emitter.removeListener('query_apps', this.queryApps);
   }
 
   constructor(props) {
@@ -72,12 +71,12 @@ export default class SelectableTable extends Component {
     this.state = {
       selectedRowKeys: [],
       dataSource: getMockData(),
+      redirectToPartition: false,
     };
   }
 
-  queryPartition = (param) => {
+  queryApps = (param) => {
     console.log('query aha ', param);
-    emitter.emit('query_partition_detail', 'Hello');
   };
 
   clearSelectedKeys = () => {
@@ -109,7 +108,7 @@ export default class SelectableTable extends Component {
     });
   };
 
-  partitionDetail = (record) => {
+  partition = (record) => {
     const data = this.state.dataSource;
 
     data.forEach((item) => {
@@ -117,16 +116,34 @@ export default class SelectableTable extends Component {
         // todo
       }
     });
-    // 找到锚点
-    const anchorElement = document.getElementById('partition-detail');
-    // 如果对应id的锚点存在，就跳转到锚点
-    if (anchorElement) { anchorElement.scrollIntoView(); }
+
+    this.setState({
+      redirectToPartitionParam: 'haha',
+      redirectToPartition: true,
+    });
+  };
+
+  addNewItem = (values) => {
+    const data = this.state.dataSource;
+    console.log(values);
+    values.status = false;
+    data.splice(0, 0, values);
+    this.setState({
+      dataSource: data,
+    });
   };
 
   renderOperator = (value, index, record) => {
+    if (!record.status) {
+      return (
+        <div>
+          <Icon type="loading" />
+        </div>
+      );
+    }
     return (
       <div>
-        <a onClick={this.partitionDetail.bind(this, record)}>查看</a>
+        <a onClick={this.partition.bind(this, record)}>划分</a>
         <a style={styles.removeBtn} onClick={this.deleteItem.bind(this, record)} >
           删除
         </a>
@@ -135,11 +152,16 @@ export default class SelectableTable extends Component {
   };
 
   render() {
+    if (this.state.redirectToPartition) {
+      return (
+        <Redirect to={{ pathname: '/partition', search: `?filter=${this.state.redirectToPartitionParam}` }} />
+      );
+    }
     return (
       <div className="selectable-table" style={styles.selectableTable}>
         <IceContainer style={styles.IceContainer}>
           <div>
-            {/* <AddDialog addNewStatistics={this.addNewStatistics} /> */}
+            <AddDialog addNewItem={this.addNewItem} />
             {/* <Button onClick={this.addStatistics} size="small" style={styles.batchBtn}>
               <Icon type="add" />增加
             </Button> */}
@@ -159,6 +181,11 @@ export default class SelectableTable extends Component {
               <Icon type="close" />清空选中
             </Button>
           </div>
+          <div>
+            <a href="/" download>
+              <Icon size="small" type="download" /> 导出表格数据到 .csv 文件
+            </a>
+          </div>
         </IceContainer>
         <IceContainer>
           <Table
@@ -171,10 +198,11 @@ export default class SelectableTable extends Component {
           >
             <Table.Column title="编码" dataIndex="id" width={120} />
             <Table.Column title="应用" dataIndex="app" width={120} />
-            <Table.Column title="类型" dataIndex="type" width={120} />
-            <Table.Column title="统计编码" dataIndex="statistics" width={120} />
             <Table.Column title="创建日期" dataIndex="createTime" width={150} />
-            <Table.Column title="算法" dataIndex="algorithm" width={150} />
+            <Table.Column title="类数" dataIndex="classCount" width={120} />
+            <Table.Column title="接口数" dataIndex="interfaceCount" width={120} />
+            <Table.Column title="方法数" dataIndex="functionCount" width={120} />
+            <Table.Column title="接口方法数" dataIndex="interFaceFunctionCount" width={120} />
             <Table.Column title="描述" dataIndex="desc" width={160} />
             <Table.Column
               title="操作"

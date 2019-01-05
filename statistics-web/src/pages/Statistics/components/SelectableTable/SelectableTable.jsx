@@ -64,7 +64,7 @@ export default class SelectableTable extends Component {
       // 支持针对特殊行进行定制
       getProps: (record) => {
         return {
-          disabled: record.id === 100306660941,
+          disabled: record.status === false,
         };
       },
     };
@@ -73,6 +73,7 @@ export default class SelectableTable extends Component {
       selectedRowKeys: [],
       dataSource: getMockData(),
       redirectToPartition: false,
+      detailId: -1,
     };
   }
 
@@ -94,6 +95,19 @@ export default class SelectableTable extends Component {
   deleteItem = (record) => {
     const { id } = record;
     console.log('delete item', id);
+
+    const data = this.state.dataSource;
+    console.log(record);
+    record.status = false;
+    const index = data.findIndex((item) => {
+      return item.id === record.id;
+    });
+    if (index !== -1) {
+      data.splice(index, 1);
+    }
+    this.setState({
+      dataSource: data,
+    });
   };
 
   partition = (record) => {
@@ -120,6 +134,15 @@ export default class SelectableTable extends Component {
     });
   };
 
+  queryDetail = (record) => {
+
+    emitter.emit('query_statistics_detail', 'Hello');
+    // 找到锚点
+    const anchorElement = document.getElementById('statistics-detail');
+    // 如果对应id的锚点存在，就跳转到锚点
+    if (anchorElement) { anchorElement.scrollIntoView(); }
+  };
+
   renderOperator = (value, index, record) => {
     if (!record.status) {
       return (
@@ -130,8 +153,8 @@ export default class SelectableTable extends Component {
     }
     return (
       <div>
-        <a href="/#/partition" >查看</a>
-        <a onClick={this.partition.bind(this, record)}>划分</a>
+        <a onClick={this.queryDetail.bind(this, record)}>详细</a>
+        <a style={styles.removeBtn} onClick={this.partition.bind(this, record)}>划分</a>
         <a style={styles.removeBtn} onClick={this.deleteItem.bind(this, record)} >
           删除
         </a>
@@ -205,7 +228,6 @@ export default class SelectableTable extends Component {
     );
   }
 }
-
 const styles = {
   batchBtn: {
     marginRight: '10px',

@@ -47,14 +47,14 @@ export default class ColumnForm extends Component {
       if (error) {
         // 处理表单报错
       }
-      emitter.emit('query_statistics', 'Hello');
+      emitter.emit('query_apps', 'Hello');
     });
   };
 
   render() {
     return (
       <div className="column-form">
-        <IceContainer title="划分数据" style={styles.container}>
+        <IceContainer title="统计数据" style={styles.container}>
           <IceFormBinderWrapper
             ref={(formRef) => {
               this.formRef = formRef;

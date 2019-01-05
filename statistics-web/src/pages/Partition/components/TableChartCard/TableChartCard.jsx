@@ -21,7 +21,7 @@ export default class TableChartCard extends Component {
   render() {
     return (
       <IceContainer style={styles.container}>
-        <h4 style={styles.title}>计算健康分析</h4>
+        <h4 id="partition-detail" style={styles.title}>划分详细信息</h4>
         <Row wrap>
           <Col l="12">
             <Graph />

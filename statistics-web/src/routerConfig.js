@@ -28,6 +28,7 @@ import Partition from './pages/Partition';
 import BasicLayout from './layouts/BasicLayout';
 import Page21 from './pages/Page21';
 import Forbidden from './pages/Forbidden';
+import App from './pages/App';
 
 const routerConfig = [
   {
@@ -120,6 +121,11 @@ const routerConfig = [
     path: '/page21',
     layout: BasicLayout,
     component: Page21,
+  },
+  {
+    path: '/app',
+    layout: BasicLayout,
+    component: App,
   },
 ];
 

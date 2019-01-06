@@ -10,6 +10,8 @@
 **/jsdoc
 /**/.idea
 *.iml
+.DS_Store
+**/.DS_Store
 out/
 /src/main/webapp/lib/js/**/*.js
 /src/main/webapp/lib/js/**/*.map

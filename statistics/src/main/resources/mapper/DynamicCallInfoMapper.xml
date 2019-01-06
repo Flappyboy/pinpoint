@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.edu.nju.software.pinpoint.statistics.dao.DynamicCallInfoMapper" >
+  <resultMap id="BaseResultMap" type="cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfo" >
+    <result column="id" property="id" jdbcType="VARCHAR" />
+    <result column="caller" property="caller" jdbcType="VARCHAR" />
+    <result column="callee" property="callee" jdbcType="VARCHAR" />
+    <result column="count" property="count" jdbcType="INTEGER" />
+    <result column="dynamicAnalysisInfoId" property="dynamicanalysisinfoid" jdbcType="VARCHAR" />
+    <result column="createdAt" property="createdat" jdbcType="TIMESTAMP" />
+    <result column="updatedAt" property="updatedat" jdbcType="TIMESTAMP" />
+    <result column="isInclude" property="isinclude" jdbcType="INTEGER" />
+    <result column="flag" property="flag" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, caller, callee, `count`, dynamicAnalysisInfoId, createdAt, updatedAt, isInclude, 
+    flag, `type`
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from DYNAMIC_CALL_INFO
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfoExample" >
+    delete from DYNAMIC_CALL_INFO
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfo" >
+    insert into DYNAMIC_CALL_INFO (id, caller, callee, 
+      `count`, dynamicAnalysisInfoId, createdAt, 
+      updatedAt, isInclude, flag, 
+      `type`)
+    values (#{id,jdbcType=VARCHAR}, #{caller,jdbcType=VARCHAR}, #{callee,jdbcType=VARCHAR}, 
+      #{count,jdbcType=INTEGER}, #{dynamicanalysisinfoid,jdbcType=VARCHAR}, #{createdat,jdbcType=TIMESTAMP}, 
+      #{updatedat,jdbcType=TIMESTAMP}, #{isinclude,jdbcType=INTEGER}, #{flag,jdbcType=INTEGER}, 
+      #{type,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfo" >
+    insert into DYNAMIC_CALL_INFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="caller != null" >
+        caller,
+      </if>
+      <if test="callee != null" >
+        callee,
+      </if>
+      <if test="count != null" >
+        `count`,
+      </if>
+      <if test="dynamicanalysisinfoid != null" >
+        dynamicAnalysisInfoId,
+      </if>
+      <if test="createdat != null" >
+        createdAt,
+      </if>
+      <if test="updatedat != null" >
+        updatedAt,
+      </if>
+      <if test="isinclude != null" >
+        isInclude,
+      </if>
+      <if test="flag != null" >
+        flag,
+      </if>
+      <if test="type != null" >
+        `type`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="caller != null" >
+        #{caller,jdbcType=VARCHAR},
+      </if>
+      <if test="callee != null" >
+        #{callee,jdbcType=VARCHAR},
+      </if>
+      <if test="count != null" >
+        #{count,jdbcType=INTEGER},
+      </if>
+      <if test="dynamicanalysisinfoid != null" >
+        #{dynamicanalysisinfoid,jdbcType=VARCHAR},
+      </if>
+      <if test="createdat != null" >
+        #{createdat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedat != null" >
+        #{updatedat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isinclude != null" >
+        #{isinclude,jdbcType=INTEGER},
+      </if>
+      <if test="flag != null" >
+        #{flag,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfoExample" resultType="java.lang.Integer" >
+    select count(*) from DYNAMIC_CALL_INFO
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update DYNAMIC_CALL_INFO
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.caller != null" >
+        caller = #{record.caller,jdbcType=VARCHAR},
+      </if>
+      <if test="record.callee != null" >
+        callee = #{record.callee,jdbcType=VARCHAR},
+      </if>
+      <if test="record.count != null" >
+        `count` = #{record.count,jdbcType=INTEGER},
+      </if>
+      <if test="record.dynamicanalysisinfoid != null" >
+        dynamicAnalysisInfoId = #{record.dynamicanalysisinfoid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createdat != null" >
+        createdAt = #{record.createdat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatedat != null" >
+        updatedAt = #{record.updatedat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isinclude != null" >
+        isInclude = #{record.isinclude,jdbcType=INTEGER},
+      </if>
+      <if test="record.flag != null" >
+        flag = #{record.flag,jdbcType=INTEGER},
+      </if>
+      <if test="record.type != null" >
+        `type` = #{record.type,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update DYNAMIC_CALL_INFO
+    set id = #{record.id,jdbcType=VARCHAR},
+      caller = #{record.caller,jdbcType=VARCHAR},
+      callee = #{record.callee,jdbcType=VARCHAR},
+      `count` = #{record.count,jdbcType=INTEGER},
+      dynamicAnalysisInfoId = #{record.dynamicanalysisinfoid,jdbcType=VARCHAR},
+      createdAt = #{record.createdat,jdbcType=TIMESTAMP},
+      updatedAt = #{record.updatedat,jdbcType=TIMESTAMP},
+      isInclude = #{record.isinclude,jdbcType=INTEGER},
+      flag = #{record.flag,jdbcType=INTEGER},
+      `type` = #{record.type,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+</mapper>

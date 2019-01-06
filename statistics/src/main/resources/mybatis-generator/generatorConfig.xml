@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <context id="MysqlContext" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="cn.edu.nju.software.pinpoint.statistics.utils.MyMapper"/>
+        </plugin>
+
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/pinpoint"
+                        userId="root"
+                        password="12345678">
+        </jdbcConnection>
+
+        <!-- 对于生成的pojo所在包 -->
+        <javaModelGenerator targetPackage="cn.edu.nju.software.pinpoint.statistics.entity" targetProject="/Users/yaya/Documents/mycode/intelliJIdea/pinpoint/statistics/src/main/java"/>
+
+        <!-- 对于生成的mapper所在目录 -->
+        <sqlMapGenerator targetPackage="mapper" targetProject="/Users/yaya/Documents/mycode/intelliJIdea/pinpoint/statistics/src/main/resources"/>
+
+        <!-- 配置mapper对应的java映射 -->
+        <javaClientGenerator targetPackage="cn.edu.nju.software.pinpoint.statistics.dao" targetProject="/Users/yaya/Documents/mycode/intelliJIdea/pinpoint/statistics/src/main/java"
+                             type="XMLMAPPER"/>
+
+
+        <table tableName="ALGORITHMS"></table>
+        <table tableName="ALGORITHMS_PARAM"></table>
+        <table tableName="APP"></table>
+        <table tableName="CLASS_NODE"></table>
+        <table tableName="DYNAMIC_ANALYSIS_INFO"></table>
+        <table tableName="DYNAMIC_CALL_INFO"></table>
+        <table tableName="METHOD_NODE"></table>
+        <table tableName="PARTITION_DETAIL"></table>
+        <table tableName="PARTITION_RESULT"></table>
+        <table tableName="STATIC_CALL_INFO"></table>
+
+    </context>
+</generatorConfiguration>

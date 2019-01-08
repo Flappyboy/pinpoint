@@ -15,7 +15,7 @@ export default class Partition extends Component {
     return (
       <div className="partition-page">
         <ColumnForm />
-        <SelectableTable />
+        <SelectableTable search={this.props.location.search}/>
         <TableChartCard />
       </div>
     );

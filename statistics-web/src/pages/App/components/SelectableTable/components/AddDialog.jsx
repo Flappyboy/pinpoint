@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import { addApp } from '../../../../../api';
 import { Dialog, Button, Form, Input, Field } from '@icedesign/base';
 import UploadCore from './UploadCore';
+
 
 const FormItem = Form.Item;
 
@@ -19,17 +21,22 @@ export default class AddDialog extends Component {
 
   handleSubmit = () => {
     this.field.validate((errors, values) => {
+      console.log(values);
       if (errors) {
         console.log('Errors in form!!!');
         return;
       }
+      addApp(values).then((response) => {
+        console.log(response.data.data);
+        this.props.addNewItem(response.data.data);
 
-      values.createTime = (new Date()).getTime();
-      this.props.addNewItem(values);
-
-      this.setState({
-        visible: false,
-      });
+        this.setState({
+          visible: false,
+        });
+      })
+        .catch((error) => {
+          console.log(error);
+        });
     });
   };
 
@@ -77,19 +84,19 @@ export default class AddDialog extends Component {
           <Form direction="ver" field={this.field}>
             <FormItem label="应用名：" {...formItemLayout}>
               <Input
-                {...init('app', {
+                {...init('appName', {
                   rules: [{ required: true, message: '必填选项' }],
                 })}
               />
             </FormItem>
 
-            <FormItem label="开始时间：" {...formItemLayout}>
+            {/* <FormItem label="开始时间：" {...formItemLayout}>
               <Input
                 {...init('startTime', {
                   rules: [{ required: false }],
                 })}
               />
-            </FormItem>
+            </FormItem> */}
 
 
             <FormItem label="描述：" {...formItemLayout}>

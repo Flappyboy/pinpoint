@@ -5,23 +5,10 @@ import moment from 'moment';
 import emitter from '../ev';
 import AddDialog from './components/AddDialog';
 import DeleteBalloon from './components/DeleteBalloon';
+import { queryPartitionList, queryPartition, delPartition, queryAppList } from '../../../../api';
 
 
-const getMockData = () => {
-  const result = [];
-  for (let i = 0; i < 15; i += 1) {
-    result.push({
-      id: 100306660940 + i,
-      app: 'hap',
-      type: '动态',
-      createTime: moment(1546256554000).format('YYYY-MM-DD HH:mm:ss'),
-      algorithm: '社区发现',
-      statistics: 100306660940,
-      desc: '测试',
-    });
-  }
-  return result;
-};
+const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 // 注意：下载数据的功能，强烈推荐通过接口实现数据输出，并下载
 // 因为这样可以有下载鉴权和日志记录，包括当前能不能下载，以及谁下载了什么
@@ -32,12 +19,62 @@ export default class SelectableTable extends Component {
   static propTypes = {};
 
   static defaultProps = {};
+  preprocess = (dataList) => {
+    dataList.forEach(data => {
+      data.createTime = moment(data.createTime).format(DATE_FORMAT);
+      data.startTime = moment(data.startTime).format(DATE_FORMAT);
+      data.endTime = moment(data.endTime).format(DATE_FORMAT);
+    });
+  }
 
+  updateList = (pageNum, callBack) => {
+    const queryParam = {
+      pageSize: this.state.pageSize,
+      page: pageNum,
+    };
+    this.setState({
+      isLoading: true,
+    });
+    queryPartitionList(queryParam).then((response) => {
+      console.log(response.data.data);
+      this.preprocess(response.data.data);
+      this.setState({
+        dataSource: response.data.data,
+        isLoading: false,
+        total: response.data.total,
+      });
+      callBack();
+    })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  handleChange = (current) => {
+    console.log(current);
+    this.updateList(current);
+  }
+
+  getQueryString = (name) => {
+    const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+    const r = this.props.search.substr(1).match(reg);
+    if (r != null) return unescape(r[2]);
+    return null;
+  }
 
   componentDidMount() {
     // 声明一个自定义事件
     // 在组件装载完成以后
     this.eventEmitter = emitter.addListener('query_partitions', this.queryPartition);
+    if (this.props.search) {
+
+      this.addNewItem({
+        id: 1004123120,
+        statisticsId: this.getQueryString('addAppId'),
+        status: false,
+      });
+    } else {
+      this.updateList(1);
+    }
   }
 
   // 组件销毁前移除事件监听
@@ -47,6 +84,7 @@ export default class SelectableTable extends Component {
 
   constructor(props) {
     super(props);
+    console.log(this.props);
 
     // 表格可以勾选配置项
     this.rowSelection = {
@@ -71,7 +109,9 @@ export default class SelectableTable extends Component {
 
     this.state = {
       selectedRowKeys: [],
-      dataSource: getMockData(),
+      dataSource: [],
+      pageSize: 10,
+      total: 0,
     };
   }
 
@@ -97,36 +137,61 @@ export default class SelectableTable extends Component {
 
     const data = this.state.dataSource;
     console.log(record);
-    record.status = false;
     const index = data.findIndex((item) => {
       return item.id === record.id;
     });
-    if (index !== -1) {
-      data.splice(index, 1);
-    }
+    data[index].status = false;
     this.setState({
       dataSource: data,
     });
+    delPartition(data[index].id).then((response) => {
+      console.log(response.data.data);
+
+      if (index !== -1) {
+        data.splice(index, 1);
+      }
+      this.setState({
+        dataSource: data,
+      });
+    })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  partitionDetail = (record) => {
+  queryDetail = (record) => {
     const data = this.state.dataSource;
 
     data.forEach((item) => {
       if (item.id === record.id) {
-        // todo
+        emitter.emit('query_partition_detail', item.id);
       }
     });
-    // 找到锚点
-    const anchorElement = document.getElementById('partition-detail');
-    // 如果对应id的锚点存在，就跳转到锚点
-    if (anchorElement) { anchorElement.scrollIntoView(); }
+  };
+
+  addNewItem = (values) => {
+    this.updateList(1, () => {
+      const data = this.state.dataSource;
+      console.log(values);
+      values.status = false;
+      data.splice(0, 0, values);
+      this.setState({
+        dataSource: data,
+      });
+    });
   };
 
   renderOperator = (value, index, record) => {
+    if (!record.status) {
+      return (
+        <div>
+          <Icon type="loading" />
+        </div>
+      );
+    }
     return (
       <div>
-        <a onClick={this.partitionDetail.bind(this, record)}>查看</a>
+        <a onClick={this.queryDetail.bind(this, record)}>详细</a>
         <a style={styles.removeBtn} onClick={this.deleteItem.bind(this, record)} >
           删除
         </a>
@@ -136,8 +201,8 @@ export default class SelectableTable extends Component {
 
   render() {
     return (
-      <div className="selectable-table" style={styles.selectableTable}>
-        <IceContainer style={styles.IceContainer}>
+      <IceContainer className="selectable-table" style={styles.selectableTable}>
+        <div style={styles.IceContainer}>
           <div>
             {/* <AddDialog addNewStatistics={this.addNewStatistics} /> */}
             {/* <Button onClick={this.addStatistics} size="small" style={styles.batchBtn}>
@@ -159,8 +224,8 @@ export default class SelectableTable extends Component {
               <Icon type="close" />清空选中
             </Button>
           </div>
-        </IceContainer>
-        <IceContainer>
+        </div>
+        <div>
           <Table
             dataSource={this.state.dataSource}
             isLoading={this.state.isLoading}
@@ -170,11 +235,11 @@ export default class SelectableTable extends Component {
             }}
           >
             <Table.Column title="编码" dataIndex="id" width={120} />
-            <Table.Column title="应用" dataIndex="app" width={120} />
-            <Table.Column title="类型" dataIndex="type" width={120} />
-            <Table.Column title="统计编码" dataIndex="statistics" width={120} />
+            <Table.Column title="应用" dataIndex="appName" width={120} />
+            <Table.Column title="类型" dataIndex="typeName" width={120} />
+            <Table.Column title="统计编码" dataIndex="statisticsId" width={120} />
             <Table.Column title="创建日期" dataIndex="createTime" width={150} />
-            <Table.Column title="算法" dataIndex="algorithm" width={150} />
+            <Table.Column title="算法" dataIndex="algorithmName" width={150} />
             <Table.Column title="描述" dataIndex="desc" width={160} />
             <Table.Column
               title="操作"
@@ -184,10 +249,10 @@ export default class SelectableTable extends Component {
             />
           </Table>
           <div style={styles.pagination}>
-            <Pagination onChange={this.change} />
+            <Pagination pageSize={this.state.pageSize} total={this.state.total} onChange={this.handleChange} />
           </div>
-        </IceContainer>
-      </div>
+        </div>
+      </IceContainer>
     );
   }
 }

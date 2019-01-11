@@ -2,29 +2,13 @@ import React, { Component } from 'react';
 import { Table, Button, Icon, Pagination } from '@icedesign/base';
 import IceContainer from '@icedesign/container';
 import moment from 'moment';
+import { queryAppList, queryApp, delApp } from '../../../../api';
 import emitter from '../ev';
 import AddDialog from './components/AddDialog';
 import DeleteBalloon from './components/DeleteBalloon';
 import { BrowserRouter as Router, Route, Link, Redirect, withRouter } from 'react-router-dom';
 
-const getMockData = () => {
-  const result = [];
-  for (let i = 0; i < 10; i += 1) {
-    result.push({
-      id: 100306660940 + i,
-      app: 'hap',
-      createTime: moment(1546256554000).format('YYYY-MM-DD HH:mm:ss'),
-      classCount: 100,
-      interfaceCount: 20,
-      functionCount: 1000,
-      interFaceFunctionCount: 150,
-      desc: '测试',
-      status: true,
-    });
-  }
-  return result;
-};
-
+const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export default class SelectableTable extends Component {
   static displayName = 'SelectableTable';
 
@@ -32,11 +16,41 @@ export default class SelectableTable extends Component {
 
   static defaultProps = {};
 
+  preprocess = (dataList) => {
+    dataList.forEach(data => {
+      data.createTime = moment(data.createTime).format(DATE_FORMAT);
+    });
+  }
+
+  updateList = (pageNum) => {
+    const queryParam = {
+      pageSize: this.state.pageSize,
+      page: pageNum,
+    };
+    this.setState({
+      isLoading: true,
+    });
+    queryAppList(queryParam).then((response) => {
+      console.log(response.data.data);
+      
+      this.preprocess(response.data.data);
+      this.setState({
+        dataSource: response.data.data,
+        isLoading: false,
+        total: response.data.total,
+      });
+    })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   componentDidMount() {
     // 声明一个自定义事件
     // 在组件装载完成以后
     this.eventEmitter = emitter.addListener('query_apps', this.queryApps);
+
+    this.updateList(1);
   }
 
   // 组件销毁前移除事件监听
@@ -70,8 +84,10 @@ export default class SelectableTable extends Component {
 
     this.state = {
       selectedRowKeys: [],
-      dataSource: getMockData(),
+      dataSource: [],
       redirectToPartition: false,
+      pageSize: 10,
+      total: 0,
     };
   }
 
@@ -96,29 +112,39 @@ export default class SelectableTable extends Component {
 
     const data = this.state.dataSource;
     console.log(record);
-    record.status = false;
     const index = data.findIndex((item) => {
       return item.id === record.id;
     });
-    if (index !== -1) {
-      data.splice(index, 1);
-    }
+    data[index].status = false;
     this.setState({
       dataSource: data,
     });
+    delApp(data[index].id).then((response) => {
+      console.log(response.data.data);
+
+      if (index !== -1) {
+        data.splice(index, 1);
+      }
+      this.setState({
+        dataSource: data,
+      });
+    })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   partition = (record) => {
     const data = this.state.dataSource;
 
+    let id;
     data.forEach((item) => {
       if (item.id === record.id) {
-        // todo
+        id = item.id;
       }
     });
-
     this.setState({
-      redirectToPartitionParam: 'haha',
+      redirectToPartitionParam: id,
       redirectToPartition: true,
     });
   };
@@ -126,12 +152,15 @@ export default class SelectableTable extends Component {
   addNewItem = (values) => {
     const data = this.state.dataSource;
     console.log(values);
-    values.status = false;
     data.splice(0, 0, values);
     this.setState({
       dataSource: data,
     });
   };
+  handleChange = (current) => {
+    console.log(current);
+    this.updateList(current);
+  }
 
   renderOperator = (value, index, record) => {
     if (!record.status) {
@@ -154,12 +183,12 @@ export default class SelectableTable extends Component {
   render() {
     if (this.state.redirectToPartition) {
       return (
-        <Redirect to={{ pathname: '/partition', search: `?filter=${this.state.redirectToPartitionParam}` }} />
+        <Redirect to={{ pathname: '/partition', search: `?addAppId=${this.state.redirectToPartitionParam}` }} />
       );
     }
     return (
-      <div className="selectable-table" style={styles.selectableTable}>
-        <IceContainer style={styles.IceContainer}>
+      <IceContainer className="selectable-table" style={styles.selectableTable}>
+        <div style={styles.IceContainer}>
           <div>
             <AddDialog addNewItem={this.addNewItem} />
             {/* <Button onClick={this.addStatistics} size="small" style={styles.batchBtn}>
@@ -186,8 +215,8 @@ export default class SelectableTable extends Component {
               <Icon size="small" type="download" /> 导出表格数据到 .csv 文件
             </a>
           </div>
-        </IceContainer>
-        <IceContainer>
+        </div>
+        <div>
           <Table
             dataSource={this.state.dataSource}
             isLoading={this.state.isLoading}
@@ -197,7 +226,7 @@ export default class SelectableTable extends Component {
             }}
           >
             <Table.Column title="编码" dataIndex="id" width={120} />
-            <Table.Column title="应用" dataIndex="app" width={120} />
+            <Table.Column title="应用" dataIndex="appName" width={120} />
             <Table.Column title="创建日期" dataIndex="createTime" width={150} />
             <Table.Column title="类数" dataIndex="classCount" width={120} />
             <Table.Column title="接口数" dataIndex="interfaceCount" width={120} />
@@ -212,10 +241,10 @@ export default class SelectableTable extends Component {
             />
           </Table>
           <div style={styles.pagination}>
-            <Pagination onChange={this.change} />
+            <Pagination pageSize={this.state.pageSize} total={this.state.total} onChange={this.handleChange} />
           </div>
-        </IceContainer>
-      </div>
+        </div>
+      </IceContainer>
     );
   }
 }

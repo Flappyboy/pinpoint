@@ -6,26 +6,10 @@ import emitter from '../ev';
 import AddDialog from './components/AddDialog';
 import DeleteBalloon from './components/DeleteBalloon';
 import { BrowserRouter as Router, Route, Link, Redirect, withRouter } from 'react-router-dom';
-
-const getMockData = () => {
-  const result = [];
-  for (let i = 0; i < 10; i += 1) {
-    result.push({
-      id: 100306660940 + i,
-      app: 'hap',
-      createTime: moment(1546256554000).format('YYYY-MM-DD HH:mm:ss'),
-      startTime: moment(1546256554000).format('YYYY-MM-DD HH:mm:ss'),
-      endTime: moment(1546256554000).format('YYYY-MM-DD HH:mm:ss'),
-      desc: '测试',
-      status: true,
-    });
-  }
-  return result;
-};
-
+import { queryStatisticsList, queryStatistics, delStatistics } from '../../../../api';
 // 注意：下载数据的功能，强烈推荐通过接口实现数据输出，并下载
 // 因为这样可以有下载鉴权和日志记录，包括当前能不能下载，以及谁下载了什么
-
+const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export default class SelectableTable extends Component {
   static displayName = 'SelectableTable';
 
@@ -33,11 +17,45 @@ export default class SelectableTable extends Component {
 
   static defaultProps = {};
 
+  preprocess = (dataList) => {
+    dataList.forEach(data => {
+      data.createTime = moment(data.createTime).format(DATE_FORMAT);
+      data.startTime = moment(data.startTime).format(DATE_FORMAT);
+      data.endTime = moment(data.endTime).format(DATE_FORMAT);
+    });
+  }
+
+  updateList = (pageNum) => {
+    const queryParam = {
+      pageSize: this.state.pageSize,
+      page: pageNum,
+    };
+    this.setState({
+      isLoading: true,
+    });
+    queryStatisticsList(queryParam).then((response) => {
+      console.log(response.data.data);
+      this.preprocess(response.data.data);
+      this.setState({
+        dataSource: response.data.data,
+        isLoading: false,
+        total: response.data.total,
+      });
+    })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  handleChange = (current) => {
+    console.log(current);
+    this.updateList(current);
+  }
 
   componentDidMount() {
     // 声明一个自定义事件
     // 在组件装载完成以后
     this.eventEmitter = emitter.addListener('query_statistics', this.queryStatistics);
+    this.updateList(1);
   }
 
   // 组件销毁前移除事件监听
@@ -71,9 +89,10 @@ export default class SelectableTable extends Component {
 
     this.state = {
       selectedRowKeys: [],
-      dataSource: getMockData(),
+      dataSource: [],
       redirectToPartition: false,
-      detailId: -1,
+      pageSize: 10,
+      total: 0,
     };
   }
 
@@ -98,28 +117,39 @@ export default class SelectableTable extends Component {
 
     const data = this.state.dataSource;
     console.log(record);
-    record.status = false;
     const index = data.findIndex((item) => {
       return item.id === record.id;
     });
-    if (index !== -1) {
-      data.splice(index, 1);
-    }
+    data[index].status = false;
     this.setState({
       dataSource: data,
     });
+    delStatistics(data[index].id).then((response) => {
+      console.log(response.data.data);
+
+      if (index !== -1) {
+        data.splice(index, 1);
+      }
+      this.setState({
+        dataSource: data,
+      });
+    })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   partition = (record) => {
     const data = this.state.dataSource;
 
+    let id;
     data.forEach((item) => {
       if (item.id === record.id) {
-        // todo
+        id = item.id;
       }
     });
-
     this.setState({
+      redirectToPartitionParam: id,
       redirectToPartition: true,
     });
   };
@@ -137,10 +167,7 @@ export default class SelectableTable extends Component {
   queryDetail = (record) => {
 
     emitter.emit('query_statistics_detail', 'Hello');
-    // 找到锚点
-    const anchorElement = document.getElementById('statistics-detail');
-    // 如果对应id的锚点存在，就跳转到锚点
-    if (anchorElement) { anchorElement.scrollIntoView(); }
+    
   };
 
   renderOperator = (value, index, record) => {
@@ -165,12 +192,12 @@ export default class SelectableTable extends Component {
   render() {
     if (this.state.redirectToPartition) {
       return (
-        <Redirect to={{ pathname: '/partition' }} />
+        <Redirect to={{ pathname: '/partition', search: `?addAppId=${this.state.redirectToPartitionParam}` }} />
       );
     }
     return (
-      <div className="selectable-table" style={styles.selectableTable}>
-        <IceContainer style={styles.IceContainer}>
+      <IceContainer className="selectable-table" style={styles.selectableTable}>
+        <div style={styles.IceContainer}>
           <div>
             <AddDialog addNewStatistics={this.addNewStatistics} />
             {/* <Button onClick={this.addStatistics} size="small" style={styles.batchBtn}>
@@ -197,8 +224,8 @@ export default class SelectableTable extends Component {
               <Icon size="small" type="download" /> 导出表格数据到 .csv 文件
             </a>
           </div>
-        </IceContainer>
-        <IceContainer>
+        </div>
+        <div>
           <Table
             dataSource={this.state.dataSource}
             isLoading={this.state.isLoading}
@@ -208,7 +235,7 @@ export default class SelectableTable extends Component {
             }}
           >
             <Table.Column title="编码" dataIndex="id" width={120} />
-            <Table.Column title="应用" dataIndex="app" width={120} />
+            <Table.Column title="应用" dataIndex="appName" width={120} />
             <Table.Column title="创建日期" dataIndex="createTime" width={150} />
             <Table.Column title="开始日期" dataIndex="startTime" width={150} />
             <Table.Column title="结束日期" dataIndex="endTime" width={160} />
@@ -221,10 +248,10 @@ export default class SelectableTable extends Component {
             />
           </Table>
           <div style={styles.pagination}>
-            <Pagination onChange={this.change} />
+            <Pagination pageSize={this.state.pageSize} total={this.state.total} onChange={this.handleChange} />
           </div>
-        </IceContainer>
-      </div>
+        </div>
+      </IceContainer>
     );
   }
 }

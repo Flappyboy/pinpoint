@@ -2,45 +2,37 @@ import React, { Component } from 'react';
 
 // 引入 ECharts 主模块
 import echarts from 'echarts/lib/echarts';
-import axios from 'axios';
 import 'echarts';
 import emitter from '../ev';
 
 const graphStyle = {
-  height: 800,
+  height: 700,
 };
 
-
+let myChart;
 class Graph extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
 
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.isLoading) {
+      myChart.showLoading();
+    } else {
+      myChart.hideLoading();
+      this.loadData(this.props.data);
+    }
+  }
 
   componentDidMount() {
-    this.eventEmitter = emitter.addListener('query_partition_detail', this.queryPartitionDetail);
-
-
-    const myChart = echarts.init(document.getElementById('graph'));
+    myChart = echarts.init(document.getElementById('graph'));
     myChart.showLoading();
-    axios.get('/api/partition-detail', {
-      params: {
-        id: 2,
-      },
-    })
-      .then((response) => {
-        console.log(response.data);
-        this.loadData(myChart, response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
   }
-  // 组件销毁前移除事件监听
-  componentWillUnmount() {
-    emitter.removeListener('query_partition_detail', this.queryPartitionDetail);
-  }
-  queryPartitionDetail = () => {
-    console.log('queryPartitionDetail');
-  }
-  loadData = (myChart, json) => {
+
+  loadData = (json) => {
     // 基于准备好的dom，初始化echarts实例
     // 绘制图表
 
@@ -48,7 +40,7 @@ class Graph extends Component {
 
     const option = {
       legend: {
-        data: ['HTMLElement', 'WebGL', 'SVG', 'CSS', 'Other']
+        data: ['HTMLElement', 'WebGL', 'SVG', 'CSS', 'Other'],
       },
       series: [{
         type: 'graph',
@@ -65,7 +57,7 @@ class Graph extends Component {
           return {
             id: node.id,
             name: node.name,
-            symbolSize: 10 * node.size,
+            symbolSize: node.size,
             x: null,
             y: null,
             draggable: true,
@@ -76,7 +68,7 @@ class Graph extends Component {
           // initLayout: 'circular'
           // repulsion: 20,
           // edgeLength: 20,
-          repulsion: 100,
+          repulsion: 200,
           // gravity: 0.2,
         },
         edges: json.links,

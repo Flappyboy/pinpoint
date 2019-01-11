@@ -10,13 +10,21 @@ public interface PartitionResultMapper {
 
     int deleteByExample(PartitionResultExample example);
 
+    int deleteByPrimaryKey(String id);
+
     int insert(PartitionResult record);
 
     int insertSelective(PartitionResult record);
 
     List<PartitionResult> selectByExample(PartitionResultExample example);
 
+    PartitionResult selectByPrimaryKey(String id);
+
     int updateByExampleSelective(@Param("record") PartitionResult record, @Param("example") PartitionResultExample example);
 
     int updateByExample(@Param("record") PartitionResult record, @Param("example") PartitionResultExample example);
+
+    int updateByPrimaryKeySelective(PartitionResult record);
+
+    int updateByPrimaryKey(PartitionResult record);
 }

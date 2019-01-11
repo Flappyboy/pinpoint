@@ -12,6 +12,8 @@ import com.github.pagehelper.PageHelper;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,6 +31,7 @@ public class DynamicCallServiceImpl implements DynamicCallService {
     @Autowired
     private MethodNodeService methodNodeService;
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void saveDCallInfo(DynamicCallInfo dynamicCallInfo) {
         String id = sid.nextShort();
         dynamicCallInfo.setId(id);
@@ -39,6 +42,7 @@ public class DynamicCallServiceImpl implements DynamicCallService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updateDCallInfo(DynamicCallInfo dynamicCallInfo) {
         dynamicCallInfo.setUpdatedat(new Date());
         DynamicCallInfoExample example = new DynamicCallInfoExample();
@@ -48,6 +52,7 @@ public class DynamicCallServiceImpl implements DynamicCallService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteDCallInfo(String dynamicCallInfoId) {
         DynamicCallInfo dynamicCallInfo = new DynamicCallInfo();
         dynamicCallInfo.setId(dynamicCallInfoId);
@@ -60,6 +65,7 @@ public class DynamicCallServiceImpl implements DynamicCallService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public DynamicCallInfo queryDCallInfo(String dynamicCallInfoId) {
         DynamicCallInfo dAnalysisInfo = new DynamicCallInfo();
         DynamicCallInfoExample example = new DynamicCallInfoExample();
@@ -72,6 +78,7 @@ public class DynamicCallServiceImpl implements DynamicCallService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<DynamicCallInfo> queryDCallInfo(Integer page, Integer pageSize) {
         PageHelper.startPage(page, pageSize);
 
@@ -84,6 +91,7 @@ public class DynamicCallServiceImpl implements DynamicCallService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<HashMap<String, String>> findEdgeByAppId(String dynamicAnalysisInfoId, int page, int pageSize, int type) {
         List<HashMap<String, String>> edges = new ArrayList<>();
         PageHelper.startPage(page, pageSize);

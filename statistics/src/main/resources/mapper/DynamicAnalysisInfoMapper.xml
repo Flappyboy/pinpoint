@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.edu.nju.software.pinpoint.statistics.dao.DynamicAnalysisInfoMapper" >
   <resultMap id="BaseResultMap" type="cn.edu.nju.software.pinpoint.statistics.entity.DynamicAnalysisInfo" >
-    <result column="id" property="id" jdbcType="VARCHAR" />
+    <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="appId" property="appid" jdbcType="VARCHAR" />
     <result column="startTine" property="starttine" jdbcType="TIMESTAMP" />
     <result column="endTime" property="endtime" jdbcType="TIMESTAMP" />
@@ -10,6 +10,7 @@
     <result column="updatedAt" property="updatedat" jdbcType="TIMESTAMP" />
     <result column="flag" property="flag" jdbcType="INTEGER" />
     <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="desc" property="desc" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -70,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, appId, startTine, endTime, createdAt, updatedAt, flag, `type`
+    id, appId, startTine, endTime, createdAt, updatedAt, flag, `type`, `desc`
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicAnalysisInfoExample" >
     select
@@ -86,6 +87,16 @@
       order by ${orderByClause}
     </if>
   </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from DYNAMIC_ANALYSIS_INFO
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from DYNAMIC_ANALYSIS_INFO
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
   <delete id="deleteByExample" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicAnalysisInfoExample" >
     delete from DYNAMIC_ANALYSIS_INFO
     <if test="_parameter != null" >
@@ -95,10 +106,10 @@
   <insert id="insert" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicAnalysisInfo" >
     insert into DYNAMIC_ANALYSIS_INFO (id, appId, startTine, 
       endTime, createdAt, updatedAt, 
-      flag, `type`)
+      flag, `type`, `desc`)
     values (#{id,jdbcType=VARCHAR}, #{appid,jdbcType=VARCHAR}, #{starttine,jdbcType=TIMESTAMP}, 
       #{endtime,jdbcType=TIMESTAMP}, #{createdat,jdbcType=TIMESTAMP}, #{updatedat,jdbcType=TIMESTAMP}, 
-      #{flag,jdbcType=INTEGER}, #{type,jdbcType=INTEGER})
+      #{flag,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, #{desc,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicAnalysisInfo" >
     insert into DYNAMIC_ANALYSIS_INFO
@@ -127,6 +138,9 @@
       <if test="type != null" >
         `type`,
       </if>
+      <if test="desc != null" >
+        `desc`,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -152,6 +166,9 @@
       </if>
       <if test="type != null" >
         #{type,jdbcType=INTEGER},
+      </if>
+      <if test="desc != null" >
+        #{desc,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -188,6 +205,9 @@
       <if test="record.type != null" >
         `type` = #{record.type,jdbcType=INTEGER},
       </if>
+      <if test="record.desc != null" >
+        `desc` = #{record.desc,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -202,9 +222,52 @@
       createdAt = #{record.createdat,jdbcType=TIMESTAMP},
       updatedAt = #{record.updatedat,jdbcType=TIMESTAMP},
       flag = #{record.flag,jdbcType=INTEGER},
-      `type` = #{record.type,jdbcType=INTEGER}
+      `type` = #{record.type,jdbcType=INTEGER},
+      `desc` = #{record.desc,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicAnalysisInfo" >
+    update DYNAMIC_ANALYSIS_INFO
+    <set >
+      <if test="appid != null" >
+        appId = #{appid,jdbcType=VARCHAR},
+      </if>
+      <if test="starttine != null" >
+        startTine = #{starttine,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endtime != null" >
+        endTime = #{endtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdat != null" >
+        createdAt = #{createdat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedat != null" >
+        updatedAt = #{updatedat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="flag != null" >
+        flag = #{flag,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        `type` = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="desc != null" >
+        `desc` = #{desc,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicAnalysisInfo" >
+    update DYNAMIC_ANALYSIS_INFO
+    set appId = #{appid,jdbcType=VARCHAR},
+      startTine = #{starttine,jdbcType=TIMESTAMP},
+      endTime = #{endtime,jdbcType=TIMESTAMP},
+      createdAt = #{createdat,jdbcType=TIMESTAMP},
+      updatedAt = #{updatedat,jdbcType=TIMESTAMP},
+      flag = #{flag,jdbcType=INTEGER},
+      `type` = #{type,jdbcType=INTEGER},
+      `desc` = #{desc,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

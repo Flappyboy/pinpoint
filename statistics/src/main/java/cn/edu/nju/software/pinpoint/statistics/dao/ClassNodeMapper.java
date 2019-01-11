@@ -10,13 +10,21 @@ public interface ClassNodeMapper {
 
     int deleteByExample(ClassNodeExample example);
 
+    int deleteByPrimaryKey(String id);
+
     int insert(ClassNode record);
 
     int insertSelective(ClassNode record);
 
     List<ClassNode> selectByExample(ClassNodeExample example);
 
+    ClassNode selectByPrimaryKey(String id);
+
     int updateByExampleSelective(@Param("record") ClassNode record, @Param("example") ClassNodeExample example);
 
     int updateByExample(@Param("record") ClassNode record, @Param("example") ClassNodeExample example);
+
+    int updateByPrimaryKeySelective(ClassNode record);
+
+    int updateByPrimaryKey(ClassNode record);
 }

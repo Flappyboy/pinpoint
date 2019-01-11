@@ -6,6 +6,8 @@ import cn.edu.nju.software.pinpoint.statistics.entity.MethodNodeExample;
 import cn.edu.nju.software.pinpoint.statistics.service.MethodNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,6 +17,7 @@ public class MethodNodeServiceImpl implements MethodNodeService {
     private MethodNodeMapper methodNodeMapper;
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public MethodNode findById(String id) {
         MethodNode methodNode = new MethodNode();
         MethodNodeExample example = new MethodNodeExample();

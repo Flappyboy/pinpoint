@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.edu.nju.software.pinpoint.statistics.dao.DynamicCallInfoMapper" >
   <resultMap id="BaseResultMap" type="cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfo" >
-    <result column="id" property="id" jdbcType="VARCHAR" />
+    <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="caller" property="caller" jdbcType="VARCHAR" />
     <result column="callee" property="callee" jdbcType="VARCHAR" />
     <result column="count" property="count" jdbcType="INTEGER" />
@@ -12,6 +12,7 @@
     <result column="isInclude" property="isinclude" jdbcType="INTEGER" />
     <result column="flag" property="flag" jdbcType="INTEGER" />
     <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="desc" property="desc" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -73,7 +74,7 @@
   </sql>
   <sql id="Base_Column_List" >
     id, caller, callee, `count`, dynamicAnalysisInfoId, createdAt, updatedAt, isInclude, 
-    flag, `type`
+    flag, `type`, `desc`
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfoExample" >
     select
@@ -89,6 +90,16 @@
       order by ${orderByClause}
     </if>
   </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from DYNAMIC_CALL_INFO
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from DYNAMIC_CALL_INFO
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
   <delete id="deleteByExample" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfoExample" >
     delete from DYNAMIC_CALL_INFO
     <if test="_parameter != null" >
@@ -99,11 +110,11 @@
     insert into DYNAMIC_CALL_INFO (id, caller, callee, 
       `count`, dynamicAnalysisInfoId, createdAt, 
       updatedAt, isInclude, flag, 
-      `type`)
+      `type`, `desc`)
     values (#{id,jdbcType=VARCHAR}, #{caller,jdbcType=VARCHAR}, #{callee,jdbcType=VARCHAR}, 
       #{count,jdbcType=INTEGER}, #{dynamicanalysisinfoid,jdbcType=VARCHAR}, #{createdat,jdbcType=TIMESTAMP}, 
       #{updatedat,jdbcType=TIMESTAMP}, #{isinclude,jdbcType=INTEGER}, #{flag,jdbcType=INTEGER}, 
-      #{type,jdbcType=INTEGER})
+      #{type,jdbcType=INTEGER}, #{desc,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfo" >
     insert into DYNAMIC_CALL_INFO
@@ -138,6 +149,9 @@
       <if test="type != null" >
         `type`,
       </if>
+      <if test="desc != null" >
+        `desc`,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -169,6 +183,9 @@
       </if>
       <if test="type != null" >
         #{type,jdbcType=INTEGER},
+      </if>
+      <if test="desc != null" >
+        #{desc,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -211,6 +228,9 @@
       <if test="record.type != null" >
         `type` = #{record.type,jdbcType=INTEGER},
       </if>
+      <if test="record.desc != null" >
+        `desc` = #{record.desc,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -227,9 +247,60 @@
       updatedAt = #{record.updatedat,jdbcType=TIMESTAMP},
       isInclude = #{record.isinclude,jdbcType=INTEGER},
       flag = #{record.flag,jdbcType=INTEGER},
-      `type` = #{record.type,jdbcType=INTEGER}
+      `type` = #{record.type,jdbcType=INTEGER},
+      `desc` = #{record.desc,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfo" >
+    update DYNAMIC_CALL_INFO
+    <set >
+      <if test="caller != null" >
+        caller = #{caller,jdbcType=VARCHAR},
+      </if>
+      <if test="callee != null" >
+        callee = #{callee,jdbcType=VARCHAR},
+      </if>
+      <if test="count != null" >
+        `count` = #{count,jdbcType=INTEGER},
+      </if>
+      <if test="dynamicanalysisinfoid != null" >
+        dynamicAnalysisInfoId = #{dynamicanalysisinfoid,jdbcType=VARCHAR},
+      </if>
+      <if test="createdat != null" >
+        createdAt = #{createdat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedat != null" >
+        updatedAt = #{updatedat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isinclude != null" >
+        isInclude = #{isinclude,jdbcType=INTEGER},
+      </if>
+      <if test="flag != null" >
+        flag = #{flag,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        `type` = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="desc != null" >
+        `desc` = #{desc,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfo" >
+    update DYNAMIC_CALL_INFO
+    set caller = #{caller,jdbcType=VARCHAR},
+      callee = #{callee,jdbcType=VARCHAR},
+      `count` = #{count,jdbcType=INTEGER},
+      dynamicAnalysisInfoId = #{dynamicanalysisinfoid,jdbcType=VARCHAR},
+      createdAt = #{createdat,jdbcType=TIMESTAMP},
+      updatedAt = #{updatedat,jdbcType=TIMESTAMP},
+      isInclude = #{isinclude,jdbcType=INTEGER},
+      flag = #{flag,jdbcType=INTEGER},
+      `type` = #{type,jdbcType=INTEGER},
+      `desc` = #{desc,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.edu.nju.software.pinpoint.statistics.dao.ClassNodeMapper" >
   <resultMap id="BaseResultMap" type="cn.edu.nju.software.pinpoint.statistics.entity.ClassNode" >
-    <result column="id" property="id" jdbcType="VARCHAR" />
+    <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="key" property="key" jdbcType="INTEGER" />
     <result column="appId" property="appid" jdbcType="VARCHAR" />
@@ -10,6 +10,7 @@
     <result column="createdAt" property="createdat" jdbcType="TIMESTAMP" />
     <result column="updatedAt" property="updatedat" jdbcType="TIMESTAMP" />
     <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="desc" property="desc" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -70,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, `name`, `key`, appId, flag, createdAt, updatedAt, `type`
+    id, `name`, `key`, appId, flag, createdAt, updatedAt, `type`, `desc`
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.ClassNodeExample" >
     select
@@ -86,6 +87,16 @@
       order by ${orderByClause}
     </if>
   </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from CLASS_NODE
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from CLASS_NODE
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
   <delete id="deleteByExample" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.ClassNodeExample" >
     delete from CLASS_NODE
     <if test="_parameter != null" >
@@ -95,10 +106,12 @@
   <insert id="insert" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.ClassNode" >
     insert into CLASS_NODE (id, `name`, `key`, 
       appId, flag, createdAt, 
-      updatedAt, `type`)
+      updatedAt, `type`, `desc`
+      )
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{key,jdbcType=INTEGER}, 
       #{appid,jdbcType=VARCHAR}, #{flag,jdbcType=INTEGER}, #{createdat,jdbcType=TIMESTAMP}, 
-      #{updatedat,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER})
+      #{updatedat,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER}, #{desc,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.ClassNode" >
     insert into CLASS_NODE
@@ -127,6 +140,9 @@
       <if test="type != null" >
         `type`,
       </if>
+      <if test="desc != null" >
+        `desc`,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -152,6 +168,9 @@
       </if>
       <if test="type != null" >
         #{type,jdbcType=INTEGER},
+      </if>
+      <if test="desc != null" >
+        #{desc,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -188,6 +207,9 @@
       <if test="record.type != null" >
         `type` = #{record.type,jdbcType=INTEGER},
       </if>
+      <if test="record.desc != null" >
+        `desc` = #{record.desc,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -202,9 +224,52 @@
       flag = #{record.flag,jdbcType=INTEGER},
       createdAt = #{record.createdat,jdbcType=TIMESTAMP},
       updatedAt = #{record.updatedat,jdbcType=TIMESTAMP},
-      `type` = #{record.type,jdbcType=INTEGER}
+      `type` = #{record.type,jdbcType=INTEGER},
+      `desc` = #{record.desc,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.ClassNode" >
+    update CLASS_NODE
+    <set >
+      <if test="name != null" >
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="key != null" >
+        `key` = #{key,jdbcType=INTEGER},
+      </if>
+      <if test="appid != null" >
+        appId = #{appid,jdbcType=VARCHAR},
+      </if>
+      <if test="flag != null" >
+        flag = #{flag,jdbcType=INTEGER},
+      </if>
+      <if test="createdat != null" >
+        createdAt = #{createdat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedat != null" >
+        updatedAt = #{updatedat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null" >
+        `type` = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="desc != null" >
+        `desc` = #{desc,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.ClassNode" >
+    update CLASS_NODE
+    set `name` = #{name,jdbcType=VARCHAR},
+      `key` = #{key,jdbcType=INTEGER},
+      appId = #{appid,jdbcType=VARCHAR},
+      flag = #{flag,jdbcType=INTEGER},
+      createdAt = #{createdat,jdbcType=TIMESTAMP},
+      updatedAt = #{updatedat,jdbcType=TIMESTAMP},
+      `type` = #{type,jdbcType=INTEGER},
+      `desc` = #{desc,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

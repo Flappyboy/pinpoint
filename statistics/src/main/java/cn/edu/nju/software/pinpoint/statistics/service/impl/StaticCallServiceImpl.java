@@ -77,6 +77,7 @@ public class StaticCallServiceImpl implements StaticCallService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<HashMap<String, String>> findEdgeByAppId(String appid, int page, int pageSize, int type) {
         List<HashMap<String, String>> edges = new ArrayList<>();
         PageHelper.startPage(page, pageSize);

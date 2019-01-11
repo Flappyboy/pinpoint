@@ -11,6 +11,8 @@ import com.github.pagehelper.PageHelper;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -27,7 +29,8 @@ public class AlgorithmsServiceImpl implements AlgorithmsService {
     private Sid sid;
 
     @Override
-    public void saveApp(Algorithms algorithms, List<AlgorithmsParam> algorithmsParams) {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void saveAlgorithms(Algorithms algorithms, List<AlgorithmsParam> algorithmsParams) {
         String id = sid.nextShort();
         algorithms.setId(id);
         algorithms.setCreatedat(new Date());
@@ -46,6 +49,7 @@ public class AlgorithmsServiceImpl implements AlgorithmsService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public HashMap<String, Object> queryAlgorithmsById(String id) {
         HashMap<String, Object> result = new HashMap<String, Object>();
         Algorithms algorithms = new Algorithms();
@@ -55,6 +59,8 @@ public class AlgorithmsServiceImpl implements AlgorithmsService {
         List<Algorithms> algorithmses = algorithmsMapper.selectByExample(example);
         if (algorithmses.size() > 0 && algorithmses != null)
             algorithms = algorithmses.get(0);
+        else
+            return null;
 
         AlgorithmsParamExample paramExample = new AlgorithmsParamExample();
         AlgorithmsParamExample.Criteria paramCriteria = paramExample.createCriteria();
@@ -66,6 +72,7 @@ public class AlgorithmsServiceImpl implements AlgorithmsService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<Algorithms> queryAlgorithmsListPaged(Integer page, Integer pageSize) {
         PageHelper.startPage(page, pageSize);
         AlgorithmsExample example = new AlgorithmsExample();
@@ -73,5 +80,40 @@ public class AlgorithmsServiceImpl implements AlgorithmsService {
         criteria.andFlagEqualTo(1);
         List<Algorithms> algorithmses = algorithmsMapper.selectByExample(example);
         return algorithmses;
+    }
+
+    @Override
+    public void updateAlgorithms(Algorithms algorithms, List<AlgorithmsParam> algorithmsParams) {
+        algorithms.setUpdatedat(new Date());
+        algorithms.setFlag(1);
+        algorithmsMapper.updateByPrimaryKeySelective(algorithms);
+
+        AlgorithmsParamExample paramExample = new AlgorithmsParamExample();
+        AlgorithmsParamExample.Criteria paramCriteria = paramExample.createCriteria();
+        paramCriteria.andAlgorithmsidEqualTo(algorithms.getId());
+        List<AlgorithmsParam> algorithmsOldParams = algorithmsParamMapper.selectByExample(paramExample);
+        for(AlgorithmsParam param :algorithmsOldParams){
+            AlgorithmsParamExample pdExample = new AlgorithmsParamExample();
+            AlgorithmsParamExample.Criteria pdCriteria = pdExample.createCriteria();
+            pdCriteria.andAlgorithmsidEqualTo(algorithms.getId()).andFlagEqualTo(1);
+            algorithmsParamMapper.deleteByExample(pdExample);
+        }
+
+        for(AlgorithmsParam param :algorithmsParams){
+            String paramId = sid.nextShort();
+            param.setId(paramId);
+            param.setCreatedat(new Date());
+            param.setUpdatedat(new Date());
+            param.setFlag(1);
+            param.setAlgorithmsid(algorithms.getId());
+            algorithmsParamMapper.insert(param);
+        }
+    }
+
+    @Override
+    public void deleteAlgorithms(String id) {
+        Algorithms algorithms = algorithmsMapper.selectByPrimaryKey(id);
+        algorithms.setFlag(0);
+        algorithmsMapper.updateByPrimaryKey(algorithms);
     }
 }

@@ -6,6 +6,8 @@ import cn.edu.nju.software.pinpoint.statistics.entity.ClassNodeExample;
 import cn.edu.nju.software.pinpoint.statistics.service.ClassNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,6 +17,7 @@ public class ClassNodeServiceImpl implements ClassNodeService {
     private ClassNodeMapper classNodeMapper;
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public ClassNode findById(String id) {
         ClassNode classnode = new ClassNode();
         ClassNodeExample classNodeExample = new ClassNodeExample();

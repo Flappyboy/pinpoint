@@ -36,9 +36,19 @@ public class DynamicAnalysisController {
             page = 1;
         }
         if (pageSize == null) {
-            page = 100;
+            pageSize = 100;
         }
         List<DynamicAnalysisInfo> mylist = dynamicAnalysisInfoService.queryDAnalysisInfoListPaged(page, pageSize);
         return JSONResult.ok(mylist);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType="query", name = "id", value = "动态分析Id", required = true, dataType = "String"),
+    })
+    @ApiOperation(value = "删除动态分析", notes = "返回状态200成功")
+    @RequestMapping(value = "/delete", method = RequestMethod.GET)
+    public JSONResult deleteDAInfo(String id) throws Exception {
+        dynamicAnalysisInfoService.deleteDAnalysisInfo(id);
+        return JSONResult.ok();
     }
 }

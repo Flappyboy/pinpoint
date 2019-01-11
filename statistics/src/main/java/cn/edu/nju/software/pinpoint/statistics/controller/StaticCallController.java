@@ -52,7 +52,7 @@ public class StaticCallController {
             page = 1;
         }
         if (pageSize == null) {
-            page = 100;
+            pageSize = 100;
         }
 
         List<HashMap<String, String>> data = staticCallService.findEdgeByAppId(appid, page, pageSize, type);

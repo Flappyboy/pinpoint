@@ -46,19 +46,14 @@ public class PartitionController {
     @ApiOperation(value = "划分结果详情分页列表", notes = "返回状态200成功")
     @RequestMapping(value = "/details", method = RequestMethod.GET)
     public JSONResult findPartitionResultDetail(String partitionId, int type, Integer page, Integer pageSize) throws Exception {
+        if (page == null) {
+            page = 1;
+        }
+        if (pageSize == null) {
+            pageSize = 100;
+        }
         List<HashMap<String, String>> partitionResults = partitionDetailService.queryPartitionDetailListPaged(partitionId, type, page, pageSize);
         return JSONResult.ok(partitionResults);
     }
 
-//    @ApiOperation(value = "划分结果详情分页列表2", notes = "返回状态200成功")
-//    @ApiModelProperty(value = "param", notes = "param的json串")
-//    @RequestMapping(value = "/details", method = RequestMethod.POST)
-//    public JSONResult findPartitionResultDetail2(@RequestBody HashMap<String,Object> param) {
-//        String partitionId = (String)param.get("partitionId");
-//        int type =  Integer.valueOf((String) param.get("type"));
-//        Integer page =Integer.valueOf((String)param.get("page"));
-//        Integer pageSize = Integer.valueOf((String)param.get("pageSize"));
-//        List<HashMap<String, String>> partitionResults = partitionDetailService.queryPartitionDetailListPaged(partitionId, type, page, pageSize);
-//        return JSONResult.ok(partitionResults);
-//    }
 }

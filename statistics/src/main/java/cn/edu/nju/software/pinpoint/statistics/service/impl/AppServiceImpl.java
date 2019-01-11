@@ -8,6 +8,8 @@ import com.github.pagehelper.PageHelper;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -21,6 +23,7 @@ public class AppServiceImpl implements AppService {
     private Sid sid;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public App saveApp(App app) {
         String id = sid.nextShort();
         app.setId(id);
@@ -32,6 +35,7 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updateApp(App app) {
         app.setUpdatedat(new Date());
         AppExample example = new AppExample();
@@ -42,6 +46,7 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteApp(String appId) {
         App app = new App();
         app.setId(appId);
@@ -54,8 +59,9 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public App queryAppById(String appId) {
-        App app = new App();
+        App app = null;
         AppExample example = new AppExample();
         AppExample.Criteria criteria = example.createCriteria();
         criteria.andIdEqualTo(appId).andFlagEqualTo(1);
@@ -66,6 +72,7 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<App> queryUserListPaged(Integer page, Integer pageSize) {
         // 开始分页
         PageHelper.startPage(page, pageSize);

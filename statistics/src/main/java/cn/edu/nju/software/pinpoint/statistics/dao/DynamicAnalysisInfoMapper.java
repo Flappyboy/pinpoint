@@ -10,13 +10,21 @@ public interface DynamicAnalysisInfoMapper {
 
     int deleteByExample(DynamicAnalysisInfoExample example);
 
+    int deleteByPrimaryKey(String id);
+
     int insert(DynamicAnalysisInfo record);
 
     int insertSelective(DynamicAnalysisInfo record);
 
     List<DynamicAnalysisInfo> selectByExample(DynamicAnalysisInfoExample example);
 
+    DynamicAnalysisInfo selectByPrimaryKey(String id);
+
     int updateByExampleSelective(@Param("record") DynamicAnalysisInfo record, @Param("example") DynamicAnalysisInfoExample example);
 
     int updateByExample(@Param("record") DynamicAnalysisInfo record, @Param("example") DynamicAnalysisInfoExample example);
+
+    int updateByPrimaryKeySelective(DynamicAnalysisInfo record);
+
+    int updateByPrimaryKey(DynamicAnalysisInfo record);
 }

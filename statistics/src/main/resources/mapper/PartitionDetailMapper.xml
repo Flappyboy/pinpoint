@@ -2,13 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.edu.nju.software.pinpoint.statistics.dao.PartitionDetailMapper" >
   <resultMap id="BaseResultMap" type="cn.edu.nju.software.pinpoint.statistics.entity.PartitionDetail" >
-    <result column="id" property="id" jdbcType="VARCHAR" />
+    <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="nodeId" property="nodeid" jdbcType="VARCHAR" />
     <result column="patitionResultId" property="patitionresultid" jdbcType="VARCHAR" />
     <result column="createdAt" property="createdat" jdbcType="TIMESTAMP" />
     <result column="updatedAt" property="updatedat" jdbcType="TIMESTAMP" />
     <result column="type" property="type" jdbcType="INTEGER" />
     <result column="flag" property="flag" jdbcType="INTEGER" />
+    <result column="desc" property="desc" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -69,7 +70,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, nodeId, patitionResultId, createdAt, updatedAt, `type`, flag
+    id, nodeId, patitionResultId, createdAt, updatedAt, `type`, flag, `desc`
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.PartitionDetailExample" >
     select
@@ -85,6 +86,16 @@
       order by ${orderByClause}
     </if>
   </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PARTITION_DETAIL
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from PARTITION_DETAIL
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
   <delete id="deleteByExample" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.PartitionDetailExample" >
     delete from PARTITION_DETAIL
     <if test="_parameter != null" >
@@ -94,10 +105,10 @@
   <insert id="insert" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.PartitionDetail" >
     insert into PARTITION_DETAIL (id, nodeId, patitionResultId, 
       createdAt, updatedAt, `type`, 
-      flag)
+      flag, `desc`)
     values (#{id,jdbcType=VARCHAR}, #{nodeid,jdbcType=VARCHAR}, #{patitionresultid,jdbcType=VARCHAR}, 
       #{createdat,jdbcType=TIMESTAMP}, #{updatedat,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER}, 
-      #{flag,jdbcType=INTEGER})
+      #{flag,jdbcType=INTEGER}, #{desc,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.PartitionDetail" >
     insert into PARTITION_DETAIL
@@ -123,6 +134,9 @@
       <if test="flag != null" >
         flag,
       </if>
+      <if test="desc != null" >
+        `desc`,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -145,6 +159,9 @@
       </if>
       <if test="flag != null" >
         #{flag,jdbcType=INTEGER},
+      </if>
+      <if test="desc != null" >
+        #{desc,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -178,6 +195,9 @@
       <if test="record.flag != null" >
         flag = #{record.flag,jdbcType=INTEGER},
       </if>
+      <if test="record.desc != null" >
+        `desc` = #{record.desc,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -191,9 +211,48 @@
       createdAt = #{record.createdat,jdbcType=TIMESTAMP},
       updatedAt = #{record.updatedat,jdbcType=TIMESTAMP},
       `type` = #{record.type,jdbcType=INTEGER},
-      flag = #{record.flag,jdbcType=INTEGER}
+      flag = #{record.flag,jdbcType=INTEGER},
+      `desc` = #{record.desc,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.PartitionDetail" >
+    update PARTITION_DETAIL
+    <set >
+      <if test="nodeid != null" >
+        nodeId = #{nodeid,jdbcType=VARCHAR},
+      </if>
+      <if test="patitionresultid != null" >
+        patitionResultId = #{patitionresultid,jdbcType=VARCHAR},
+      </if>
+      <if test="createdat != null" >
+        createdAt = #{createdat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedat != null" >
+        updatedAt = #{updatedat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null" >
+        `type` = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="flag != null" >
+        flag = #{flag,jdbcType=INTEGER},
+      </if>
+      <if test="desc != null" >
+        `desc` = #{desc,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.PartitionDetail" >
+    update PARTITION_DETAIL
+    set nodeId = #{nodeid,jdbcType=VARCHAR},
+      patitionResultId = #{patitionresultid,jdbcType=VARCHAR},
+      createdAt = #{createdat,jdbcType=TIMESTAMP},
+      updatedAt = #{updatedat,jdbcType=TIMESTAMP},
+      `type` = #{type,jdbcType=INTEGER},
+      flag = #{flag,jdbcType=INTEGER},
+      `desc` = #{desc,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

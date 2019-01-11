@@ -8,6 +8,8 @@ import com.github.pagehelper.PageHelper;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -20,6 +22,7 @@ public class PartitionResultServiceImpl implements PartitionResultService {
     private Sid sid;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public PartitionResult savePartitionResult(PartitionResult partitionResult) {
         String id = sid.nextShort();
         partitionResult.setId(id);
@@ -31,6 +34,7 @@ public class PartitionResultServiceImpl implements PartitionResultService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updatePartitionResult(PartitionResult partitionResult) {
         partitionResult.setUpdatedat(new Date());
         PartitionResultExample example = new PartitionResultExample();
@@ -40,6 +44,7 @@ public class PartitionResultServiceImpl implements PartitionResultService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deletePartitionResult(String partitionResultId) {
         PartitionResult partitionResult = new PartitionResult();
         partitionResult.setId(partitionResultId);
@@ -52,6 +57,7 @@ public class PartitionResultServiceImpl implements PartitionResultService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public PartitionResult queryPartitionResultById(String partitionResultId) {
         PartitionResult partitionResult = new PartitionResult();
         PartitionResultExample example = new PartitionResultExample();
@@ -64,6 +70,7 @@ public class PartitionResultServiceImpl implements PartitionResultService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<PartitionResult> queryPartitionResultListPaged(String dynamicInfoId,String algorithmsId,int type,Integer page, Integer pageSize) {
         PageHelper.startPage(page, pageSize);
 

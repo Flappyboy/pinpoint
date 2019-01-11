@@ -14,6 +14,8 @@ public class Algorithms implements Serializable {
 
     private Integer flag;
 
+    private String desc;
+
     private static final long serialVersionUID = 1L;
 
     public String getId() {
@@ -56,6 +58,14 @@ public class Algorithms implements Serializable {
         this.flag = flag;
     }
 
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc == null ? null : desc.trim();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -67,6 +77,7 @@ public class Algorithms implements Serializable {
         sb.append(", createdat=").append(createdat);
         sb.append(", updatedat=").append(updatedat);
         sb.append(", flag=").append(flag);
+        sb.append(", desc=").append(desc);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

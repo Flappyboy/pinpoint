@@ -8,9 +8,13 @@ import java.util.List;
 
 public interface AlgorithmsService {
 
-    public void saveApp(Algorithms algorithms, List<AlgorithmsParam> algorithmsParams);
+    public void saveAlgorithms(Algorithms algorithms, List<AlgorithmsParam> algorithmsParams);
 
     public HashMap<String, Object> queryAlgorithmsById(String id);
 
     public List<Algorithms> queryAlgorithmsListPaged(Integer page, Integer pageSize);
+
+    public void updateAlgorithms(Algorithms algorithms, List<AlgorithmsParam> algorithmsParams);
+
+    public void deleteAlgorithms(String id);
 }

@@ -64,7 +64,7 @@ public class AppController {
             page = 1;
         }
         if (pageSize == null) {
-            page = 100;
+            pageSize = 100;
         }
         List<App> appList = appService.queryUserListPaged(page, pageSize);
         return JSONResult.ok(appList);

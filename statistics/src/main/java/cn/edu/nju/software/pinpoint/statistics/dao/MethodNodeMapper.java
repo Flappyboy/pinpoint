@@ -10,13 +10,21 @@ public interface MethodNodeMapper {
 
     int deleteByExample(MethodNodeExample example);
 
+    int deleteByPrimaryKey(String id);
+
     int insert(MethodNode record);
 
     int insertSelective(MethodNode record);
 
     List<MethodNode> selectByExample(MethodNodeExample example);
 
+    MethodNode selectByPrimaryKey(String id);
+
     int updateByExampleSelective(@Param("record") MethodNode record, @Param("example") MethodNodeExample example);
 
     int updateByExample(@Param("record") MethodNode record, @Param("example") MethodNodeExample example);
+
+    int updateByPrimaryKeySelective(MethodNode record);
+
+    int updateByPrimaryKey(MethodNode record);
 }

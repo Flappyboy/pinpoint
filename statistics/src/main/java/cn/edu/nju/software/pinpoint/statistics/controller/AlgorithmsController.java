@@ -2,7 +2,7 @@ package cn.edu.nju.software.pinpoint.statistics.controller;
 
 import cn.edu.nju.software.pinpoint.statistics.entity.Algorithms;
 import cn.edu.nju.software.pinpoint.statistics.entity.AlgorithmsParam;
-import cn.edu.nju.software.pinpoint.statistics.entity.App;
+import cn.edu.nju.software.pinpoint.statistics.entity.bean.AlgorithmsBean;
 import cn.edu.nju.software.pinpoint.statistics.entity.common.JSONResult;
 import cn.edu.nju.software.pinpoint.statistics.service.AlgorithmsService;
 import io.swagger.annotations.*;
@@ -23,17 +23,17 @@ public class AlgorithmsController {
     @ApiModelProperty(value = "algorithmsMap", notes = "算法的json串")
     @ApiOperation(value = "新增算法", notes = "返回状态200成功")
     @RequestMapping(value = "/addAlgorithms", method = RequestMethod.POST)
-    public JSONResult addApp(@RequestBody HashMap<String,Object> algorithmsMap) throws Exception {
-        Algorithms algorithms = (Algorithms)algorithmsMap.get("algorithms");
-        List<AlgorithmsParam> algorithmsParams = ( List<AlgorithmsParam>)algorithmsMap.get("param");
-        algorithmsService.saveApp(algorithms,algorithmsParams);
+    public JSONResult addApp(@RequestBody AlgorithmsBean algorithmsMap) throws Exception {
+        Algorithms algorithms = algorithmsMap.getAlgorithms();
+        List<AlgorithmsParam> algorithmsParams = algorithmsMap.getParams();
+        algorithmsService.saveAlgorithms(algorithms, algorithmsParams);
         return JSONResult.ok();
     }
 
     @ApiOperation(value = "根据id查询算法", notes = "返回状态200成功")
     @RequestMapping(value = "/algorithms", method = RequestMethod.GET)
     @ApiImplicitParams({
-            @ApiImplicitParam(paramType="query", name = "id", value = "算法id", required = true, dataType = "String"),
+            @ApiImplicitParam(paramType = "query", name = "id", value = "算法id", required = true, dataType = "String"),
     })
     public JSONResult queryAppById(String id) throws Exception {
         HashMap<String, Object> algorithms = algorithmsService.queryAlgorithmsById(id);
@@ -41,8 +41,8 @@ public class AlgorithmsController {
     }
 
     @ApiImplicitParams({
-            @ApiImplicitParam(paramType="query", name = "page", value = "分页：页码",  dataType = "int"),
-            @ApiImplicitParam(paramType="query", name = "pageSize", value = "分页：每页大小（默认大小100）",  dataType = "int")
+            @ApiImplicitParam(paramType = "query", name = "page", value = "分页：页码", dataType = "int"),
+            @ApiImplicitParam(paramType = "query", name = "pageSize", value = "分页：每页大小（默认大小100）", dataType = "int")
     })
     @ApiOperation(value = "分页查询算法列表", notes = "返回状态200成功")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -51,10 +51,30 @@ public class AlgorithmsController {
             page = 1;
         }
         if (pageSize == null) {
-            page = 100;
+            pageSize = 100;
         }
         List<Algorithms> algorithmsList = algorithmsService.queryAlgorithmsListPaged(page, pageSize);
         return JSONResult.ok(algorithmsList);
+    }
+
+    @ApiModelProperty(value = "algorithmsMap", notes = "算法的json串")
+    @ApiOperation(value = "更新算法", notes = "返回状态200成功")
+    @RequestMapping(value = "/updAlgorithms", method = RequestMethod.POST)
+    public JSONResult updateAlgorithms(@RequestBody  AlgorithmsBean algorithmsMap) {
+        Algorithms algorithms = algorithmsMap.getAlgorithms();
+        List<AlgorithmsParam> algorithmsParams = algorithmsMap.getParams();
+        algorithmsService.updateAlgorithms(algorithms, algorithmsParams);
+        return JSONResult.ok();
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "query", name = "id", value = "算法id", required = true, dataType = "String"),
+    })
+    @ApiOperation(value = "删除算法", notes = "返回状态200成功")
+    @RequestMapping(value = "/delAlgorithms", method = RequestMethod.GET)
+    public JSONResult deleteAlgorithms(String id) {
+        algorithmsService.deleteAlgorithms(id);
+        return JSONResult.ok();
     }
 
 }

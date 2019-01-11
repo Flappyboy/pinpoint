@@ -10,13 +10,21 @@ public interface AlgorithmsMapper {
 
     int deleteByExample(AlgorithmsExample example);
 
+    int deleteByPrimaryKey(String id);
+
     int insert(Algorithms record);
 
     int insertSelective(Algorithms record);
 
     List<Algorithms> selectByExample(AlgorithmsExample example);
 
+    Algorithms selectByPrimaryKey(String id);
+
     int updateByExampleSelective(@Param("record") Algorithms record, @Param("example") AlgorithmsExample example);
 
     int updateByExample(@Param("record") Algorithms record, @Param("example") AlgorithmsExample example);
+
+    int updateByPrimaryKeySelective(Algorithms record);
+
+    int updateByPrimaryKey(Algorithms record);
 }

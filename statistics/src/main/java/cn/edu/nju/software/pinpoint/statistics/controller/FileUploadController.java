@@ -3,12 +3,9 @@ package cn.edu.nju.software.pinpoint.statistics.controller;
 import cn.edu.nju.software.pinpoint.statistics.entity.common.JSONResult;
 import cn.edu.nju.software.pinpoint.statistics.utils.FileUtil;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +24,7 @@ public class FileUploadController {
     /*
      * 获取file.html页面
      */
-    @RequestMapping("file")
+    @RequestMapping(value ="file",method = RequestMethod.GET)
     public String file(){
         return "/file";
     }

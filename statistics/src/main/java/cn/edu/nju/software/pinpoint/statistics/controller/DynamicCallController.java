@@ -36,7 +36,7 @@ public class DynamicCallController {
             page = 1;
         }
         if (pageSize == null) {
-            page = 100;
+            pageSize = 100;
         }
 
         List<HashMap<String, String>> data = dynamicCallService.findEdgeByAppId(dynamicAnalysisInfoId, page, pageSize, type);

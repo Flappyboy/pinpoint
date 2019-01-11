@@ -9,6 +9,8 @@ import com.github.pagehelper.PageHelper;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -21,6 +23,7 @@ public class DynamicAnalysisInfoServiceImpl implements DynamicAnalysisInfoServic
     private Sid sid;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void saveDAnalysisInfo(DynamicAnalysisInfo dAnalysisInfo) {
         String id = sid.nextShort();
         dAnalysisInfo.setId(id);
@@ -31,6 +34,7 @@ public class DynamicAnalysisInfoServiceImpl implements DynamicAnalysisInfoServic
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updateDAnalysisInfo(DynamicAnalysisInfo dAnalysisInfo) {
         dAnalysisInfo.setUpdatedat(new Date());
         DynamicAnalysisInfoExample example = new DynamicAnalysisInfoExample();
@@ -40,6 +44,7 @@ public class DynamicAnalysisInfoServiceImpl implements DynamicAnalysisInfoServic
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteDAnalysisInfo(String dAnalysisInfoId) {
         DynamicAnalysisInfo dAnalysisInfo = new DynamicAnalysisInfo();
         dAnalysisInfo.setId(dAnalysisInfoId);
@@ -52,6 +57,7 @@ public class DynamicAnalysisInfoServiceImpl implements DynamicAnalysisInfoServic
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public DynamicAnalysisInfo queryDAnalysisInfoById(String dAnalysisInfoId) {
         DynamicAnalysisInfo dAnalysisInfo = new DynamicAnalysisInfo();
         DynamicAnalysisInfoExample example = new DynamicAnalysisInfoExample();
@@ -64,6 +70,7 @@ public class DynamicAnalysisInfoServiceImpl implements DynamicAnalysisInfoServic
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<DynamicAnalysisInfo> queryDAnalysisInfoListPaged(Integer page, Integer pageSize) {
         PageHelper.startPage(page, pageSize);
 

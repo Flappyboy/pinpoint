@@ -9,6 +9,8 @@ import com.github.pagehelper.PageHelper;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +29,7 @@ public class PartitionDetailServiceImpl implements PartitionDetailService {
     private PartitionDetailMapper partitionDetailMapper;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public PartitionDetail savePartitionDetail(PartitionDetail partitionDetail) {
         String id = sid.nextShort();
         partitionDetail.setId(id);
@@ -38,6 +41,7 @@ public class PartitionDetailServiceImpl implements PartitionDetailService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updatePartitionDetail(PartitionDetail partitionDetail) {
         partitionDetail.setUpdatedat(new Date());
         PartitionDetailExample example = new PartitionDetailExample();
@@ -47,6 +51,7 @@ public class PartitionDetailServiceImpl implements PartitionDetailService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deletePartitionDetail(String partitionDetailId) {
         PartitionDetail partitionDetail = new PartitionDetail();
         partitionDetail.setId(partitionDetailId);
@@ -59,6 +64,7 @@ public class PartitionDetailServiceImpl implements PartitionDetailService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public PartitionDetail queryPartitionDetailById(String partitionDetailId) {
         PartitionDetail partitionDetail = new PartitionDetail();
         PartitionDetailExample example = new PartitionDetailExample();
@@ -71,6 +77,7 @@ public class PartitionDetailServiceImpl implements PartitionDetailService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<HashMap<String, String>> queryPartitionDetailListPaged(String partitionId, int type, Integer page, Integer pageSize) {
         List<HashMap<String, String>> nodes = new ArrayList<>();
         PageHelper.startPage(page, pageSize);

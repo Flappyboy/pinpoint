@@ -24,6 +24,8 @@ public class DynamicCallInfo implements Serializable {
 
     private Integer type;
 
+    private String desc;
+
     private static final long serialVersionUID = 1L;
 
     public String getId() {
@@ -106,6 +108,14 @@ public class DynamicCallInfo implements Serializable {
         this.type = type;
     }
 
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc == null ? null : desc.trim();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -122,6 +132,7 @@ public class DynamicCallInfo implements Serializable {
         sb.append(", isinclude=").append(isinclude);
         sb.append(", flag=").append(flag);
         sb.append(", type=").append(type);
+        sb.append(", desc=").append(desc);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

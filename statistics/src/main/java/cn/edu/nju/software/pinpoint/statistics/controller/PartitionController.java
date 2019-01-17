@@ -56,4 +56,9 @@ public class PartitionController {
         return JSONResult.ok(partitionResults);
     }
 
+    @RequestMapping(value = "/do", method = RequestMethod.GET)
+    public JSONResult doPartition(String appid,String algorithmsid,String dynamicanalysisinfoid,int type) throws Exception {
+        partitionResultService.partition(appid,algorithmsid,dynamicanalysisinfoid,type);
+        return JSONResult.ok();
+    }
 }

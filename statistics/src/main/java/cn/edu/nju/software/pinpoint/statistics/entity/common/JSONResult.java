@@ -28,8 +28,6 @@ public class JSONResult {
     // 响应中的数据
     private Object data;
 
-//    private String ok;    // 不使用
-
     public static JSONResult build(Integer status, String msg, Object data) {
         return new JSONResult(status, msg, data);
     }
@@ -162,11 +160,4 @@ public class JSONResult {
         }
     }
 
-//    public String getOk() {
-//        return ok;
-//    }
-//
-//    public void setOk(String ok) {
-//        this.ok = ok;
-//    }
 }

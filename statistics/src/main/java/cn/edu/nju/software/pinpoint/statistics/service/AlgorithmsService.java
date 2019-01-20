@@ -17,4 +17,6 @@ public interface AlgorithmsService {
     public void updateAlgorithms(Algorithms algorithms, List<AlgorithmsParam> algorithmsParams);
 
     public void deleteAlgorithms(String id);
+
+    public int countOfAlgorithms();
 }

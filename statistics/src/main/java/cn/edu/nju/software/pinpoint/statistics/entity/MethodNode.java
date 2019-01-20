@@ -22,6 +22,8 @@ public class MethodNode implements Serializable {
 
     private String desc;
 
+    private String classname;
+
     private static final long serialVersionUID = 1L;
 
     public String getId() {
@@ -96,6 +98,14 @@ public class MethodNode implements Serializable {
         this.desc = desc == null ? null : desc.trim();
     }
 
+    public String getClassname() {
+        return classname;
+    }
+
+    public void setClassname(String classname) {
+        this.classname = classname == null ? null : classname.trim();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -111,6 +121,7 @@ public class MethodNode implements Serializable {
         sb.append(", createdat=").append(createdat);
         sb.append(", updatedat=").append(updatedat);
         sb.append(", desc=").append(desc);
+        sb.append(", classname=").append(classname);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

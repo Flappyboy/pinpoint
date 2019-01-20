@@ -16,7 +16,7 @@ import java.util.Map;
 @CrossOrigin
 @RestController
 @Api(value = "划分结果接口")
-@RequestMapping(value = "/partition")
+@RequestMapping(value = "/api")
 public class PartitionController {
     @Autowired
     private PartitionResultService partitionResultService;
@@ -31,10 +31,20 @@ public class PartitionController {
             @ApiImplicitParam(paramType="query", name = "pageSize", value = "分页：每页大小（默认大小100）",  dataType = "int")
     })
     @ApiOperation(value = "划分结果分页列表", notes = "返回状态200成功")
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/partition", method = RequestMethod.GET)
     public JSONResult findPartitionResultList(String dynamicInfoId, String algorithmsId,int type, Integer page, Integer pageSize) throws Exception {
+        if (page == null) {
+            page = 1;
+        }
+        if (pageSize == null) {
+            pageSize = 100;
+        }
         List<PartitionResult> partitionResults = partitionResultService.queryPartitionResultListPaged(dynamicInfoId,algorithmsId, type, page, pageSize);
-        return JSONResult.ok(partitionResults);
+        int count = partitionResultService.countOfPartitionResult(dynamicInfoId,algorithmsId, type);
+        HashMap<String ,Object> result = new HashMap<String ,Object>();
+        result.put("list",partitionResults);
+        result.put("total",count);
+        return JSONResult.ok(result);
     }
 
     @ApiImplicitParams({
@@ -44,19 +54,23 @@ public class PartitionController {
             @ApiImplicitParam(paramType="query", name = "pageSize", value = "分页：每页大小（默认大小100）",  dataType = "int")
     })
     @ApiOperation(value = "划分结果详情分页列表", notes = "返回状态200成功")
-    @RequestMapping(value = "/details", method = RequestMethod.GET)
-    public JSONResult findPartitionResultDetail(String partitionId, int type, Integer page, Integer pageSize) throws Exception {
+    @RequestMapping(value = "/partition/{id}", method = RequestMethod.GET)
+    public JSONResult findPartitionResultDetail(@PathVariable String id, int type, Integer page, Integer pageSize) throws Exception {
         if (page == null) {
             page = 1;
         }
         if (pageSize == null) {
             pageSize = 100;
         }
-        List<HashMap<String, String>> partitionResults = partitionDetailService.queryPartitionDetailListPaged(partitionId, type, page, pageSize);
-        return JSONResult.ok(partitionResults);
+        List<HashMap<String, String>> partitionDetails = partitionDetailService.queryPartitionDetailListPaged(id, type, page, pageSize);
+        int count = partitionDetailService.countOfPartitionDetail(id, type);
+        HashMap<String ,Object> result = new HashMap<String ,Object>();
+        result.put("list",partitionDetails);
+        result.put("total",count);
+        return JSONResult.ok(result);
     }
 
-    @RequestMapping(value = "/do", method = RequestMethod.GET)
+    @RequestMapping(value = "/partition/do", method = RequestMethod.GET)
     public JSONResult doPartition(String appid,String algorithmsid,String dynamicanalysisinfoid,int type) throws Exception {
         partitionResultService.partition(appid,algorithmsid,dynamicanalysisinfoid,type);
         return JSONResult.ok();

@@ -7,22 +7,23 @@ import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @CrossOrigin
 @RestController
 @Api(value = "动态分析信息接口")
-@RequestMapping(value = "/dynaInfo")
+@RequestMapping(value = "/api")
 public class DynamicAnalysisController {
     @Autowired
     private DynamicAnalysisInfoService dynamicAnalysisInfoService;
 
     @ApiModelProperty(value = "dynamicAnalysisInfo", notes = "动态分析信息的json串")
     @ApiOperation(value = "新增动态分析信息", notes = "返回状态200成功")
-    @RequestMapping(value = "/addDynaInfo", method = RequestMethod.POST)
+    @RequestMapping(value = "/dynaInfo", method = RequestMethod.POST)
     public JSONResult addApp(@RequestBody DynamicAnalysisInfo dynamicAnalysisInfo) throws Exception {
-        dynamicAnalysisInfoService.saveDAnalysisInfo(dynamicAnalysisInfo);
-        return JSONResult.ok();
+        DynamicAnalysisInfo dynamicAnalysisInfo1 = dynamicAnalysisInfoService.saveDAnalysisInfo(dynamicAnalysisInfo);
+        return JSONResult.ok(dynamicAnalysisInfo1.getId());
     }
 
     @ApiImplicitParams({
@@ -30,24 +31,28 @@ public class DynamicAnalysisController {
             @ApiImplicitParam(paramType="query", name = "pageSize", value = "分页：每页大小（默认大小100）",  dataType = "int")
     })
     @ApiOperation(value = "分页查询动态分析信息", notes = "返回状态200成功")
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public JSONResult queryAppListPaged(Integer page, Integer pageSize) {
+    @RequestMapping(value = "/dynaInfo", method = RequestMethod.GET)
+    public JSONResult queryAppListPaged(Integer page, Integer pageSize,String appName,String desc) {
         if (page == null) {
             page = 1;
         }
         if (pageSize == null) {
             pageSize = 100;
         }
-        List<DynamicAnalysisInfo> mylist = dynamicAnalysisInfoService.queryDAnalysisInfoListPaged(page, pageSize);
-        return JSONResult.ok(mylist);
+        List<DynamicAnalysisInfo> mylist = dynamicAnalysisInfoService.queryDAnalysisInfoListPaged(page, pageSize,appName,desc);
+        int count = dynamicAnalysisInfoService.countOfDAnalysisInfo();
+        HashMap<String ,Object> result = new HashMap<String ,Object>();
+        result.put("list",mylist);
+        result.put("total",count);
+        return JSONResult.ok(result);
     }
 
     @ApiImplicitParams({
             @ApiImplicitParam(paramType="query", name = "id", value = "动态分析Id", required = true, dataType = "String"),
     })
     @ApiOperation(value = "删除动态分析", notes = "返回状态200成功")
-    @RequestMapping(value = "/delete", method = RequestMethod.GET)
-    public JSONResult deleteDAInfo(String id) throws Exception {
+    @RequestMapping(value = "/dynaInfo/{id}", method = RequestMethod.DELETE)
+    public JSONResult deleteDAInfo(@PathVariable  String id) throws Exception {
         dynamicAnalysisInfoService.deleteDAnalysisInfo(id);
         return JSONResult.ok();
     }

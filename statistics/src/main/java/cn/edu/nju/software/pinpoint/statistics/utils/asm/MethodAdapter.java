@@ -41,8 +41,7 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
         }
 
         if (!owner.equals(this.className)) {
-            // Classnode sourcenode = classnoedes.get(this.className);
-            // Classnode targetnode = classnoedes.get(owner);
+
             String edgeKey = this.className + "_" + owner;
             StaticCallInfo myedge = classEdges.get(edgeKey);
             if (myedge != null) {
@@ -51,15 +50,22 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
                 classEdges.put(edgeKey, myedge);
             } else {
                 StaticCallInfo newedge = new StaticCallInfo();
-                newedge.setCaller(this.className);
-                newedge.setCallee(owner);
+                newedge.setCaller(this.className.replace("/", ".")
+                        .replace(";", ",")
+                        .replace("(L", "(")
+                        .replace(",)", ")")
+                        .replace(",L", ","));
+                newedge.setCallee(owner.replace("/", ".")
+                        .replace(";", ",")
+                        .replace("(L", "(")
+                        .replace(",)", ")")
+                        .replace(",L", ","));
                 newedge.setCount(1);
                 classEdges.put(edgeKey, newedge);
             }
         }
 
-//        String sourceMethodName = this.className+"."+this.name+this.desc;
-        String sourceMethodName = (this.className + "." + this.name + this.desc).replace("/", ".")
+        String sourceMethodName = (this.className + "--" + this.name + this.desc).replace("/", ".")
                 .replace(";", ",")
                 .replace("(L", "(")
                 .replace(",)", ")")
@@ -68,7 +74,7 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
         sourceMethodName = sourceMethodName.substring(0, index1 + 1);
 
 //        String targetMethodName = owner+"."+name+desc;
-        String targetMethodName = (owner + "." + name + desc).replace("/", ".")
+        String targetMethodName = (owner + "--" + name + desc).replace("/", ".")
                 .replace(";", ",")
                 .replace("(L", "(")
                 .replace(",)", ")")

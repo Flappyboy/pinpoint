@@ -15,7 +15,7 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @Api(value = "算法相关接口")
-@RequestMapping(value = "/algorithms")
+@RequestMapping(value = "/api")
 public class AlgorithmsController {
     @Autowired
     private AlgorithmsService algorithmsService;
@@ -45,7 +45,7 @@ public class AlgorithmsController {
             @ApiImplicitParam(paramType = "query", name = "pageSize", value = "分页：每页大小（默认大小100）", dataType = "int")
     })
     @ApiOperation(value = "分页查询算法列表", notes = "返回状态200成功")
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/algorithms/list", method = RequestMethod.GET)
     public JSONResult queryAppListPaged(Integer page, Integer pageSize) {
         if (page == null) {
             page = 1;
@@ -54,6 +54,10 @@ public class AlgorithmsController {
             pageSize = 100;
         }
         List<Algorithms> algorithmsList = algorithmsService.queryAlgorithmsListPaged(page, pageSize);
+        int count = algorithmsService.countOfAlgorithms();
+        HashMap<String ,Object> result = new HashMap<String ,Object>();
+        result.put("list",algorithmsList);
+        result.put("total",count);
         return JSONResult.ok(algorithmsList);
     }
 

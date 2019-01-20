@@ -15,4 +15,6 @@ public interface PartitionDetailService {
     public PartitionDetail queryPartitionDetailById(String partitionDetailId);
 
     public List<HashMap<String, String>> queryPartitionDetailListPaged(String partitionId, int type, Integer page, Integer pageSize);
+
+    public int countOfPartitionDetail(String partitionId, int type);
 }

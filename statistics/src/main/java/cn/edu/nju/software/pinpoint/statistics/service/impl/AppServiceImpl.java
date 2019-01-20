@@ -73,15 +73,33 @@ public class AppServiceImpl implements AppService {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
-    public List<App> queryUserListPaged(Integer page, Integer pageSize) {
+    public List<App> queryUserListPaged(Integer page, Integer pageSize,String appName,String desc) {
         // 开始分页
         PageHelper.startPage(page, pageSize);
 
         AppExample example = new AppExample();
         AppExample.Criteria criteria = example.createCriteria();
         criteria.andFlagEqualTo(1);
+        if(appName!=""&&appName!=null&&!appName.isEmpty())
+            criteria.andNameEqualTo(appName);
+        if(desc!=""&&desc!=null&&!desc.isEmpty())
+            criteria.andDescLike(desc);
         example.setOrderByClause("createdat");
         List<App> appList = appMapper.selectByExample(example);
         return appList;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public int countOfApp(String appName,String desc) {
+        AppExample example = new AppExample();
+        AppExample.Criteria criteria = example.createCriteria();
+        if(appName!=""&&appName!=null&&!appName.isEmpty())
+            criteria.andNameEqualTo(appName);
+        if(desc!=""&&desc!=null&&!desc.isEmpty())
+            criteria.andDescLike(desc);
+        criteria.andFlagEqualTo(1);
+        int count =appMapper.countByExample(example);
+        return count;
     }
 }

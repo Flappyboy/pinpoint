@@ -26,6 +26,8 @@ public class PartitionResult implements Serializable {
 
     private Integer order;
 
+    private String partitionid;
+
     private static final long serialVersionUID = 1L;
 
     public String getId() {
@@ -116,6 +118,14 @@ public class PartitionResult implements Serializable {
         this.order = order;
     }
 
+    public String getPartitionid() {
+        return partitionid;
+    }
+
+    public void setPartitionid(String partitionid) {
+        this.partitionid = partitionid == null ? null : partitionid.trim();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -133,6 +143,7 @@ public class PartitionResult implements Serializable {
         sb.append(", flag=").append(flag);
         sb.append(", type=").append(type);
         sb.append(", order=").append(order);
+        sb.append(", partitionid=").append(partitionid);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

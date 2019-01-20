@@ -22,6 +22,8 @@ public class DynamicAnalysisInfo implements Serializable {
 
     private String desc;
 
+    private Integer status;
+
     private static final long serialVersionUID = 1L;
 
     public String getId() {
@@ -96,6 +98,14 @@ public class DynamicAnalysisInfo implements Serializable {
         this.desc = desc == null ? null : desc.trim();
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -111,6 +121,7 @@ public class DynamicAnalysisInfo implements Serializable {
         sb.append(", flag=").append(flag);
         sb.append(", type=").append(type);
         sb.append(", desc=").append(desc);
+        sb.append(", status=").append(status);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

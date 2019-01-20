@@ -28,4 +28,15 @@ public class MethodNodeServiceImpl implements MethodNodeService {
             methodNode = methodNodes.get(0);
         return methodNode;
     }
+
+    @Override
+    public List<MethodNode> findByCondition(String name, String classname, String appid) {
+        MethodNodeExample example = new MethodNodeExample();
+        MethodNodeExample.Criteria criteria = example.createCriteria();
+        criteria.andNameEqualTo(name).andAppidEqualTo(appid).andFlagEqualTo(1);
+        if(classname!=null)
+            criteria.andClassnameEqualTo(classname);
+        List<MethodNode> methodNodes = methodNodeMapper.selectByExample(example);
+        return methodNodes;
+    }
 }

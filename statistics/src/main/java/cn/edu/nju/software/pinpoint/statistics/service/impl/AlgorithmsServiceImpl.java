@@ -83,6 +83,7 @@ public class AlgorithmsServiceImpl implements AlgorithmsService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void updateAlgorithms(Algorithms algorithms, List<AlgorithmsParam> algorithmsParams) {
         algorithms.setUpdatedat(new Date());
         algorithms.setFlag(1);
@@ -111,9 +112,19 @@ public class AlgorithmsServiceImpl implements AlgorithmsService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void deleteAlgorithms(String id) {
         Algorithms algorithms = algorithmsMapper.selectByPrimaryKey(id);
         algorithms.setFlag(0);
         algorithmsMapper.updateByPrimaryKey(algorithms);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public int countOfAlgorithms() {
+        AlgorithmsExample example = new AlgorithmsExample();
+        AlgorithmsExample.Criteria criteria = example.createCriteria();
+        criteria.andFlagEqualTo(1);
+        return algorithmsMapper.countByExample(example);
     }
 }

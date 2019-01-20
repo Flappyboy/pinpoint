@@ -694,6 +694,76 @@ public class MethodNodeExample {
             addCriterion("`desc` not between", value1, value2, "desc");
             return (Criteria) this;
         }
+
+        public Criteria andClassnameIsNull() {
+            addCriterion("className is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andClassnameIsNotNull() {
+            addCriterion("className is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andClassnameEqualTo(String value) {
+            addCriterion("className =", value, "classname");
+            return (Criteria) this;
+        }
+
+        public Criteria andClassnameNotEqualTo(String value) {
+            addCriterion("className <>", value, "classname");
+            return (Criteria) this;
+        }
+
+        public Criteria andClassnameGreaterThan(String value) {
+            addCriterion("className >", value, "classname");
+            return (Criteria) this;
+        }
+
+        public Criteria andClassnameGreaterThanOrEqualTo(String value) {
+            addCriterion("className >=", value, "classname");
+            return (Criteria) this;
+        }
+
+        public Criteria andClassnameLessThan(String value) {
+            addCriterion("className <", value, "classname");
+            return (Criteria) this;
+        }
+
+        public Criteria andClassnameLessThanOrEqualTo(String value) {
+            addCriterion("className <=", value, "classname");
+            return (Criteria) this;
+        }
+
+        public Criteria andClassnameLike(String value) {
+            addCriterion("className like", value, "classname");
+            return (Criteria) this;
+        }
+
+        public Criteria andClassnameNotLike(String value) {
+            addCriterion("className not like", value, "classname");
+            return (Criteria) this;
+        }
+
+        public Criteria andClassnameIn(List<String> values) {
+            addCriterion("className in", values, "classname");
+            return (Criteria) this;
+        }
+
+        public Criteria andClassnameNotIn(List<String> values) {
+            addCriterion("className not in", values, "classname");
+            return (Criteria) this;
+        }
+
+        public Criteria andClassnameBetween(String value1, String value2) {
+            addCriterion("className between", value1, value2, "classname");
+            return (Criteria) this;
+        }
+
+        public Criteria andClassnameNotBetween(String value1, String value2) {
+            addCriterion("className not between", value1, value2, "classname");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

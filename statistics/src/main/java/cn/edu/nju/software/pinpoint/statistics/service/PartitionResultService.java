@@ -18,4 +18,5 @@ public interface PartitionResultService {
 
     public void partition(String appid,String algorithmsid,String dynamicanalysisinfoid,int type) throws IOException;
 
+    public int countOfPartitionResult(String dynamicInfoId,String algorithmsId,int type);
 }

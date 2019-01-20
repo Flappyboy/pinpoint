@@ -1,9 +1,9 @@
 package cn.edu.nju.software.pinpoint.statistics.service.impl;
 
+import cn.edu.nju.software.pinpoint.statistics.dao.AppMapper;
 import cn.edu.nju.software.pinpoint.statistics.dao.DynamicAnalysisInfoMapper;
 import cn.edu.nju.software.pinpoint.statistics.entity.DynamicAnalysisInfo;
 import cn.edu.nju.software.pinpoint.statistics.entity.DynamicAnalysisInfoExample;
-import cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfoExample;
 import cn.edu.nju.software.pinpoint.statistics.service.DynamicAnalysisInfoService;
 import com.github.pagehelper.PageHelper;
 import org.n3r.idworker.Sid;
@@ -20,17 +20,21 @@ public class DynamicAnalysisInfoServiceImpl implements DynamicAnalysisInfoServic
     @Autowired
     private DynamicAnalysisInfoMapper dynamicAnalysisInfoMapper;
     @Autowired
+    private AppMapper appMapper;
+    @Autowired
     private Sid sid;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void saveDAnalysisInfo(DynamicAnalysisInfo dAnalysisInfo) {
+    public DynamicAnalysisInfo saveDAnalysisInfo(DynamicAnalysisInfo dAnalysisInfo) {
         String id = sid.nextShort();
         dAnalysisInfo.setId(id);
         dAnalysisInfo.setCreatedat(new Date());
         dAnalysisInfo.setUpdatedat(new Date());
         dAnalysisInfo.setFlag(1);
-        dynamicAnalysisInfoMapper.insert(dAnalysisInfo);
+        dAnalysisInfo.setStatus(0);
+        dynamicAnalysisInfoMapper.insertSelective(dAnalysisInfo);
+        return dAnalysisInfo;
     }
 
     @Override
@@ -71,14 +75,29 @@ public class DynamicAnalysisInfoServiceImpl implements DynamicAnalysisInfoServic
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
-    public List<DynamicAnalysisInfo> queryDAnalysisInfoListPaged(Integer page, Integer pageSize) {
+    public List<DynamicAnalysisInfo> queryDAnalysisInfoListPaged(Integer page, Integer pageSize,String appName,String desc) {
         PageHelper.startPage(page, pageSize);
 
+        if(appName!=null&&appName!=""&&!appName.isEmpty()){
+
+        }
+        if(desc!=null&&desc!=""&&!desc.isEmpty()){
+
+        }
         DynamicAnalysisInfoExample example = new DynamicAnalysisInfoExample();
         DynamicAnalysisInfoExample.Criteria criteria = example.createCriteria();
         criteria.andFlagEqualTo(1);
         example.setOrderByClause("createdat");
         List<DynamicAnalysisInfo> dynamicAnalysisInfoList = dynamicAnalysisInfoMapper.selectByExample(example);
         return dynamicAnalysisInfoList;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public int countOfDAnalysisInfo() {
+        DynamicAnalysisInfoExample example = new DynamicAnalysisInfoExample();
+        DynamicAnalysisInfoExample.Criteria criteria = example.createCriteria();
+        criteria.andFlagEqualTo(1);
+        return dynamicAnalysisInfoMapper.countByExample(example);
     }
 }

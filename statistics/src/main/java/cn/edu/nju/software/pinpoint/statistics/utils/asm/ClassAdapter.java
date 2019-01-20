@@ -27,7 +27,12 @@ public class ClassAdapter extends ClassVisitor implements Opcodes {
             cv.visit(version, access, name, signature, superName, interfaces);
 
         }
-        owner = name;
+        owner = name
+                .replace("/", ".")
+                .replace(";", ",")
+                .replace("(L", "(")
+                .replace(",)", ")")
+                .replace(",L", ",");;
         isInterface = (access & Opcodes.ACC_INTERFACE) != 0;
         System.out.println(name);
         ClassNode cnode = classNodes.get(name);
@@ -62,7 +67,13 @@ public class ClassAdapter extends ClassVisitor implements Opcodes {
         int index2 = methodName.lastIndexOf(".");
         String className = methodName.substring(0, index + 1);
         MethodNode sourceMethodNode = new MethodNode();
+        String ename = (name + desc).replace("/", ".")
+                .replace(";", ",")
+                .replace("(L", "(")
+                .replace(",)", ")")
+                .replace(",L", ",");
         sourceMethodNode.setName(methodName);
+        sourceMethodNode.setClassname(this.owner);
         sourceMethodNode.setClassid(className);
         methodNodes.put(methodName, sourceMethodNode);
         return mv;

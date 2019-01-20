@@ -13,6 +13,7 @@
     <result column="flag" property="flag" jdbcType="INTEGER" />
     <result column="type" property="type" jdbcType="INTEGER" />
     <result column="order" property="order" jdbcType="INTEGER" />
+    <result column="partitionId" property="partitionid" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -74,7 +75,7 @@
   </sql>
   <sql id="Base_Column_List" >
     id, `desc`, `name`, algorithmsId, dynamicAnalysisInfoId, appId, createdAt, updatedAt, 
-    flag, `type`, `order`
+    flag, `type`, `order`, partitionId
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.PartitionResultExample" >
     select
@@ -110,11 +111,13 @@
     insert into PARTITION_RESULT (id, `desc`, `name`, 
       algorithmsId, dynamicAnalysisInfoId, appId, 
       createdAt, updatedAt, flag, 
-      `type`, `order`)
+      `type`, `order`, partitionId
+      )
     values (#{id,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{algorithmsid,jdbcType=VARCHAR}, #{dynamicanalysisinfoid,jdbcType=VARCHAR}, #{appid,jdbcType=VARCHAR}, 
       #{createdat,jdbcType=TIMESTAMP}, #{updatedat,jdbcType=TIMESTAMP}, #{flag,jdbcType=INTEGER}, 
-      #{type,jdbcType=INTEGER}, #{order,jdbcType=INTEGER})
+      #{type,jdbcType=INTEGER}, #{order,jdbcType=INTEGER}, #{partitionid,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.PartitionResult" >
     insert into PARTITION_RESULT
@@ -152,6 +155,9 @@
       <if test="order != null" >
         `order`,
       </if>
+      <if test="partitionid != null" >
+        partitionId,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -186,6 +192,9 @@
       </if>
       <if test="order != null" >
         #{order,jdbcType=INTEGER},
+      </if>
+      <if test="partitionid != null" >
+        #{partitionid,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -231,6 +240,9 @@
       <if test="record.order != null" >
         `order` = #{record.order,jdbcType=INTEGER},
       </if>
+      <if test="record.partitionid != null" >
+        partitionId = #{record.partitionid,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -248,7 +260,8 @@
       updatedAt = #{record.updatedat,jdbcType=TIMESTAMP},
       flag = #{record.flag,jdbcType=INTEGER},
       `type` = #{record.type,jdbcType=INTEGER},
-      `order` = #{record.order,jdbcType=INTEGER}
+      `order` = #{record.order,jdbcType=INTEGER},
+      partitionId = #{record.partitionid,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -286,6 +299,9 @@
       <if test="order != null" >
         `order` = #{order,jdbcType=INTEGER},
       </if>
+      <if test="partitionid != null" >
+        partitionId = #{partitionid,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -300,7 +316,8 @@
       updatedAt = #{updatedat,jdbcType=TIMESTAMP},
       flag = #{flag,jdbcType=INTEGER},
       `type` = #{type,jdbcType=INTEGER},
-      `order` = #{order,jdbcType=INTEGER}
+      `order` = #{order,jdbcType=INTEGER},
+      partitionId = #{partitionid,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

@@ -89,17 +89,17 @@ public class PartitionResultServiceImpl implements PartitionResultService {
     @Transactional(propagation = Propagation.SUPPORTS)
     public List<PartitionResult> queryPartitionResultListPaged(String dynamicInfoId, String algorithmsId, int type, Integer page, Integer pageSize) {
         PageHelper.startPage(page, pageSize);
-
         PartitionResultExample example = new PartitionResultExample();
         PartitionResultExample.Criteria criteria = example.createCriteria();
         criteria.andFlagEqualTo(1).andDynamicanalysisinfoidEqualTo(dynamicInfoId).
                 andAlgorithmsidEqualTo(algorithmsId).andTypeEqualTo(type);
-        example.setOrderByClause("createdat");
+//        example.setOrderByClause("createdat");
         List<PartitionResult> partitionResultList = partitionResultMapper.selectByExample(example);
         return partitionResultList;
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void partition(String appid, String algorithmsid, String dynamicanalysisinfoid, int type) throws IOException {
         StaticCallInfoExample staticCallInfoExample = new StaticCallInfoExample();
         StaticCallInfoExample.Criteria sccriteria = staticCallInfoExample.createCriteria();
@@ -193,7 +193,7 @@ public class PartitionResultServiceImpl implements PartitionResultService {
         //划分结果入库
         List<String> resultLines = FileUtil.readFile(outputPath);
         int communityCount = 0;
-        for (int j =1; j<resultLines.size();j++) {
+        for (int j = 1; j < resultLines.size(); j++) {
 //            if(!resultLine.trim().endsWith("0")&&resultLine.trim()!="0"){
             String resultLine = resultLines.get(j);
             System.out.println(resultLine);
@@ -224,5 +224,15 @@ public class PartitionResultServiceImpl implements PartitionResultService {
         }
         FileUtil.delete(outputPath);
         FileUtil.delete(filePath);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public int countOfPartitionResult(String dynamicInfoId, String algorithmsId, int type) {
+        PartitionResultExample example = new PartitionResultExample();
+        PartitionResultExample.Criteria criteria = example.createCriteria();
+        criteria.andFlagEqualTo(1).andDynamicanalysisinfoidEqualTo(dynamicInfoId).
+                andAlgorithmsidEqualTo(algorithmsId).andTypeEqualTo(type);
+        return partitionResultMapper.countByExample(example);
     }
 }

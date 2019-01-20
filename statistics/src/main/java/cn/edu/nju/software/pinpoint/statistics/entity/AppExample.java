@@ -624,6 +624,306 @@ public class AppExample {
             addCriterion("`desc` not between", value1, value2, "desc");
             return (Criteria) this;
         }
+
+        public Criteria andClasscountIsNull() {
+            addCriterion("classCount is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andClasscountIsNotNull() {
+            addCriterion("classCount is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andClasscountEqualTo(Integer value) {
+            addCriterion("classCount =", value, "classcount");
+            return (Criteria) this;
+        }
+
+        public Criteria andClasscountNotEqualTo(Integer value) {
+            addCriterion("classCount <>", value, "classcount");
+            return (Criteria) this;
+        }
+
+        public Criteria andClasscountGreaterThan(Integer value) {
+            addCriterion("classCount >", value, "classcount");
+            return (Criteria) this;
+        }
+
+        public Criteria andClasscountGreaterThanOrEqualTo(Integer value) {
+            addCriterion("classCount >=", value, "classcount");
+            return (Criteria) this;
+        }
+
+        public Criteria andClasscountLessThan(Integer value) {
+            addCriterion("classCount <", value, "classcount");
+            return (Criteria) this;
+        }
+
+        public Criteria andClasscountLessThanOrEqualTo(Integer value) {
+            addCriterion("classCount <=", value, "classcount");
+            return (Criteria) this;
+        }
+
+        public Criteria andClasscountIn(List<Integer> values) {
+            addCriterion("classCount in", values, "classcount");
+            return (Criteria) this;
+        }
+
+        public Criteria andClasscountNotIn(List<Integer> values) {
+            addCriterion("classCount not in", values, "classcount");
+            return (Criteria) this;
+        }
+
+        public Criteria andClasscountBetween(Integer value1, Integer value2) {
+            addCriterion("classCount between", value1, value2, "classcount");
+            return (Criteria) this;
+        }
+
+        public Criteria andClasscountNotBetween(Integer value1, Integer value2) {
+            addCriterion("classCount not between", value1, value2, "classcount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacecountIsNull() {
+            addCriterion("interfaceCount is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacecountIsNotNull() {
+            addCriterion("interfaceCount is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacecountEqualTo(Integer value) {
+            addCriterion("interfaceCount =", value, "interfacecount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacecountNotEqualTo(Integer value) {
+            addCriterion("interfaceCount <>", value, "interfacecount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacecountGreaterThan(Integer value) {
+            addCriterion("interfaceCount >", value, "interfacecount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacecountGreaterThanOrEqualTo(Integer value) {
+            addCriterion("interfaceCount >=", value, "interfacecount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacecountLessThan(Integer value) {
+            addCriterion("interfaceCount <", value, "interfacecount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacecountLessThanOrEqualTo(Integer value) {
+            addCriterion("interfaceCount <=", value, "interfacecount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacecountIn(List<Integer> values) {
+            addCriterion("interfaceCount in", values, "interfacecount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacecountNotIn(List<Integer> values) {
+            addCriterion("interfaceCount not in", values, "interfacecount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacecountBetween(Integer value1, Integer value2) {
+            addCriterion("interfaceCount between", value1, value2, "interfacecount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacecountNotBetween(Integer value1, Integer value2) {
+            addCriterion("interfaceCount not between", value1, value2, "interfacecount");
+            return (Criteria) this;
+        }
+
+        public Criteria andFunctioncountIsNull() {
+            addCriterion("functionCount is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFunctioncountIsNotNull() {
+            addCriterion("functionCount is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFunctioncountEqualTo(Integer value) {
+            addCriterion("functionCount =", value, "functioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andFunctioncountNotEqualTo(Integer value) {
+            addCriterion("functionCount <>", value, "functioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andFunctioncountGreaterThan(Integer value) {
+            addCriterion("functionCount >", value, "functioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andFunctioncountGreaterThanOrEqualTo(Integer value) {
+            addCriterion("functionCount >=", value, "functioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andFunctioncountLessThan(Integer value) {
+            addCriterion("functionCount <", value, "functioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andFunctioncountLessThanOrEqualTo(Integer value) {
+            addCriterion("functionCount <=", value, "functioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andFunctioncountIn(List<Integer> values) {
+            addCriterion("functionCount in", values, "functioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andFunctioncountNotIn(List<Integer> values) {
+            addCriterion("functionCount not in", values, "functioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andFunctioncountBetween(Integer value1, Integer value2) {
+            addCriterion("functionCount between", value1, value2, "functioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andFunctioncountNotBetween(Integer value1, Integer value2) {
+            addCriterion("functionCount not between", value1, value2, "functioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacefunctioncountIsNull() {
+            addCriterion("interFaceFunctionCount is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacefunctioncountIsNotNull() {
+            addCriterion("interFaceFunctionCount is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacefunctioncountEqualTo(Integer value) {
+            addCriterion("interFaceFunctionCount =", value, "interfacefunctioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacefunctioncountNotEqualTo(Integer value) {
+            addCriterion("interFaceFunctionCount <>", value, "interfacefunctioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacefunctioncountGreaterThan(Integer value) {
+            addCriterion("interFaceFunctionCount >", value, "interfacefunctioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacefunctioncountGreaterThanOrEqualTo(Integer value) {
+            addCriterion("interFaceFunctionCount >=", value, "interfacefunctioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacefunctioncountLessThan(Integer value) {
+            addCriterion("interFaceFunctionCount <", value, "interfacefunctioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacefunctioncountLessThanOrEqualTo(Integer value) {
+            addCriterion("interFaceFunctionCount <=", value, "interfacefunctioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacefunctioncountIn(List<Integer> values) {
+            addCriterion("interFaceFunctionCount in", values, "interfacefunctioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacefunctioncountNotIn(List<Integer> values) {
+            addCriterion("interFaceFunctionCount not in", values, "interfacefunctioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacefunctioncountBetween(Integer value1, Integer value2) {
+            addCriterion("interFaceFunctionCount between", value1, value2, "interfacefunctioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterfacefunctioncountNotBetween(Integer value1, Integer value2) {
+            addCriterion("interFaceFunctionCount not between", value1, value2, "interfacefunctioncount");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusIsNull() {
+            addCriterion("`status` is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusIsNotNull() {
+            addCriterion("`status` is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusEqualTo(Integer value) {
+            addCriterion("`status` =", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotEqualTo(Integer value) {
+            addCriterion("`status` <>", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusGreaterThan(Integer value) {
+            addCriterion("`status` >", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusGreaterThanOrEqualTo(Integer value) {
+            addCriterion("`status` >=", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusLessThan(Integer value) {
+            addCriterion("`status` <", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusLessThanOrEqualTo(Integer value) {
+            addCriterion("`status` <=", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusIn(List<Integer> values) {
+            addCriterion("`status` in", values, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotIn(List<Integer> values) {
+            addCriterion("`status` not in", values, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusBetween(Integer value1, Integer value2) {
+            addCriterion("`status` between", value1, value2, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotBetween(Integer value1, Integer value2) {
+            addCriterion("`status` not between", value1, value2, "status");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

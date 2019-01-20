@@ -20,6 +20,16 @@ public class App implements Serializable {
 
     private String desc;
 
+    private Integer classcount;
+
+    private Integer interfacecount;
+
+    private Integer functioncount;
+
+    private Integer interfacefunctioncount;
+
+    private Integer status;
+
     private static final long serialVersionUID = 1L;
 
     public String getId() {
@@ -86,6 +96,46 @@ public class App implements Serializable {
         this.desc = desc == null ? null : desc.trim();
     }
 
+    public Integer getClasscount() {
+        return classcount;
+    }
+
+    public void setClasscount(Integer classcount) {
+        this.classcount = classcount;
+    }
+
+    public Integer getInterfacecount() {
+        return interfacecount;
+    }
+
+    public void setInterfacecount(Integer interfacecount) {
+        this.interfacecount = interfacecount;
+    }
+
+    public Integer getFunctioncount() {
+        return functioncount;
+    }
+
+    public void setFunctioncount(Integer functioncount) {
+        this.functioncount = functioncount;
+    }
+
+    public Integer getInterfacefunctioncount() {
+        return interfacefunctioncount;
+    }
+
+    public void setInterfacefunctioncount(Integer interfacefunctioncount) {
+        this.interfacefunctioncount = interfacefunctioncount;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -100,6 +150,11 @@ public class App implements Serializable {
         sb.append(", nodenumber=").append(nodenumber);
         sb.append(", flag=").append(flag);
         sb.append(", desc=").append(desc);
+        sb.append(", classcount=").append(classcount);
+        sb.append(", interfacecount=").append(interfacecount);
+        sb.append(", functioncount=").append(functioncount);
+        sb.append(", interfacefunctioncount=").append(interfacefunctioncount);
+        sb.append(", status=").append(status);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

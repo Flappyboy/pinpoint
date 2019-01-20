@@ -1,5 +1,6 @@
 package cn.edu.nju.software.pinpoint.statistics.service.impl;
 
+import cn.edu.nju.software.pinpoint.statistics.dao.AppMapper;
 import cn.edu.nju.software.pinpoint.statistics.dao.ClassNodeMapper;
 import cn.edu.nju.software.pinpoint.statistics.dao.MethodNodeMapper;
 import cn.edu.nju.software.pinpoint.statistics.dao.StaticCallInfoMapper;
@@ -10,6 +11,7 @@ import cn.edu.nju.software.pinpoint.statistics.service.StaticCallService;
 import cn.edu.nju.software.pinpoint.statistics.utils.FileUtil;
 import cn.edu.nju.software.pinpoint.statistics.utils.asm.ClassAdapter;
 import cn.edu.nju.software.pinpoint.statistics.utils.asm.MethodAdapter;
+import cn.edu.nju.software.pinpoint.statistics.utils.file.FileCompress;
 import com.github.pagehelper.PageHelper;
 import org.n3r.idworker.Sid;
 import org.springframework.asm.ClassReader;
@@ -37,12 +39,22 @@ public class StaticCallServiceImpl implements StaticCallService {
     @Autowired
     private MethodNodeService methodNodeService;
     @Autowired
+    private AppMapper appMapper;
+    @Autowired
     private Sid sid;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void saveStaticAnalysis(String appid, String path) throws Exception {
+    public void saveStaticAnalysis(String appid, String compressFile) throws Exception {
         ArrayList<String> myfiles = new ArrayList<String>();
+        String outPath = compressFile.trim().substring(0,compressFile.trim().lastIndexOf("."));
+        System.out.println("解压路径：" + outPath);
+        FileCompress.unCompress(compressFile,outPath);
+        String path = "";
+        if(path.trim().endsWith(".war"))
+            path = outPath+"/WEB-INF/classes";
+        else
+            path = outPath;
         FileUtil.traverseFolder(path, myfiles);
         System.out.println("class文件数：" + myfiles.size());
         for (String file : myfiles) {
@@ -64,6 +76,13 @@ public class StaticCallServiceImpl implements StaticCallService {
         //类
         HashMap<String, ClassNode> classNodes = ClassAdapter.classNodes;
         HashMap<String, StaticCallInfo> classEdges = MethodAdapter.classEdges;
+
+        App app = new App();
+        app.setId(appid);
+        app.setStatus(1);
+        app.setClasscount(classNodes.size());
+        app.setFunctioncount(methodnoedes.size());
+        appMapper.updateByPrimaryKeySelective(app);
 
         System.out.println("保存方法结点");
         saveMethodNode(methodnoedes, appid);
@@ -108,6 +127,15 @@ public class StaticCallServiceImpl implements StaticCallService {
         return edges;
     }
 
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public int countOfStaticAnalysis(String appid, int type) {
+        StaticCallInfoExample example = new StaticCallInfoExample();
+        StaticCallInfoExample.Criteria criteria = example.createCriteria();
+        criteria.andAppidEqualTo(appid).andFlagEqualTo(1).andTypeEqualTo(type);
+        return staticCallInfoMapper.countByExample(example);
+    }
+
     private void saveMethodNode(HashMap<String, MethodNode> methodnoedes, String appid) {
         int methodKey = 0;
         for (Map.Entry<String, MethodNode> entry : methodnoedes.entrySet()) {
@@ -115,7 +143,7 @@ public class StaticCallServiceImpl implements StaticCallService {
 
             MethodNodeExample example = new MethodNodeExample();
             MethodNodeExample.Criteria criteria = example.createCriteria();
-            criteria.andNameEqualTo(methodNode.getName())
+            criteria.andNameEqualTo(methodNode.getName()).andClassnameEqualTo(methodNode.getClassname())
                     .andAppidEqualTo(appid).andFlagEqualTo(1);
             List<MethodNode> mnodes = methodNodeMapper.selectByExample(example);
 
@@ -161,9 +189,11 @@ public class StaticCallServiceImpl implements StaticCallService {
             StaticCallInfo methodEdge = entry.getValue();
 
             System.out.println("getSource   :    " + methodEdge.getCaller());
+            String sCallerName = methodEdge.getCaller();
+            String[] scallerArr = sCallerName.split("--");
             MethodNodeExample example1 = new MethodNodeExample();
             MethodNodeExample.Criteria criteria1 = example1.createCriteria();
-            criteria1.andNameEqualTo(methodEdge.getCaller()).andAppidEqualTo(appid).andFlagEqualTo(1);
+            criteria1.andNameEqualTo(scallerArr[1]).andClassnameEqualTo(scallerArr[0]).andAppidEqualTo(appid).andFlagEqualTo(1);
             List<MethodNode> sourceNodes = methodNodeMapper.selectByExample(example1);
             if (!sourceNodes.isEmpty()) {
                 MethodNode mynode = sourceNodes.get(0);
@@ -171,9 +201,11 @@ public class StaticCallServiceImpl implements StaticCallService {
             }
 
             System.out.println("getTarget   :   " + methodEdge.getCallee());
+            String tCalleeName = methodEdge.getCallee();
+            String[] tcalleeArr = tCalleeName.split("--");
             MethodNodeExample example2 = new MethodNodeExample();
             MethodNodeExample.Criteria criteria2 = example2.createCriteria();
-            criteria2.andNameEqualTo(methodEdge.getCallee()).andAppidEqualTo(appid).andFlagEqualTo(1);
+            criteria2.andNameEqualTo(tcalleeArr[1]).andClassnameEqualTo(tcalleeArr[0]).andAppidEqualTo(appid).andFlagEqualTo(1);
             List<MethodNode> targetNodes = methodNodeMapper.selectByExample(example2);
             if (!targetNodes.isEmpty()) {
                 MethodNode mynode = targetNodes.get(0);

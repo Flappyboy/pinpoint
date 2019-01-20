@@ -101,4 +101,13 @@ public class PartitionDetailServiceImpl implements PartitionDetailService {
         }
         return nodes;
     }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public int countOfPartitionDetail(String partitionId, int type) {
+        PartitionDetailExample example = new PartitionDetailExample();
+        PartitionDetailExample.Criteria criteria = example.createCriteria();
+        criteria.andFlagEqualTo(1).andPatitionresultidEqualTo(partitionId).andTypeEqualTo(type);
+        return partitionDetailMapper.countByExample(example);
+    }
 }

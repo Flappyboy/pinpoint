@@ -18,7 +18,7 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @Api(value = "静态调用关系接口")
-@RequestMapping(value = "/staticCall")
+@RequestMapping(value = "/api")
 public class StaticCallController {
     @Autowired
     private StaticCallService staticCallService;
@@ -28,7 +28,7 @@ public class StaticCallController {
             @ApiImplicitParam(paramType="query", name = "appid", value = "项目appId", required = true, dataType = "String"),
     })
     @ApiOperation(value = "静态代码分析，结果入库", notes = "返回状态200成功")
-    @RequestMapping(value = "/analysis", method = RequestMethod.GET)
+    @RequestMapping(value = "/staticCall/do", method = RequestMethod.GET)
     public JSONResult doStaticAnalysis(String path, String appid) throws Exception {
         try {
             System.out.println(path);
@@ -46,7 +46,7 @@ public class StaticCallController {
             @ApiImplicitParam(paramType="query", name = "pageSize", value = "分页：每页大小（默认大小100）",  dataType = "int")
     })
     @ApiOperation(value = "静态结果分页列表", notes = "返回状态200成功")
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/staticCall", method = RequestMethod.GET)
     public JSONResult staticEdgeList(String appid, Integer page, Integer pageSize, int type) throws Exception {
         if (page == null) {
             page = 1;
@@ -56,7 +56,11 @@ public class StaticCallController {
         }
 
         List<HashMap<String, String>> data = staticCallService.findEdgeByAppId(appid, page, pageSize, type);
-        return JSONResult.ok(data);
+        int count = staticCallService.countOfStaticAnalysis(appid,type);
+        HashMap<String ,Object> result = new HashMap<String ,Object>();
+        result.put("list",data);
+        result.put("total",count);
+        return JSONResult.ok(result);
     }
 
 

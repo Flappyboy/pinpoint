@@ -1,16 +1,12 @@
 package cn.edu.nju.software.pinpoint.statistics.controller;
 
+import cn.edu.nju.software.pinpoint.statistics.entity.DynamicAnalysisInfo;
+import cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfo;
 import cn.edu.nju.software.pinpoint.statistics.entity.common.JSONResult;
 import cn.edu.nju.software.pinpoint.statistics.service.DynamicCallService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,13 +14,14 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @Api(value = "动态调用关系接口")
+@RequestMapping(value = "/api")
 public class DynamicCallController {
 
     @Autowired
     private DynamicCallService dynamicCallService;
 
     @ApiOperation(value = "动态结果分页列表", notes = "返回状态200成功")
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/dynaCall", method = RequestMethod.GET)
     @ApiImplicitParams({
             @ApiImplicitParam(paramType="query", name = "dynamicAnalysisInfoId", value = "动态信息id", required = true, dataType = "String"),
             @ApiImplicitParam(paramType="query", name = "type", value = "结点类型，0-类结点，1-方法结点", required = true, dataType = "String"),
@@ -40,6 +37,18 @@ public class DynamicCallController {
         }
 
         List<HashMap<String, String>> data = dynamicCallService.findEdgeByAppId(dynamicAnalysisInfoId, page, pageSize, type);
-        return JSONResult.ok(data);
+        int count = dynamicCallService.countOfDynamicCall(dynamicAnalysisInfoId,type);
+        HashMap<String ,Object> result = new HashMap<String ,Object>();
+        result.put("list",data);
+        result.put("total",count);
+        return JSONResult.ok(result);
+    }
+
+    @ApiModelProperty(value = "dynamicAnalysisInfo", notes = "动态分析调用信息的json串")
+    @ApiOperation(value = "新增动态分析调用信息", notes = "返回状态200成功")
+    @RequestMapping(value = "/dynaCall", method = RequestMethod.POST)
+    public JSONResult addApp(@RequestBody DynamicCallInfo dynamicCallInfo) throws Exception {
+        dynamicCallService.saveDCallInfo(dynamicCallInfo);
+        return JSONResult.ok();
     }
 }

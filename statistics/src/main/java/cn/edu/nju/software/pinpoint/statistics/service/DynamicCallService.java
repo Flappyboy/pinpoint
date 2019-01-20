@@ -16,4 +16,5 @@ public interface DynamicCallService {
 
     public List<DynamicCallInfo> queryDCallInfo(Integer page, Integer pageSize);
     public List<HashMap<String,String>> findEdgeByAppId(String dynamicAnalysisInfoId, int page, int pageSize, int type);
+    public int countOfDynamicCall(String dynamicAnalysisInfoId,int type);
 }

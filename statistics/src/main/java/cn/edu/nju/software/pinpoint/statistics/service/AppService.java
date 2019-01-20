@@ -13,6 +13,8 @@ public interface AppService {
 
     public App queryAppById(String appId);
 
-    public List<App> queryUserListPaged(Integer page, Integer pageSize);
+    public List<App> queryUserListPaged(Integer page, Integer pageSize,String appName,String desc);
+
+    public int countOfApp(String appName,String desc);
 
 }

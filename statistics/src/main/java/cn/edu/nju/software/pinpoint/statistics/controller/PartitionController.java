@@ -1,78 +1,67 @@
 package cn.edu.nju.software.pinpoint.statistics.controller;
 
-import cn.edu.nju.software.pinpoint.statistics.entity.PartitionResult;
+import cn.edu.nju.software.pinpoint.statistics.entity.PartitionInfo;
 import cn.edu.nju.software.pinpoint.statistics.entity.common.JSONResult;
-import cn.edu.nju.software.pinpoint.statistics.service.PartitionDetailService;
-import cn.edu.nju.software.pinpoint.statistics.service.PartitionResultService;
+import cn.edu.nju.software.pinpoint.statistics.service.PartitionService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @CrossOrigin
 @RestController
-@Api(value = "划分结果接口")
+@Api(value = "划分相关接口")
 @RequestMapping(value = "/api")
 public class PartitionController {
     @Autowired
-    private PartitionResultService partitionResultService;
-    @Autowired
-    private PartitionDetailService partitionDetailService;
+    private PartitionService partitionService;
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(paramType="query", name = "dynamicInfoId", value = "动态信息id", required = true, dataType = "String"),
-            @ApiImplicitParam(paramType="query", name = "algorithmsId", value = "算法id", required = true, dataType = "String"),
-            @ApiImplicitParam(paramType="query", name = "type", value = "结点类型，0-类结点，1-方法结点", required = true, dataType = "String"),
-            @ApiImplicitParam(paramType="query", name = "page", value = "分页：页码",  dataType = "int"),
-            @ApiImplicitParam(paramType="query", name = "pageSize", value = "分页：每页大小（默认大小100）",  dataType = "int")
-    })
-    @ApiOperation(value = "划分结果分页列表", notes = "返回状态200成功")
-    @RequestMapping(value = "/partition", method = RequestMethod.GET)
-    public JSONResult findPartitionResultList(String dynamicInfoId, String algorithmsId,int type, Integer page, Integer pageSize) throws Exception {
-        if (page == null) {
-            page = 1;
-        }
-        if (pageSize == null) {
-            pageSize = 100;
-        }
-        List<PartitionResult> partitionResults = partitionResultService.queryPartitionResultListPaged(dynamicInfoId,algorithmsId, type, page, pageSize);
-        int count = partitionResultService.countOfPartitionResult(dynamicInfoId,algorithmsId, type);
-        HashMap<String ,Object> result = new HashMap<String ,Object>();
-        result.put("list",partitionResults);
-        result.put("total",count);
-        return JSONResult.ok(result);
-    }
-
-    @ApiImplicitParams({
-            @ApiImplicitParam(paramType="query", name = "partitionId", value = "划分结果id", required = true, dataType = "String"),
-            @ApiImplicitParam(paramType="query", name = "type", value = "结点类型，0-类结点，1-方法结点", required = true, dataType = "String"),
-            @ApiImplicitParam(paramType="query", name = "page", value = "分页：页码",  dataType = "int"),
-            @ApiImplicitParam(paramType="query", name = "pageSize", value = "分页：每页大小（默认大小100）",  dataType = "int")
-    })
-    @ApiOperation(value = "划分结果详情分页列表", notes = "返回状态200成功")
-    @RequestMapping(value = "/partition/{id}", method = RequestMethod.GET)
-    public JSONResult findPartitionResultDetail(@PathVariable String id, int type, Integer page, Integer pageSize) throws Exception {
-        if (page == null) {
-            page = 1;
-        }
-        if (pageSize == null) {
-            pageSize = 100;
-        }
-        List<HashMap<String, String>> partitionDetails = partitionDetailService.queryPartitionDetailListPaged(id, type, page, pageSize);
-        int count = partitionDetailService.countOfPartitionDetail(id, type);
-        HashMap<String ,Object> result = new HashMap<String ,Object>();
-        result.put("list",partitionDetails);
-        result.put("total",count);
-        return JSONResult.ok(result);
-    }
-
-    @RequestMapping(value = "/partition/do", method = RequestMethod.GET)
-    public JSONResult doPartition(String appid,String algorithmsid,String dynamicanalysisinfoid,int type) throws Exception {
-        partitionResultService.partition(appid,algorithmsid,dynamicanalysisinfoid,type);
+    @ApiModelProperty(value = "partition", notes = "项目信息的json串")
+    @ApiOperation(value = "新增划分", notes = "返回状态200成功")
+    @RequestMapping(value = "/partition", method = RequestMethod.POST)
+    public JSONResult addPartition(@RequestBody PartitionInfo partition) throws Exception {
+        partitionService.addPartition(partition);
         return JSONResult.ok();
+    }
+
+    @ApiModelProperty(value = "partition", notes = "项目信息的json串")
+    @ApiOperation(value = "更新项目", notes = "返回状态200成功")
+    @RequestMapping(value = "/partition", method = RequestMethod.PUT)
+    public JSONResult updatePartition(@RequestBody PartitionInfo partition) throws Exception {
+        partitionService.updatePartition(partition);
+        return JSONResult.ok();
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType="query", name = "id", value = "项目appId", required = true, dataType = "String"),
+    })
+    @ApiOperation(value = "删除项目", notes = "返回状态200成功")
+    @RequestMapping(value = "/partition/{id}", method = RequestMethod.DELETE)
+    public JSONResult deletePartition(@PathVariable String id) throws Exception {
+        partitionService.delPartition(id);
+        return JSONResult.ok();
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType="query", name = "page", value = "分页：页码",  dataType = "int"),
+            @ApiImplicitParam(paramType="query", name = "pageSize", value = "分页：每页大小（默认大小100）",  dataType = "int")
+    })
+    @ApiOperation(value = "分页查询项目列表", notes = "返回状态200成功")
+    @RequestMapping(value = "/partition", method = RequestMethod.GET)
+    public JSONResult queryPartitionListPaged(Integer page, Integer pageSize,String appName,String desc,String algorithmsid,Integer type) {
+        if (page == null) {
+            page = 1;
+        }
+        if (pageSize == null) {
+            pageSize = 100;
+        }
+        List<HashMap<String ,Object>> partitionList = partitionService.findBycondition( page,  pageSize, appName, desc, algorithmsid, type);
+        int count = partitionService.count( appName, desc, algorithmsid, type);
+        HashMap<String ,Object> result = new HashMap<String ,Object>();
+        result.put("list",partitionList);
+        result.put("total",count);
+        return JSONResult.ok(result);
     }
 }

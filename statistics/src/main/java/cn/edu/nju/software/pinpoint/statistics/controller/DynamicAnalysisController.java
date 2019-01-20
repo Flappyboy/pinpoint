@@ -40,7 +40,7 @@ public class DynamicAnalysisController {
             pageSize = 100;
         }
         List<DynamicAnalysisInfo> mylist = dynamicAnalysisInfoService.queryDAnalysisInfoListPaged(page, pageSize,appName,desc);
-        int count = dynamicAnalysisInfoService.countOfDAnalysisInfo();
+        int count = dynamicAnalysisInfoService.countOfDAnalysisInfo(appName,desc);
         HashMap<String ,Object> result = new HashMap<String ,Object>();
         result.put("list",mylist);
         result.put("total",count);

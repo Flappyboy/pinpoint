@@ -15,6 +15,6 @@ public interface DynamicAnalysisInfoService {
 
     public List<DynamicAnalysisInfo> queryDAnalysisInfoListPaged(Integer page, Integer pageSize,String appName,String desc);
 
-    public int countOfDAnalysisInfo();
+    public int countOfDAnalysisInfo(String appName,String desc);
 
 }

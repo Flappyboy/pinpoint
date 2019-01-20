@@ -3,7 +3,7 @@ package cn.edu.nju.software.pinpoint.statistics.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Partition implements Serializable {
+public class PartitionInfo implements Serializable {
     private String id;
 
     private String appid;

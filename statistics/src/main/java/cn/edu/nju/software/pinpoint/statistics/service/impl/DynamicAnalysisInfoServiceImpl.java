@@ -2,6 +2,8 @@ package cn.edu.nju.software.pinpoint.statistics.service.impl;
 
 import cn.edu.nju.software.pinpoint.statistics.dao.AppMapper;
 import cn.edu.nju.software.pinpoint.statistics.dao.DynamicAnalysisInfoMapper;
+import cn.edu.nju.software.pinpoint.statistics.entity.App;
+import cn.edu.nju.software.pinpoint.statistics.entity.AppExample;
 import cn.edu.nju.software.pinpoint.statistics.entity.DynamicAnalysisInfo;
 import cn.edu.nju.software.pinpoint.statistics.entity.DynamicAnalysisInfoExample;
 import cn.edu.nju.software.pinpoint.statistics.service.DynamicAnalysisInfoService;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 @Service
@@ -78,15 +81,23 @@ public class DynamicAnalysisInfoServiceImpl implements DynamicAnalysisInfoServic
     public List<DynamicAnalysisInfo> queryDAnalysisInfoListPaged(Integer page, Integer pageSize,String appName,String desc) {
         PageHelper.startPage(page, pageSize);
 
-        if(appName!=null&&appName!=""&&!appName.isEmpty()){
-
-        }
-        if(desc!=null&&desc!=""&&!desc.isEmpty()){
-
-        }
         DynamicAnalysisInfoExample example = new DynamicAnalysisInfoExample();
         DynamicAnalysisInfoExample.Criteria criteria = example.createCriteria();
         criteria.andFlagEqualTo(1);
+        if(appName!=null&&appName!=""&&!appName.isEmpty()){
+            AppExample appexample = new AppExample();
+            AppExample.Criteria appcriteria = appexample.createCriteria();
+            appcriteria.andFlagEqualTo(1).andNameEqualTo(appName);
+            List<App> apps = appMapper.selectByExample(appexample);
+            List<String> appIds = new ArrayList<>();
+            for(App app :apps){
+                appIds.add(app.getId());
+            }
+            criteria.andAppidIn(appIds);
+        }
+        if(desc!=null&&desc!=""&&!desc.isEmpty()){
+            criteria.andDescEqualTo(desc);
+        }
         example.setOrderByClause("createdat");
         List<DynamicAnalysisInfo> dynamicAnalysisInfoList = dynamicAnalysisInfoMapper.selectByExample(example);
         return dynamicAnalysisInfoList;
@@ -94,10 +105,24 @@ public class DynamicAnalysisInfoServiceImpl implements DynamicAnalysisInfoServic
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public int countOfDAnalysisInfo() {
+    public int countOfDAnalysisInfo(String appName,String desc) {
         DynamicAnalysisInfoExample example = new DynamicAnalysisInfoExample();
         DynamicAnalysisInfoExample.Criteria criteria = example.createCriteria();
         criteria.andFlagEqualTo(1);
+        if(appName!=null&&appName!=""&&!appName.isEmpty()){
+            AppExample appexample = new AppExample();
+            AppExample.Criteria appcriteria = appexample.createCriteria();
+            appcriteria.andFlagEqualTo(1).andNameEqualTo(appName);
+            List<App> apps = appMapper.selectByExample(appexample);
+            List<String> appIds = new ArrayList<>();
+            for(App app :apps){
+                appIds.add(app.getId());
+            }
+            criteria.andAppidIn(appIds);
+        }
+        if(desc!=null&&desc!=""&&!desc.isEmpty()){
+            criteria.andDescEqualTo(desc);
+        }
         return dynamicAnalysisInfoMapper.countByExample(example);
     }
 }

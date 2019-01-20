@@ -70,10 +70,10 @@
         <!--<table tableName="CLASS_NODE"></table>-->
         <!--<table tableName="DYNAMIC_ANALYSIS_INFO"></table>-->
         <!--<table tableName="DYNAMIC_CALL_INFO"></table>-->
-        <table tableName="METHOD_NODE"></table>
+        <!--<table tableName="METHOD_NODE"></table>-->
         <!--<table tableName="PARTITION_DETAIL"></table>-->
         <!--<table tableName="PARTITION_RESULT"></table>-->
         <!--<table tableName="STATIC_CALL_INFO"></table>-->
-        <!--<table tableName="PARTITION"></table>-->
+        <table tableName="PARTITION_INFO"></table>
     </context>
 </generatorConfiguration>

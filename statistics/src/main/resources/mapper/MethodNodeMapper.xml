@@ -13,6 +13,9 @@
     <result column="desc" property="desc" jdbcType="VARCHAR" />
     <result column="className" property="classname" jdbcType="VARCHAR" />
   </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="cn.edu.nju.software.pinpoint.statistics.entity.MethodNode" extends="BaseResultMap" >
+    <result column="fullName" property="fullname" jdbcType="LONGVARCHAR" />
+  </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
       <foreach collection="oredCriteria" item="criteria" separator="or" >
@@ -74,6 +77,25 @@
   <sql id="Base_Column_List" >
     id, `name`, classId, `key`, appId, flag, createdAt, updatedAt, `desc`, className
   </sql>
+  <sql id="Blob_Column_List" >
+    fullName
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.MethodNodeExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from METHOD_NODE
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.MethodNodeExample" >
     select
     <if test="distinct" >
@@ -88,9 +110,11 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
     select 
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from METHOD_NODE
     where id = #{id,jdbcType=VARCHAR}
   </select>
@@ -107,12 +131,12 @@
   <insert id="insert" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.MethodNode" >
     insert into METHOD_NODE (id, `name`, classId, 
       `key`, appId, flag, createdAt, 
-      updatedAt, `desc`, className
-      )
+      updatedAt, `desc`, className, 
+      fullName)
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{classid,jdbcType=VARCHAR}, 
       #{key,jdbcType=INTEGER}, #{appid,jdbcType=VARCHAR}, #{flag,jdbcType=INTEGER}, #{createdat,jdbcType=TIMESTAMP}, 
-      #{updatedat,jdbcType=TIMESTAMP}, #{desc,jdbcType=VARCHAR}, #{classname,jdbcType=VARCHAR}
-      )
+      #{updatedat,jdbcType=TIMESTAMP}, #{desc,jdbcType=VARCHAR}, #{classname,jdbcType=VARCHAR}, 
+      #{fullname,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.MethodNode" >
     insert into METHOD_NODE
@@ -147,6 +171,9 @@
       <if test="classname != null" >
         className,
       </if>
+      <if test="fullname != null" >
+        fullName,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -178,6 +205,9 @@
       </if>
       <if test="classname != null" >
         #{classname,jdbcType=VARCHAR},
+      </if>
+      <if test="fullname != null" >
+        #{fullname,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
@@ -220,7 +250,27 @@
       <if test="record.classname != null" >
         className = #{record.classname,jdbcType=VARCHAR},
       </if>
+      <if test="record.fullname != null" >
+        fullName = #{record.fullname,jdbcType=LONGVARCHAR},
+      </if>
     </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update METHOD_NODE
+    set id = #{record.id,jdbcType=VARCHAR},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      classId = #{record.classid,jdbcType=VARCHAR},
+      `key` = #{record.key,jdbcType=INTEGER},
+      appId = #{record.appid,jdbcType=VARCHAR},
+      flag = #{record.flag,jdbcType=INTEGER},
+      createdAt = #{record.createdat,jdbcType=TIMESTAMP},
+      updatedAt = #{record.updatedat,jdbcType=TIMESTAMP},
+      `desc` = #{record.desc,jdbcType=VARCHAR},
+      className = #{record.classname,jdbcType=VARCHAR},
+      fullName = #{record.fullname,jdbcType=LONGVARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -271,7 +321,24 @@
       <if test="classname != null" >
         className = #{classname,jdbcType=VARCHAR},
       </if>
+      <if test="fullname != null" >
+        fullName = #{fullname,jdbcType=LONGVARCHAR},
+      </if>
     </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.MethodNode" >
+    update METHOD_NODE
+    set `name` = #{name,jdbcType=VARCHAR},
+      classId = #{classid,jdbcType=VARCHAR},
+      `key` = #{key,jdbcType=INTEGER},
+      appId = #{appid,jdbcType=VARCHAR},
+      flag = #{flag,jdbcType=INTEGER},
+      createdAt = #{createdat,jdbcType=TIMESTAMP},
+      updatedAt = #{updatedat,jdbcType=TIMESTAMP},
+      `desc` = #{desc,jdbcType=VARCHAR},
+      className = #{classname,jdbcType=VARCHAR},
+      fullName = #{fullname,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.MethodNode" >

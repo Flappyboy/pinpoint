@@ -82,16 +82,18 @@ public class StaticCallServiceImpl implements StaticCallService {
         app.setStatus(1);
         app.setClasscount(classNodes.size());
         app.setFunctioncount(methodnoedes.size());
+        app.setInterfacecount(ClassAdapter.interfaceNum);
         appMapper.updateByPrimaryKeySelective(app);
 
-        System.out.println("保存方法结点");
-        saveMethodNode(methodnoedes, appid);
-        System.out.println("保存方法边");
-        saveMethodEdge(methodedges, appid);
         System.out.println("保存类结点");
         saveClassNode(classNodes, appid);
         System.out.println("保存类边");
         saveClassEdge(classEdges, appid);
+        System.out.println("保存方法结点");
+        saveMethodNode(methodnoedes, appid);
+        System.out.println("保存方法边");
+        saveMethodEdge(methodedges, appid);
+
 
     }
 
@@ -140,12 +142,17 @@ public class StaticCallServiceImpl implements StaticCallService {
         int methodKey = 0;
         for (Map.Entry<String, MethodNode> entry : methodnoedes.entrySet()) {
             MethodNode methodNode = entry.getValue();
-
+//            System.out.println(methodNode);
             MethodNodeExample example = new MethodNodeExample();
             MethodNodeExample.Criteria criteria = example.createCriteria();
-            criteria.andNameEqualTo(methodNode.getName()).andClassnameEqualTo(methodNode.getClassname())
+            criteria.andFullNameEqualTo(methodNode.getFullname())
+//                    .andNameEqualTo(methodNode.getName())
+//                    .andClassnameEqualTo(methodNode.getClassname())
                     .andAppidEqualTo(appid).andFlagEqualTo(1);
-            List<MethodNode> mnodes = methodNodeMapper.selectByExample(example);
+//            criteria.andNameEqualTo(methodNode.getName()).andClassnameEqualTo(methodNode.getClassname())
+//                    .andAppidEqualTo(appid).andFlagEqualTo(1);
+//            List<MethodNode> mnodes = methodNodeMapper.selectByExample(example);
+            List<MethodNode> mnodes = methodNodeMapper.selectByExampleWithBLOBs(example);
 
             methodKey += 1;
 
@@ -155,7 +162,7 @@ public class StaticCallServiceImpl implements StaticCallService {
                 String classId = "";
                 ClassNodeExample classexample = new ClassNodeExample();
                 ClassNodeExample.Criteria classcriteria = classexample.createCriteria();
-                classcriteria.andNameEqualTo(methodNode.getClassid()).andAppidEqualTo(appid).andFlagEqualTo(1);
+                classcriteria.andNameEqualTo(methodNode.getClassname()).andAppidEqualTo(appid).andFlagEqualTo(1);
                 List<ClassNode> cnodes = classNodeMapper.selectByExample(classexample);
                 if (cnodes.size() != 0 && cnodes != null) {
                     ClassNode cn = cnodes.get(0);
@@ -173,10 +180,11 @@ public class StaticCallServiceImpl implements StaticCallService {
             } else {
                 MethodNode mn = mnodes.get(0);
                 mn.setKey(methodKey);
-                MethodNodeExample example1 = new MethodNodeExample();
-                MethodNodeExample.Criteria criteria1 = example1.createCriteria();
-                criteria1.andIdEqualTo(mn.getId()).andFlagEqualTo(1);
-                methodNodeMapper.updateByExampleSelective(mn, example1);
+                methodNodeMapper.updateByPrimaryKeySelective(mn);
+//                MethodNodeExample example1 = new MethodNodeExample();
+//                MethodNodeExample.Criteria criteria1 = example1.createCriteria();
+//                criteria1.andIdEqualTo(mn.getId()).andFlagEqualTo(1);
+//                methodNodeMapper.updateByExampleSelective(mn, example1);
             }
         }
 
@@ -188,25 +196,27 @@ public class StaticCallServiceImpl implements StaticCallService {
             String targetid = "";
             StaticCallInfo methodEdge = entry.getValue();
 
-            System.out.println("getSource   :    " + methodEdge.getCaller());
+//            System.out.println("getSource   :    " + methodEdge.getCaller());
             String sCallerName = methodEdge.getCaller();
-            String[] scallerArr = sCallerName.split("--");
+//            String[] scallerArr = sCallerName.split("-!-");
             MethodNodeExample example1 = new MethodNodeExample();
             MethodNodeExample.Criteria criteria1 = example1.createCriteria();
-            criteria1.andNameEqualTo(scallerArr[1]).andClassnameEqualTo(scallerArr[0]).andAppidEqualTo(appid).andFlagEqualTo(1);
-            List<MethodNode> sourceNodes = methodNodeMapper.selectByExample(example1);
+            criteria1.andFullNameEqualTo(sCallerName.replace("-!-","")).andAppidEqualTo(appid).andFlagEqualTo(1);
+//            criteria1.andNameEqualTo(scallerArr[1]).andClassnameEqualTo(scallerArr[0]).andAppidEqualTo(appid).andFlagEqualTo(1);
+            List<MethodNode> sourceNodes = methodNodeMapper.selectByExampleWithBLOBs(example1);
             if (!sourceNodes.isEmpty()) {
                 MethodNode mynode = sourceNodes.get(0);
                 sourceid = mynode.getId();
             }
 
-            System.out.println("getTarget   :   " + methodEdge.getCallee());
+//            System.out.println("getTarget   :   " + methodEdge.getCallee());
             String tCalleeName = methodEdge.getCallee();
-            String[] tcalleeArr = tCalleeName.split("--");
+//            String[] tcalleeArr = tCalleeName.split("-!-");
             MethodNodeExample example2 = new MethodNodeExample();
             MethodNodeExample.Criteria criteria2 = example2.createCriteria();
-            criteria2.andNameEqualTo(tcalleeArr[1]).andClassnameEqualTo(tcalleeArr[0]).andAppidEqualTo(appid).andFlagEqualTo(1);
-            List<MethodNode> targetNodes = methodNodeMapper.selectByExample(example2);
+            criteria1.andFullNameEqualTo(tCalleeName.replace("-!-","")).andAppidEqualTo(appid).andFlagEqualTo(1);
+//            criteria2.andNameEqualTo(tcalleeArr[1]).andClassnameEqualTo(tcalleeArr[0]).andAppidEqualTo(appid).andFlagEqualTo(1);
+            List<MethodNode> targetNodes = methodNodeMapper.selectByExampleWithBLOBs(example2);
             if (!targetNodes.isEmpty()) {
                 MethodNode mynode = targetNodes.get(0);
                 targetid = mynode.getId();
@@ -280,7 +290,7 @@ public class StaticCallServiceImpl implements StaticCallService {
             String targetid = "";
             StaticCallInfo classEdge = entry.getValue();
 
-            System.out.println("getSource   :    " + classEdge.getCaller());
+//            System.out.println("getSource   :    " + classEdge.getCaller());
             ClassNodeExample example1 = new ClassNodeExample();
             ClassNodeExample.Criteria criteria1 = example1.createCriteria();
             criteria1.andNameEqualTo(classEdge.getCaller()).andAppidEqualTo(appid).andFlagEqualTo(1);
@@ -290,7 +300,7 @@ public class StaticCallServiceImpl implements StaticCallService {
                 sourceid = mynode.getId();
             }
 
-            System.out.println("getTarget   :   " + classEdge.getCallee());
+//            System.out.println("getTarget   :   " + classEdge.getCallee());
             ClassNodeExample example2 = new ClassNodeExample();
             ClassNodeExample.Criteria criteria2 = example2.createCriteria();
             criteria2.andNameEqualTo(classEdge.getCallee()).andAppidEqualTo(appid).andFlagEqualTo(1);

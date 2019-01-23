@@ -42,7 +42,7 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
 
         if (!owner.equals(this.className)) {
 
-            String edgeKey = this.className + "_" + owner;
+            String edgeKey = this.className + "_!_" + owner;
             StaticCallInfo myedge = classEdges.get(edgeKey);
             if (myedge != null) {
                 int weight = myedge.getCount();
@@ -65,7 +65,7 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
             }
         }
 
-        String sourceMethodName = (this.className + "--" + this.name + this.desc).replace("/", ".")
+        String sourceMethodName = (this.className + "-!-" + this.name +"-!-"+ this.desc).replace("/", ".")
                 .replace(";", ",")
                 .replace("(L", "(")
                 .replace(",)", ")")
@@ -74,7 +74,7 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
         sourceMethodName = sourceMethodName.substring(0, index1 + 1);
 
 //        String targetMethodName = owner+"."+name+desc;
-        String targetMethodName = (owner + "--" + name + desc).replace("/", ".")
+        String targetMethodName = (owner + "-!-" + name +"-!-"+ desc).replace("/", ".")
                 .replace(";", ",")
                 .replace("(L", "(")
                 .replace(",)", ")")
@@ -83,7 +83,7 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
         targetMethodName = targetMethodName.substring(0, index2 + 1);
 
         if (!sourceMethodName.equals(targetMethodName)) {
-            String edgeKey = sourceMethodName + "_" + targetMethodName;
+            String edgeKey = sourceMethodName + "_!_" + targetMethodName;
 
             StaticCallInfo myedge = methodEdges.get(edgeKey);
             if (myedge != null) {

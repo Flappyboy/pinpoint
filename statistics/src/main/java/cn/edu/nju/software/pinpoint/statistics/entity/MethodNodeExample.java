@@ -190,6 +190,11 @@ public class MethodNodeExample {
             return (Criteria) this;
         }
 
+        public Criteria andFullNameEqualTo(String value) {
+            addCriterion("`fullName` =", value, "fullname");
+            return (Criteria) this;
+        }
+
         public Criteria andNameNotEqualTo(String value) {
             addCriterion("`name` <>", value, "name");
             return (Criteria) this;

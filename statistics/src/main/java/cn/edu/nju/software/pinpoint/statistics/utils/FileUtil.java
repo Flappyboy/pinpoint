@@ -71,7 +71,7 @@ public class FileUtil {
         if (file.exists()) {
             File[] files = file.listFiles();
             if (null == files || files.length == 0) {
-                // System.out.println("文件夹是空的!");
+                 System.out.println("文件夹是空的!");
                 return;
             } else {
                 for (File file2 : files) {
@@ -81,7 +81,7 @@ public class FileUtil {
 
                         if (file2.getName().endsWith(".class")) {
                             myfiles.add(file2.getAbsolutePath());
-                            System.out.println("文件:" + file2.getAbsolutePath());
+//                            System.out.println("文件:" + file2.getAbsolutePath());
                         }
 
                     }

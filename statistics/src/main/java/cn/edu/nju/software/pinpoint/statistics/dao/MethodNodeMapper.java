@@ -16,15 +16,21 @@ public interface MethodNodeMapper {
 
     int insertSelective(MethodNode record);
 
+    List<MethodNode> selectByExampleWithBLOBs(MethodNodeExample example);
+
     List<MethodNode> selectByExample(MethodNodeExample example);
 
     MethodNode selectByPrimaryKey(String id);
 
     int updateByExampleSelective(@Param("record") MethodNode record, @Param("example") MethodNodeExample example);
 
+    int updateByExampleWithBLOBs(@Param("record") MethodNode record, @Param("example") MethodNodeExample example);
+
     int updateByExample(@Param("record") MethodNode record, @Param("example") MethodNodeExample example);
 
     int updateByPrimaryKeySelective(MethodNode record);
+
+    int updateByPrimaryKeyWithBLOBs(MethodNode record);
 
     int updateByPrimaryKey(MethodNode record);
 }

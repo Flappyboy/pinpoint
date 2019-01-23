@@ -1,9 +1,11 @@
 package cn.edu.nju.software.pinpoint.statistics.service.impl;
 
-import cn.edu.nju.software.pinpoint.statistics.dao.AlgorithmsMapper;
-import cn.edu.nju.software.pinpoint.statistics.dao.AppMapper;
-import cn.edu.nju.software.pinpoint.statistics.dao.PartitionInfoMapper;
+import cn.edu.nju.software.pinpoint.statistics.dao.*;
 import cn.edu.nju.software.pinpoint.statistics.entity.*;
+import cn.edu.nju.software.pinpoint.statistics.entity.bean.PartitionEdge;
+import cn.edu.nju.software.pinpoint.statistics.entity.bean.PartitionGraph;
+import cn.edu.nju.software.pinpoint.statistics.entity.bean.PartitionNode;
+import cn.edu.nju.software.pinpoint.statistics.entity.bean.PartitionNodeEdge;
 import cn.edu.nju.software.pinpoint.statistics.service.PartitionService;
 import com.github.pagehelper.PageHelper;
 import org.n3r.idworker.Sid;
@@ -21,10 +23,30 @@ import java.util.List;
 public class PartitionServiceImpl implements PartitionService {
     @Autowired
     private PartitionInfoMapper partitionMapper;
+
     @Autowired
     private AppMapper appMapper;
+
     @Autowired
     private AlgorithmsMapper algorithmsMapper;
+
+    @Autowired
+    private PartitionResultMapper partitionResultMapper;
+
+    @Autowired
+    private StaticCallInfoMapper staticCallInfoMapper;
+
+    @Autowired
+    private DynamicCallInfoMapper dynamicCallInfoMapper;
+
+    @Autowired
+    private PartitionDetailMapper partitionDetailMapper;
+
+    @Autowired
+    private ClassNodeMapper classNodeMapper;
+    @Autowired
+    private MethodNodeMapper methodNodeMapper;
+
     @Autowired
     private Sid sid;
 
@@ -43,6 +65,7 @@ public class PartitionServiceImpl implements PartitionService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void delPartition(String id) {
         PartitionInfo partition = new PartitionInfo();
         partition.setId(id);
@@ -51,12 +74,14 @@ public class PartitionServiceImpl implements PartitionService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void updatePartition(PartitionInfo partition) {
         partition.setUpdatedat(new Date());
         partitionMapper.updateByPrimaryKeySelective(partition);
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public List<HashMap<String, Object>> findBycondition(Integer page, Integer pageSize, String appName, String desc, String algorithmsid, Integer type) {
         // 开始分页
         PageHelper.startPage(page, pageSize);
@@ -109,6 +134,7 @@ public class PartitionServiceImpl implements PartitionService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public int count(String appName, String desc, String algorithmsid, Integer type) {
         PartitionInfoExample example = new PartitionInfoExample();
         PartitionInfoExample.Criteria criteria = example.createCriteria();
@@ -135,5 +161,155 @@ public class PartitionServiceImpl implements PartitionService {
         return count;
     }
 
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public PartitionGraph getGraph(String partitionInfoId) {
+        PartitionGraph partitionGraph = new PartitionGraph();
 
+        //找出所有社区
+        PartitionInfo partitionInfo = partitionMapper.selectByPrimaryKey(partitionInfoId);
+        int type = partitionInfo.getType();
+        String appid = partitionInfo.getAppid();
+        String namicanalysisinfoid = partitionInfo.getDynamicanalysisinfoid();
+        PartitionResultExample partitionResultExample = new PartitionResultExample();
+        PartitionResultExample.Criteria partitionCriteria = partitionResultExample.createCriteria();
+        partitionCriteria.andFlagEqualTo(1).andPartitionidEqualTo(partitionInfoId);
+        List<PartitionResult> partitionResultList = partitionResultMapper.selectByExample(partitionResultExample);
+
+        HashMap<String, List<String>> nodes = new HashMap<>();
+
+        //社区节点
+        List<PartitionNode> partitionNodes = new ArrayList<>();
+        for (PartitionResult partitionResult : partitionResultList) {
+            List<String> nodeIds = new ArrayList<>();
+            PartitionNode partitionNode = new PartitionNode();
+            partitionNode.setCommunity(partitionResult);
+            List<ClassNode> classNodes = new ArrayList<>();
+            List<MethodNode> methodNodes = new ArrayList<>();
+            PartitionDetailExample partitionDetailExample = new PartitionDetailExample();
+            PartitionDetailExample.Criteria partitionDetailsCriteria = partitionDetailExample.createCriteria();
+            partitionDetailsCriteria.andPatitionresultidEqualTo(partitionResult.getId()).andFlagEqualTo(1);
+            List<PartitionDetail> partitionDetails = partitionDetailMapper.selectByExample(partitionDetailExample);
+            for (PartitionDetail partitionDetail : partitionDetails) {
+                if (type == 0) {
+                    ClassNode classNode = classNodeMapper.selectByPrimaryKey(partitionDetail.getNodeid());
+                    classNodes.add(classNode);
+                    nodeIds.add(classNode.getId());
+                }
+                if (type == 1) {
+                    MethodNode methodNode = methodNodeMapper.selectByPrimaryKey(partitionDetail.getNodeid());
+                    methodNodes.add(methodNode);
+                    nodeIds.add(methodNode.getId());
+                }
+            }
+            nodes.put(partitionResult.getId(), nodeIds);
+            partitionNode.setClassNodes(classNodes);
+            partitionNode.setMethodNodes(methodNodes);
+            partitionNodes.add(partitionNode);
+        }
+
+        //社区边
+        List<PartitionEdge> partitionEdges = new ArrayList<>();
+        for (PartitionNode partitionNode1 : partitionNodes) {
+            for (PartitionNode partitionNode2 : partitionNodes) {
+                String communityId1 = partitionNode1.getCommunity().getId();
+                String communityId2 = partitionNode2.getCommunity().getId();
+                if (communityId1 != communityId2) {
+                    //查询静态的边
+                    List<StaticCallInfo> staticCallInfos = new ArrayList<>();
+                    staticCallInfos = getStaticEdge(nodes.get(communityId1),nodes.get(communityId2),type,appid);
+                    staticCallInfos.addAll(getStaticEdge(nodes.get(communityId2),nodes.get(communityId1),type,appid));
+                    //查询动态的边
+                    List<DynamicCallInfo> dynamicCallInfos = new ArrayList<>();
+                    dynamicCallInfos = getDynamicEdge(nodes.get(communityId1),nodes.get(communityId2),type,namicanalysisinfoid);
+                    dynamicCallInfos.addAll(getDynamicEdge(nodes.get(communityId2),nodes.get(communityId1),type,namicanalysisinfoid));
+                    //合并边
+                    List<PartitionNodeEdge>  partitionNodeEdges = getMergedEdge(staticCallInfos,dynamicCallInfos,type);
+                    //判断两社区之间有边
+                    if(partitionNodeEdges!=null&&partitionNodeEdges.size()>0){
+                        PartitionEdge partitionEdge = new PartitionEdge();
+                        partitionEdge.setSourceCommunityId(communityId1);
+                        partitionEdge.setTargetCommunityId(communityId2);
+                        partitionEdge.setEdges(partitionNodeEdges);
+                        partitionEdges.add(partitionEdge);
+                    }
+                }
+            }
+        }
+
+        partitionGraph.setPartitionNodes(partitionNodes);
+        partitionGraph.setPartitionEdges(partitionEdges);
+        return partitionGraph;
+    }
+
+    //查询静态的边
+    public List<StaticCallInfo> getStaticEdge(List<String> callerNodeId1, List<String> calleeNodeId2, int type, String appid) {
+        StaticCallInfoExample staticCallInfoExample = new StaticCallInfoExample();
+        StaticCallInfoExample.Criteria staticCallInfoCriteria = staticCallInfoExample.createCriteria();
+        staticCallInfoCriteria.andTypeEqualTo(type).andAppidEqualTo(appid).andFlagEqualTo(1)
+                .andCallerIn(callerNodeId1).andCalleeIn(calleeNodeId2);
+        List<StaticCallInfo> staticCallInfos = staticCallInfoMapper.selectByExample(staticCallInfoExample);
+        return staticCallInfos;
+    }
+
+    //查询动态的边
+    public List<DynamicCallInfo> getDynamicEdge(List<String> callerNodeId1, List<String> calleeNodeId2, int type, String namicanalysisinfoid) {
+        DynamicCallInfoExample dynamicCallInfoExample = new DynamicCallInfoExample();
+        DynamicCallInfoExample.Criteria dynamicCallInfoCriteria = dynamicCallInfoExample.createCriteria();
+        dynamicCallInfoCriteria.andFlagEqualTo(1).andDynamicanalysisinfoidEqualTo(namicanalysisinfoid).andTypeEqualTo(type)
+                .andCallerIn(callerNodeId1).andCalleeIn(calleeNodeId2);
+        List<DynamicCallInfo> dynamicCallInfos = dynamicCallInfoMapper.selectByExample(dynamicCallInfoExample);
+        return dynamicCallInfos;
+    }
+
+    //合并边
+    public List<PartitionNodeEdge> getMergedEdge(List<StaticCallInfo> staticEdges,List<DynamicCallInfo> dynamicEdges,int type){
+        List<PartitionNodeEdge> partitionNodeEdges = new ArrayList<>();
+        HashMap<String ,PartitionNodeEdge> edgesMap = new HashMap<>();
+        for(StaticCallInfo staticEdge:staticEdges){
+            String key = staticEdge.getCaller()+"_"+staticEdge.getCallee();
+            PartitionNodeEdge partitionNodeEdge = createPartitionNodeEdge(staticEdge.getCaller(),staticEdge.getCallee(),type,staticEdge.getCount());
+            edgesMap.put(key,partitionNodeEdge);
+        }
+        for(DynamicCallInfo dynamicEdge:dynamicEdges){
+            String key = dynamicEdge.getCaller()+"_"+dynamicEdge.getCallee();
+            PartitionNodeEdge partitionNodeEdge = edgesMap.get(key);
+            if(partitionNodeEdge == null){
+                partitionNodeEdge = createPartitionNodeEdge(dynamicEdge.getCaller(),dynamicEdge.getCallee(),type,dynamicEdge.getCount());
+            }else{
+                int count = partitionNodeEdge.getCount()+dynamicEdge.getCount();
+                partitionNodeEdge.setCount(count);
+            }
+            edgesMap.put(key,partitionNodeEdge);
+        }
+        return partitionNodeEdges;
+    }
+
+    //根据节点id创建划分节点边
+    public PartitionNodeEdge createPartitionNodeEdge(String callerId,String calleeId,int type,int count){
+        PartitionNodeEdge partitionNodeEdge = new PartitionNodeEdge();
+        if (type == 0) {
+            ClassNode callerClassNode = classNodeMapper.selectByPrimaryKey(callerId);
+            ClassNode calleeClassNode = classNodeMapper.selectByPrimaryKey(calleeId);
+            partitionNodeEdge.setCaller(callerClassNode.getName());
+            partitionNodeEdge.setCallerName(callerClassNode.getName());
+            partitionNodeEdge.setCallerFullName(callerClassNode.getName());
+            partitionNodeEdge.setCallee(calleeClassNode.getId());
+            partitionNodeEdge.setCalleeName(calleeClassNode.getName());
+            partitionNodeEdge.setCalleeFullName(calleeClassNode.getName());
+            partitionNodeEdge.setCount(count);
+        }
+        if (type == 1) {
+            MethodNode callerMethodNode = methodNodeMapper.selectByPrimaryKey(callerId);
+            MethodNode calleeMethodNode = methodNodeMapper.selectByPrimaryKey(calleeId);
+            partitionNodeEdge.setCaller(callerMethodNode.getId());
+            partitionNodeEdge.setCallerName(callerMethodNode.getName());
+            partitionNodeEdge.setCallerFullName(callerMethodNode.getFullname());
+            partitionNodeEdge.setCallee(calleeMethodNode.getId());
+            partitionNodeEdge.setCalleeName(calleeMethodNode.getName());
+            partitionNodeEdge.setCalleeFullName(calleeMethodNode.getFullname());
+            partitionNodeEdge.setCount(count);
+        }
+        return partitionNodeEdge;
+    }
 }

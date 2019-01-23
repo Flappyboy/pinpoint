@@ -1,6 +1,7 @@
 package cn.edu.nju.software.pinpoint.statistics.controller;
 
 import cn.edu.nju.software.pinpoint.statistics.entity.PartitionInfo;
+import cn.edu.nju.software.pinpoint.statistics.entity.bean.PartitionGraph;
 import cn.edu.nju.software.pinpoint.statistics.entity.common.JSONResult;
 import cn.edu.nju.software.pinpoint.statistics.service.PartitionService;
 import io.swagger.annotations.*;
@@ -64,4 +65,13 @@ public class PartitionController {
         result.put("total",count);
         return JSONResult.ok(result);
     }
+
+    @ApiOperation(value = "获取划分详情", notes = "返回状态200成功")
+    @RequestMapping(value = "/partition/{id}", method = RequestMethod.GET)
+    public JSONResult getGraph(String id) {
+        PartitionGraph artitionGraph = partitionService.getGraph(id);
+        return JSONResult.ok(artitionGraph);
+    }
+
+
 }

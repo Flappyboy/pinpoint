@@ -63,7 +63,8 @@ public class ClassAdapter extends ClassVisitor implements Opcodes {
                 .replace(";", ",")
                 .replace("(L", "(")
                 .replace(",)", ")")
-                .replace(",L", ",");
+                .replace(",L", ",")
+                .replace(")L",")");
 //        int index = methodName.lastIndexOf(")");
 //        methodName = methodName.substring(0, index + 1);
 
@@ -74,7 +75,8 @@ public class ClassAdapter extends ClassVisitor implements Opcodes {
                 .replace(";", ",")
                 .replace("(L", "(")
                 .replace(",)", ")")
-                .replace(",L", ",");
+                .replace(",L", ",")
+                .replace(")L",")");
         MethodNode methodNode = new MethodNode();
         methodNode.setName(name);
         methodNode.setClassname(className);

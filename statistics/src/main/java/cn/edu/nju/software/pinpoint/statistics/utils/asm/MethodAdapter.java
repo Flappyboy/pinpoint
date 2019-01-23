@@ -54,11 +54,13 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
                         .replace(";", ",")
                         .replace("(L", "(")
                         .replace(",)", ")")
+                        .replace(")L",")")
                         .replace(",L", ","));
                 newedge.setCallee(owner.replace("/", ".")
                         .replace(";", ",")
                         .replace("(L", "(")
                         .replace(",)", ")")
+                        .replace(")L",")")
                         .replace(",L", ","));
                 newedge.setCount(1);
                 classEdges.put(edgeKey, newedge);
@@ -69,6 +71,7 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
                 .replace(";", ",")
                 .replace("(L", "(")
                 .replace(",)", ")")
+                .replace(")L",")")
                 .replace(",L", ",");
         int index1 = sourceMethodName.lastIndexOf(")");
         sourceMethodName = sourceMethodName.substring(0, index1 + 1);
@@ -78,6 +81,7 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
                 .replace(";", ",")
                 .replace("(L", "(")
                 .replace(",)", ")")
+                .replace(")L",")")
                 .replace(",L", ",");
         int index2 = targetMethodName.lastIndexOf(")");
         targetMethodName = targetMethodName.substring(0, index2 + 1);

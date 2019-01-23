@@ -62,9 +62,22 @@ public class DynamicCallServiceImpl implements DynamicCallService {
         }
         System.out.println(callerId);
         System.out.println(calleeId);
-        dynamicCallInfo.setCaller(callerId);
-        dynamicCallInfo.setCallee(calleeId);
-        dynamicCallInfoMapper.insert(dynamicCallInfo);
+        DynamicCallInfoExample dynamicCallInfoExample = new DynamicCallInfoExample();
+        DynamicCallInfoExample.Criteria dynamicCallInfoCriteria = dynamicCallInfoExample.createCriteria();
+        dynamicCallInfoCriteria.andCallerEqualTo(callerId).andCalleeEqualTo(calleeId).andFlagEqualTo(1)
+        .andTypeEqualTo(type).andDynamicanalysisinfoidEqualTo(dynamicCallInfo.getDynamicanalysisinfoid());
+        List<DynamicCallInfo> ds = dynamicCallInfoMapper.selectByExample(dynamicCallInfoExample);
+        if(ds==null||ds.size()<=0) {
+            dynamicCallInfo.setCaller(callerId);
+            dynamicCallInfo.setCallee(calleeId);
+            dynamicCallInfoMapper.insert(dynamicCallInfo);
+        }else{
+            DynamicCallInfo dci = ds.get(0);
+            int count = dci.getCount() + dynamicCallInfo.getCount();
+            dynamicCallInfo.setCount(count);
+            dynamicCallInfoMapper.updateByPrimaryKeySelective(dynamicCallInfo);
+        }
+
         if (flag == 0) {
             DynamicAnalysisInfo ainfo = new DynamicAnalysisInfo();
             ainfo.setId(dinfo.getId());

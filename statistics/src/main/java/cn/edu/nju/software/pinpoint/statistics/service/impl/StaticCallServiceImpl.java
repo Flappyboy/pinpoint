@@ -16,6 +16,7 @@ import com.github.pagehelper.PageHelper;
 import org.n3r.idworker.Sid;
 import org.springframework.asm.ClassReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,7 @@ public class StaticCallServiceImpl implements StaticCallService {
     private Sid sid;
 
     @Override
+    @Async
     @Transactional(propagation = Propagation.REQUIRED)
     public void saveStaticAnalysis(String appid, String compressFile) throws Exception {
         ArrayList<String> myfiles = new ArrayList<String>();
@@ -94,7 +96,12 @@ public class StaticCallServiceImpl implements StaticCallService {
         System.out.println("保存方法边");
         saveMethodEdge(methodedges, appid);
 
-
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("结束！");
     }
 
     @Override

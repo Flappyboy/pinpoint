@@ -13,8 +13,10 @@ export default class DetailTable extends Component {
 
   static defaultProps = {};
 
-  updateList = (pageNum) => {
+  updateList = (pageNum, param) => {
     const queryParam = {
+      dynamicAnalysisInfoId: param,
+      type: 0,
       pageSize: this.state.pageSize,
       page: pageNum,
     };
@@ -25,9 +27,9 @@ export default class DetailTable extends Component {
       console.log(response.data.data);
 
       this.setState({
-        dataSource: response.data.data,
+        dataSource: response.data.data.list,
         isLoading: false,
-        total: response.data.total,
+        total: response.data.data.total,
       });
       // 找到锚点
       const anchorElement = document.getElementById('statistics-detail');
@@ -67,7 +69,7 @@ export default class DetailTable extends Component {
       show: true,
       isLoading: true,
     });
-    this.updateList(1);
+    this.updateList(1,param);
     console.log('query aha ', param);
   };
 
@@ -82,8 +84,8 @@ export default class DetailTable extends Component {
             dataSource={this.state.dataSource}
             isLoading={this.state.isLoading}
           >
-            <Table.Column title="调用类" dataIndex="callerName" width={120} />
-            <Table.Column title="被调用类" dataIndex="calleeName" width={120} />
+            <Table.Column title="调用类" dataIndex="caller" width={120} />
+            <Table.Column title="被调用类" dataIndex="callee" width={120} />
             <Table.Column title="次数" dataIndex="count" width={150} />
           </Table>
           <div style={styles.pagination}>

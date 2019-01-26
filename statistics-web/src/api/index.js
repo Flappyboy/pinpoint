@@ -42,11 +42,20 @@ export default {
 
 
 // const ip = 'localhost';
-const ip = '172.19.240.73';
-const port = '8029';
-const base = '/mock/api';
+// const ip = '172.19.240.73';
+// const ip = '172.19.163.242';
+// const port = '8029';
+// const port = '8088';
+// const base = '/mock/api';
+const base = '/api';
 const baseLocation = `http://${ip}:${port}${base}`;
 
+
+export class Base {
+  ip = ip;
+  port = port;
+  base = base;
+}
 
 const app = 'app';
 const appBase = `${baseLocation}/${app}`;
@@ -54,7 +63,7 @@ export async function addApp(params) {
   return axios({
     url: appBase,
     method: 'post',
-    data: Qs.stringify(params),
+    data: params,
   });
 }
 export async function queryAppList(inParams) {
@@ -77,13 +86,13 @@ export async function delApp(id) {
   });
 }
 
-const statistics = 'statistics';
+const statistics = 'dynaInfo';
 const statisticsBase = `${baseLocation}/${statistics}`;
 export async function addStatistics(params) {
   return axios({
     url: statisticsBase,
     method: 'post',
-    data: Qs.stringify(params),
+    data: params,
   });
 }
 export async function queryStatisticsList(inParams) {
@@ -106,7 +115,7 @@ export async function delStatistics(id) {
   });
 }
 
-const call = 'call';
+const call = 'dynaCall';
 const callBase = `${baseLocation}/${call}`;
 export async function queryCallList(inParams) {
   return axios({
@@ -123,10 +132,13 @@ export async function addPartition(params) {
   return axios({
     url: partitionBase,
     method: 'post',
-    data: Qs.stringify(params),
+    data: params,
   });
 }
 export async function queryPartitionList(inParams) {
+  inParams.dynamicInfoId = 1;
+  inParams.algorithmsId = 1;
+  inParams.type = 1;
   return axios({
     url: partitionBase,
     method: 'get',
@@ -156,7 +168,7 @@ export async function queryClassList(inParams) {
   });
 }
 
-const pD = `${baseLocation}/partition-detail`;
+const pD = `${baseLocation}/partition`;
 export async function queryPartitionDetail(inParams) {
   return axios.get(pD, {
     params: inParams,

@@ -1,6 +1,6 @@
-package cn.edu.nju.software.pinpoint.statistics;
+package cn.edu.nju.software.pinpoint.statistics.mock;
 
-import cn.edu.nju.software.pinpoint.statistics.dto.*;
+import cn.edu.nju.software.pinpoint.statistics.mock.dto.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;

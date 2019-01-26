@@ -84,7 +84,7 @@ export default class AddDialog extends Component {
           <Form direction="ver" field={this.field}>
             <FormItem label="应用名：" {...formItemLayout}>
               <Input
-                {...init('appName', {
+                {...init('name', {
                   rules: [{ required: true, message: '必填选项' }],
                 })}
               />

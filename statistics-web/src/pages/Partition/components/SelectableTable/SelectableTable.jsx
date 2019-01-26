@@ -24,6 +24,9 @@ export default class SelectableTable extends Component {
       data.createTime = moment(data.createTime).format(DATE_FORMAT);
       data.startTime = moment(data.startTime).format(DATE_FORMAT);
       data.endTime = moment(data.endTime).format(DATE_FORMAT);
+      if (!('status' in data)) {
+        data.status = true;
+      }
     });
   }
 
@@ -37,11 +40,11 @@ export default class SelectableTable extends Component {
     });
     queryPartitionList(queryParam).then((response) => {
       console.log(response.data.data);
-      this.preprocess(response.data.data);
+      this.preprocess(response.data.data.list);
       this.setState({
-        dataSource: response.data.data,
+        dataSource: response.data.data.list,
         isLoading: false,
-        total: response.data.total,
+        total: response.data.data.total,
       });
       callBack();
     })
@@ -236,8 +239,8 @@ export default class SelectableTable extends Component {
           >
             <Table.Column title="编码" dataIndex="id" width={120} />
             <Table.Column title="应用" dataIndex="appName" width={120} />
-            <Table.Column title="类型" dataIndex="typeName" width={120} />
-            <Table.Column title="统计编码" dataIndex="statisticsId" width={120} />
+            <Table.Column title="类型" dataIndex="type" width={120} />
+            <Table.Column title="统计编码" dataIndex="dynamicanalysisinfoid" width={120} />
             <Table.Column title="创建日期" dataIndex="createTime" width={150} />
             <Table.Column title="算法" dataIndex="algorithmName" width={150} />
             <Table.Column title="描述" dataIndex="desc" width={160} />

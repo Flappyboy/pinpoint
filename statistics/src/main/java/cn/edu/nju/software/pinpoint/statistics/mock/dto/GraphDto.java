@@ -1,4 +1,4 @@
-package cn.edu.nju.software.pinpoint.statistics.dto;
+package cn.edu.nju.software.pinpoint.statistics.mock.dto;
 
 import java.util.ArrayList;
 import java.util.List;

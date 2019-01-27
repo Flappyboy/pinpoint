@@ -29,10 +29,10 @@ public class StaticCallController {
     })
     @ApiOperation(value = "静态代码分析，结果入库", notes = "返回状态200成功")
     @RequestMapping(value = "/staticCall/do", method = RequestMethod.GET)
-    public JSONResult doStaticAnalysis(String path, String appid) throws Exception {
+    public JSONResult doStaticAnalysis(String path, String appid,Integer flag) throws Exception {
         try {
             System.out.println(path);
-            staticCallService.saveStaticAnalysis(appid, path);
+            staticCallService.saveStaticAnalysis(appid, path,flag);
             return JSONResult.ok();
         } catch (Exception e) {
             return JSONResult.errorMsg(e.toString());

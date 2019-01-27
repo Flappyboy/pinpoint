@@ -68,7 +68,7 @@ public class PartitionController {
 
     @ApiOperation(value = "获取划分详情", notes = "返回状态200成功")
     @RequestMapping(value = "/partition/{id}", method = RequestMethod.GET)
-    public JSONResult getGraph(String id) {
+    public JSONResult getGraph(@PathVariable String id) {
         PartitionGraph artitionGraph = partitionService.getGraph(id);
         return JSONResult.ok(artitionGraph);
     }

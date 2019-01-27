@@ -100,7 +100,7 @@ public class PartitionResultServiceImpl implements PartitionResultService {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
-    public void partition(String appid, String algorithmsid, String dynamicanalysisinfoid, int type) throws IOException {
+    public void partition(String appid, String algorithmsid, String dynamicanalysisinfoid, int type, String partitionId) throws IOException {
         StaticCallInfoExample staticCallInfoExample = new StaticCallInfoExample();
         StaticCallInfoExample.Criteria sccriteria = staticCallInfoExample.createCriteria();
         sccriteria.andFlagEqualTo(1).andAppidEqualTo(appid).andTypeEqualTo(type);
@@ -121,18 +121,21 @@ public class PartitionResultServiceImpl implements PartitionResultService {
             }
         }
 
-        DynamicCallInfoExample dynamicCallInfoExample = new DynamicCallInfoExample();
-        DynamicCallInfoExample.Criteria dccriteria = dynamicCallInfoExample.createCriteria();
-        dccriteria.andFlagEqualTo(1).andDynamicanalysisinfoidEqualTo(dynamicanalysisinfoid).andTypeEqualTo(type);
-        List<DynamicCallInfo> dynamicCallInfos = dynamicCallInfoMapper.selectByExample(dynamicCallInfoExample);
-        for (DynamicCallInfo dynamicCallInfo : dynamicCallInfos) {
-            if (nodeKeys.get(dynamicCallInfo.getCaller()) == null) {
-                key += 1;
-                nodeKeys.put(dynamicCallInfo.getCaller(), key);
-            }
-            if (nodeKeys.get(dynamicCallInfo.getCallee()) == null) {
-                key += 1;
-                nodeKeys.put(dynamicCallInfo.getCallee(), key);
+        List<DynamicCallInfo> dynamicCallInfos = new ArrayList<>();
+        if (dynamicanalysisinfoid != null) {
+            DynamicCallInfoExample dynamicCallInfoExample = new DynamicCallInfoExample();
+            DynamicCallInfoExample.Criteria dccriteria = dynamicCallInfoExample.createCriteria();
+            dccriteria.andFlagEqualTo(1).andDynamicanalysisinfoidEqualTo(dynamicanalysisinfoid).andTypeEqualTo(type);
+            dynamicCallInfos = dynamicCallInfoMapper.selectByExample(dynamicCallInfoExample);
+            for (DynamicCallInfo dynamicCallInfo : dynamicCallInfos) {
+                if (nodeKeys.get(dynamicCallInfo.getCaller()) == null) {
+                    key += 1;
+                    nodeKeys.put(dynamicCallInfo.getCaller(), key);
+                }
+                if (nodeKeys.get(dynamicCallInfo.getCallee()) == null) {
+                    key += 1;
+                    nodeKeys.put(dynamicCallInfo.getCallee(), key);
+                }
             }
         }
 
@@ -150,24 +153,26 @@ public class PartitionResultServiceImpl implements PartitionResultService {
             edges.put(edgeKey, edge);
         }
 
-        for (DynamicCallInfo dynamicCallInfo : dynamicCallInfos) {
-            String edgeKey = dynamicCallInfo.getCaller() + "_" + dynamicCallInfo.getCallee();
-            EdgeBean edge = edges.get(edgeKey);
-            if (edge == null) {
-                EdgeBean newedge = new EdgeBean();
-                newedge.setSourceId(dynamicCallInfo.getCaller());
-                int sourceKey = nodeKeys.get(dynamicCallInfo.getCaller());
-                newedge.setSourceKey(sourceKey);
-                newedge.setTargetId(dynamicCallInfo.getCallee());
-                int targetKey = nodeKeys.get(dynamicCallInfo.getCallee());
-                newedge.setTargetKey(targetKey);
-                newedge.setWeight(dynamicCallInfo.getCount());
-                edges.put(edgeKey, newedge);
-            } else {
-                int dyCount = dynamicCallInfo.getCount();
-                int stCount = edge.getWeight();
-                edge.setWeight(dyCount + stCount);
-                edges.put(edgeKey, edge);
+        if (dynamicCallInfos != null && dynamicCallInfos.size() > 0) {
+            for (DynamicCallInfo dynamicCallInfo : dynamicCallInfos) {
+                String edgeKey = dynamicCallInfo.getCaller() + "_" + dynamicCallInfo.getCallee();
+                EdgeBean edge = edges.get(edgeKey);
+                if (edge == null) {
+                    EdgeBean newedge = new EdgeBean();
+                    newedge.setSourceId(dynamicCallInfo.getCaller());
+                    int sourceKey = nodeKeys.get(dynamicCallInfo.getCaller());
+                    newedge.setSourceKey(sourceKey);
+                    newedge.setTargetId(dynamicCallInfo.getCallee());
+                    int targetKey = nodeKeys.get(dynamicCallInfo.getCallee());
+                    newedge.setTargetKey(targetKey);
+                    newedge.setWeight(dynamicCallInfo.getCount());
+                    edges.put(edgeKey, newedge);
+                } else {
+                    int dyCount = dynamicCallInfo.getCount();
+                    int stCount = edge.getWeight();
+                    edge.setWeight(dyCount + stCount);
+                    edges.put(edgeKey, edge);
+                }
             }
         }
 
@@ -206,6 +211,7 @@ public class PartitionResultServiceImpl implements PartitionResultService {
             partitionResult.setName(String.valueOf(communityCount));
             partitionResult.setOrder(communityCount);
             partitionResult.setType(type);
+            partitionResult.setPartitionid(partitionId);
             PartitionResult pr = savePartitionResult(partitionResult);
 
             String[] communityKeys = resultLine.split(" ");

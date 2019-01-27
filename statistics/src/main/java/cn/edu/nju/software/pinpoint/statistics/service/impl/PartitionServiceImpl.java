@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class PartitionServiceImpl implements PartitionService {
@@ -168,6 +165,8 @@ public class PartitionServiceImpl implements PartitionService {
 
         //找出所有社区
         PartitionInfo partitionInfo = partitionMapper.selectByPrimaryKey(partitionInfoId);
+        if(partitionInfo == null)
+            return  null;
         int type = partitionInfo.getType();
         String appid = partitionInfo.getAppid();
         String namicanalysisinfoid = partitionInfo.getDynamicanalysisinfoid();
@@ -205,6 +204,8 @@ public class PartitionServiceImpl implements PartitionService {
             nodes.put(partitionResult.getId(), nodeIds);
             partitionNode.setClassNodes(classNodes);
             partitionNode.setMethodNodes(methodNodes);
+            partitionNode.setClaaSize(classNodes.size());
+            partitionNode.setMethodSize(methodNodes.size());
             partitionNodes.add(partitionNode);
         }
 
@@ -281,6 +282,10 @@ public class PartitionServiceImpl implements PartitionService {
                 partitionNodeEdge.setCount(count);
             }
             edgesMap.put(key,partitionNodeEdge);
+        }
+        for (Map.Entry<String ,PartitionNodeEdge> entry : edgesMap.entrySet()) {
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+            partitionNodeEdges.add(entry.getValue());
         }
         return partitionNodeEdges;
     }

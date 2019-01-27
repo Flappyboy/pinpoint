@@ -16,5 +16,7 @@ public class PartitionNode {
     private PartitionResult community;
     private List<ClassNode> classNodes;
     private List<MethodNode> methodNodes;
-    private int size;
+    private int claaSize = 0;
+    private int methodSize = 0;
+
 }

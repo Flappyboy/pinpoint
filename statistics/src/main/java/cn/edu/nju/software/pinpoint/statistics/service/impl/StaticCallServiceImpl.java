@@ -47,16 +47,23 @@ public class StaticCallServiceImpl implements StaticCallService {
     @Override
     @Async
     @Transactional(propagation = Propagation.REQUIRED)
-    public void saveStaticAnalysis(String appid, String compressFile) throws Exception {
+    public void saveStaticAnalysis(String appid, String compressFile,Integer flag) throws Exception {
         ArrayList<String> myfiles = new ArrayList<String>();
-        String outPath = compressFile.trim().substring(0,compressFile.trim().lastIndexOf("."));
-        System.out.println("解压路径：" + outPath);
-        FileCompress.unCompress(compressFile,outPath);
         String path = "";
-        if(path.trim().endsWith(".war"))
-            path = outPath+"/WEB-INF/classes";
-        else
-            path = outPath;
+
+        if(flag != null) {
+            if(flag == 1) {
+                String outPath = compressFile.trim().substring(0, compressFile.trim().lastIndexOf("."));
+                System.out.println("解压路径：" + outPath);
+                FileCompress.unCompress(compressFile, outPath);
+                if (path.trim().endsWith(".war"))
+                    path = outPath + "/WEB-INF/classes";
+                else
+                    path = outPath;
+            }else
+                path = compressFile;
+        }else
+            path = compressFile;
         FileUtil.traverseFolder(path, myfiles);
         System.out.println("class文件数：" + myfiles.size());
         for (String file : myfiles) {

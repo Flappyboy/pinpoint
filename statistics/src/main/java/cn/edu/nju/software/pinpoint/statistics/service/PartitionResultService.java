@@ -16,7 +16,7 @@ public interface PartitionResultService {
 
     public List<PartitionResult> queryPartitionResultListPaged(String dynamicInfoId,String algorithmsId,int type,Integer page, Integer pageSize);
 
-    public void partition(String appid,String algorithmsid,String dynamicanalysisinfoid,int type) throws IOException;
+    public void partition(String appid,String algorithmsid,String dynamicanalysisinfoid,int type,String partitionId) throws IOException;
 
     public int countOfPartitionResult(String dynamicInfoId,String algorithmsId,int type);
 }

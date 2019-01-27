@@ -1,5 +1,6 @@
 import { Upload } from '@icedesign/base';
 import React, { Component } from 'react';
+import { Base } from '../../../../../api';
 
 const { Core } = Upload;
 
@@ -50,14 +51,14 @@ export default class UploadCore extends Component {
             borderRadius: '5px',
             fontSize: '12px',
           }}
-          action="//www.easy-mock.com/mock/5b960dce7db69152d06475bc/ice/upload" // 该接口仅作测试使用，业务请勿使用
-          accept="image/png, image/jpg, image/jpeg, image/gif, image/bmp"
-          name="filename"
+          action="http://172.19.163.242:8088/api/upload"
+          accept=""
+          name="file"
           disabled={this.state.disabled}
           multiple
           dragable={this.state.dragable}
-          multipart={{ _token: 'sdj23da' }}
-          headers={{ Authorization: 'user_1' }}
+          // multipart={{ _token: 'sdj23da' }}
+          // headers={{ Authorization: 'user_1' }}
           beforeUpload={beforeUpload}
           onStart={onStart}
           onProgress={onProgress}

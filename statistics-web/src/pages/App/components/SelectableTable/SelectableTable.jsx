@@ -19,6 +19,9 @@ export default class SelectableTable extends Component {
   preprocess = (dataList) => {
     dataList.forEach(data => {
       data.createTime = moment(data.createTime).format(DATE_FORMAT);
+      if (!data.status) {
+        data.status = true;
+      }
     });
   }
 
@@ -32,12 +35,11 @@ export default class SelectableTable extends Component {
     });
     queryAppList(queryParam).then((response) => {
       console.log(response.data.data);
-      
-      this.preprocess(response.data.data);
+      this.preprocess(response.data.data.list);
       this.setState({
-        dataSource: response.data.data,
+        dataSource: response.data.data.list,
         isLoading: false,
-        total: response.data.total,
+        total: response.data.data.total ? response.data.data.total : 10,
       });
     })
       .catch((error) => {
@@ -150,6 +152,9 @@ export default class SelectableTable extends Component {
   };
 
   addNewItem = (values) => {
+    if (!values.status) {
+      values.status = false;
+    }
     const data = this.state.dataSource;
     console.log(values);
     data.splice(0, 0, values);
@@ -226,7 +231,7 @@ export default class SelectableTable extends Component {
             }}
           >
             <Table.Column title="编码" dataIndex="id" width={120} />
-            <Table.Column title="应用" dataIndex="appName" width={120} />
+            <Table.Column title="应用" dataIndex="name" width={120} />
             <Table.Column title="创建日期" dataIndex="createTime" width={150} />
             <Table.Column title="类数" dataIndex="classCount" width={120} />
             <Table.Column title="接口数" dataIndex="interfaceCount" width={120} />
@@ -244,6 +249,10 @@ export default class SelectableTable extends Component {
             <Pagination pageSize={this.state.pageSize} total={this.state.total} onChange={this.handleChange} />
           </div>
         </div>
+        <form action="http://172.19.163.242:8088/api/upload" method="post" enctype="multipart/form-data">
+          <p>选择文件: <input type="file" name="file" /></p >
+          <p><input type="submit" value="提交" /></p >
+        </form>
       </IceContainer>
     );
   }

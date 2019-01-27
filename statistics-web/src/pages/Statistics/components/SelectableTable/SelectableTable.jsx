@@ -22,6 +22,9 @@ export default class SelectableTable extends Component {
       data.createTime = moment(data.createTime).format(DATE_FORMAT);
       data.startTime = moment(data.startTime).format(DATE_FORMAT);
       data.endTime = moment(data.endTime).format(DATE_FORMAT);
+      if (!('status' in data)) {
+        data.status = true;
+      }
     });
   }
 
@@ -35,11 +38,11 @@ export default class SelectableTable extends Component {
     });
     queryStatisticsList(queryParam).then((response) => {
       console.log(response.data.data);
-      this.preprocess(response.data.data);
+      this.preprocess(response.data.data.list);
       this.setState({
-        dataSource: response.data.data,
+        dataSource: response.data.data.list,
         isLoading: false,
-        total: response.data.total,
+        total: response.data.data.total,
       });
     })
       .catch((error) => {
@@ -166,8 +169,8 @@ export default class SelectableTable extends Component {
 
   queryDetail = (record) => {
 
-    emitter.emit('query_statistics_detail', 'Hello');
-    
+    emitter.emit('query_statistics_detail', record.id);
+
   };
 
   renderOperator = (value, index, record) => {

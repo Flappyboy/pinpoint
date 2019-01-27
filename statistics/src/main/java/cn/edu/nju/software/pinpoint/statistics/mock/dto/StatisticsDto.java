@@ -1,4 +1,4 @@
-package cn.edu.nju.software.pinpoint.statistics.dto;
+package cn.edu.nju.software.pinpoint.statistics.mock.dto;
 
 public class StatisticsDto {
     private Long id;

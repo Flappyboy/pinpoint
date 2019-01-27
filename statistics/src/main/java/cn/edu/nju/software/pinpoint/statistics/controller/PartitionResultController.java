@@ -70,6 +70,14 @@ public class PartitionResultController {
         return JSONResult.ok(result);
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType="query", name = "appid", value = "项目id", required = true, dataType = "String"),
+            @ApiImplicitParam(paramType="query", name = "algorithmsid", value = "算法id", required = true, dataType = "String"),
+            @ApiImplicitParam(paramType="query", name = "dynamicanalysisinfoid", value = "动态调用信息id",  dataType = "int"),
+            @ApiImplicitParam(paramType="query", name = "type", value = "类型 0-类结点，1-方法结点",  dataType = "int"),
+            @ApiImplicitParam(paramType="query", name = "partitionId", value = "划分信息id",  dataType = "int")
+    })
+    @ApiOperation(value = "执行划分", notes = "返回状态200成功")
     @RequestMapping(value = "/partitionResult/do", method = RequestMethod.GET)
     public JSONResult doPartition(String appid,String algorithmsid,String dynamicanalysisinfoid,int type,String partitionId) throws Exception {
         partitionResultService.partition(appid,algorithmsid,dynamicanalysisinfoid,type,partitionId);

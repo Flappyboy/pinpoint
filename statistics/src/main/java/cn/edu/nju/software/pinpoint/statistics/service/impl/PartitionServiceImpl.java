@@ -6,16 +6,20 @@ import cn.edu.nju.software.pinpoint.statistics.entity.bean.PartitionEdge;
 import cn.edu.nju.software.pinpoint.statistics.entity.bean.PartitionGraph;
 import cn.edu.nju.software.pinpoint.statistics.entity.bean.PartitionNode;
 import cn.edu.nju.software.pinpoint.statistics.entity.bean.PartitionNodeEdge;
+import cn.edu.nju.software.pinpoint.statistics.service.PartitionResultService;
 import cn.edu.nju.software.pinpoint.statistics.service.PartitionService;
 import com.github.pagehelper.PageHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.*;
 
+@Slf4j
 @Service
 public class PartitionServiceImpl implements PartitionService {
     @Autowired
@@ -45,6 +49,9 @@ public class PartitionServiceImpl implements PartitionService {
     private MethodNodeMapper methodNodeMapper;
 
     @Autowired
+    private PartitionResultService partitionResultService;
+
+    @Autowired
     private Sid sid;
 
     @Override
@@ -59,6 +66,18 @@ public class PartitionServiceImpl implements PartitionService {
         System.out.println(partition);
         partitionMapper.insertSelective(partition);
 
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    log.debug("partion start: "+partition);
+                    partitionResultService.partition(partition.getAppid(),partition.getAlgorithmsid(),partition.getDynamicanalysisinfoid(),partition.getType(),partition.getId());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
     }
 
     @Override
@@ -104,11 +123,12 @@ public class PartitionServiceImpl implements PartitionService {
             criteria.andAlgorithmsidEqualTo(algorithmsid);
         if (type != null)
             criteria.andTypeEqualTo(type);
-        example.setOrderByClause("createdat");
+        example.setOrderByClause("createdat desc");
         List<PartitionInfo> partitionList = partitionMapper.selectByExample(example);
         List<HashMap<String, Object>> results = new ArrayList<>();
-        HashMap<String, Object> result = new HashMap<>();
+
         for (PartitionInfo partitionInfo : partitionList) {
+            HashMap<String, Object> result = new HashMap<>();
             String appid = partitionInfo.getAppid();
             App app = appMapper.selectByPrimaryKey(appid);
             String algoid = partitionInfo.getAlgorithmsid();

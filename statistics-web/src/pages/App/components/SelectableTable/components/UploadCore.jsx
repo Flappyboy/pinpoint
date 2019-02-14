@@ -1,12 +1,14 @@
 import { Upload } from '@icedesign/base';
 import React, { Component } from 'react';
-import { Base } from '../../../../../api';
+import '../../../../../api';
 
 const { Core } = Upload;
 
 export default class UploadCore extends Component {
   constructor(props) {
     super(props);
+
+    this.callback = (arg) => { props.callback(arg); };
 
     this.state = {
       disabled: false,
@@ -37,6 +39,7 @@ export default class UploadCore extends Component {
   }
 
   render() {
+    const action = `${global.base.baseLocation}/upload`;
     return (
       <div>
         <Core
@@ -51,7 +54,7 @@ export default class UploadCore extends Component {
             borderRadius: '5px',
             fontSize: '12px',
           }}
-          action="http://172.19.163.242:8088/api/upload"
+          action={action}
           accept=""
           name="file"
           disabled={this.state.disabled}
@@ -59,12 +62,12 @@ export default class UploadCore extends Component {
           dragable={this.state.dragable}
           // multipart={{ _token: 'sdj23da' }}
           // headers={{ Authorization: 'user_1' }}
-          beforeUpload={beforeUpload}
-          onStart={onStart}
-          onProgress={onProgress}
-          onSuccess={onSuccess}
-          onError={onError}
-          onAbort={onAbort}
+          beforeUpload={this.beforeUpload}
+          onStart={this.onStart}
+          onProgress={this.onProgress}
+          onSuccess={this.onSuccess}
+          onError={this.onError}
+          onAbort={this.onAbort}
         >
           {this.state.disabled ? '禁止上传' : this.state.dragable ? '点击或者拖拽上传' : '点击上传'}
         </Core>
@@ -83,28 +86,31 @@ export default class UploadCore extends Component {
       </div>
     );
   }
+
+  beforeUpload = (file) => {
+    console.log('beforeUpload callback : ', file);
+  }
+
+  onStart = (files) => {
+    console.log('onStart callback : ', files);
+  }
+
+  onProgress = (e, file) => {
+    console.log('onProgress callback : ', e, file);
+  }
+
+  onSuccess = (res, file) => {
+    console.log('onSuccess callback : ', res, file);
+    this.callback(res.data.path);
+  }
+
+  onError = (err, res, file) => {
+    console.log('onError callback : ', err, res, file);
+  }
+
+  onAbort = (e, file) => {
+    console.log('onAbort callback : ', e, file);
+  }
 }
 
-function beforeUpload(file) {
-  console.log('beforeUpload callback : ', file);
-}
 
-function onStart(files) {
-  console.log('onStart callback : ', files);
-}
-
-function onProgress(e, file) {
-  console.log('onProgress callback : ', e, file);
-}
-
-function onSuccess(res, file) {
-  console.log('onSuccess callback : ', res, file);
-}
-
-function onError(err, res, file) {
-  console.log('onError callback : ', err, res, file);
-}
-
-function onAbort(e, file) {
-  console.log('onAbort callback : ', e, file);
-}

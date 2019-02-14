@@ -1,10 +1,15 @@
 package cn.edu.nju.software.pinpoint.statistics.controller;
 
 import cn.edu.nju.software.pinpoint.statistics.entity.PartitionResult;
+import cn.edu.nju.software.pinpoint.statistics.entity.PartitionResultEdge;
+import cn.edu.nju.software.pinpoint.statistics.entity.PartitionResultEdgeCall;
 import cn.edu.nju.software.pinpoint.statistics.entity.common.JSONResult;
+import cn.edu.nju.software.pinpoint.statistics.mock.dto.GraphDto;
 import cn.edu.nju.software.pinpoint.statistics.service.PartitionDetailService;
+import cn.edu.nju.software.pinpoint.statistics.service.PartitionResultEdgeService;
 import cn.edu.nju.software.pinpoint.statistics.service.PartitionResultService;
 import io.swagger.annotations.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @CrossOrigin
 @RestController
 @Api(value = "划分结果接口")
@@ -22,6 +28,9 @@ public class PartitionResultController {
     private PartitionResultService partitionResultService;
     @Autowired
     private PartitionDetailService partitionDetailService;
+
+    @Autowired
+    private PartitionResultEdgeService partitionResultEdgeService;
 
     @ApiImplicitParams({
             @ApiImplicitParam(paramType="query", name = "dynamicInfoId", value = "动态信息id", required = true, dataType = "String"),
@@ -82,5 +91,45 @@ public class PartitionResultController {
     public JSONResult doPartition(String appid,String algorithmsid,String dynamicanalysisinfoid,int type,String partitionId) throws Exception {
         partitionResultService.partition(appid,algorithmsid,dynamicanalysisinfoid,type,partitionId);
         return JSONResult.ok();
+    }
+
+
+
+    @RequestMapping(value = "/partition-detail/{id}", method = RequestMethod.GET)
+    public JSONResult partitionResultDetail(@PathVariable String id) throws Exception {
+        GraphDto graphDto = partitionResultService.queryPartitionResultForDto(id);
+        return JSONResult.ok(graphDto);
+    }
+
+    @RequestMapping(value = "/partition-detail-node/{id}", method = RequestMethod.GET)
+    public JSONResult partitionResultDetailNodes(@PathVariable String id, int type, Integer page, Integer pageSize) throws Exception {
+        if (page == null) {
+            page = 1;
+        }
+        if (pageSize == null) {
+            pageSize = 100;
+        }
+        List<HashMap<String, String>> partitionDetails = partitionDetailService.queryPartitionDetailListPaged(id, type, page, pageSize);
+        int count = partitionDetailService.countOfPartitionDetail(id, type);
+        HashMap<String ,Object> result = new HashMap<String ,Object>();
+        result.put("list",partitionDetails);
+        result.put("total",count);
+        return JSONResult.ok(result);
+    }
+
+    @RequestMapping(value = "/partition-detail-edge/{id}", method = RequestMethod.GET)
+    public JSONResult partitionResultDetailEdges(@PathVariable String id, int type, Integer page, Integer pageSize) throws Exception {
+        if (page == null) {
+            page = 1;
+        }
+        if (pageSize == null) {
+            pageSize = 100;
+        }
+        List<HashMap<String, String>> partitionDetails = partitionDetailService.queryPartitionDetailListPaged(id, type, page, pageSize);
+        int count = partitionDetailService.countOfPartitionDetail(id, type);
+        HashMap<String ,Object> result = new HashMap<String ,Object>();
+        result.put("list",partitionDetails);
+        result.put("total",count);
+        return JSONResult.ok(result);
     }
 }

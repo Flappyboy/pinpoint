@@ -5,8 +5,10 @@ import cn.edu.nju.software.pinpoint.statistics.utils.FileUtil;
 import cn.edu.nju.software.pinpoint.statistics.utils.cors.CorsConfigure;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +25,9 @@ import java.util.Map;
 @RequestMapping(value = "/api")
 @Controller
 public class FileUploadController{
+
+    @Value("${filepath}")
+    private String path;
     /*
      * 获取file.html页面
      */
@@ -42,8 +47,8 @@ public class FileUploadController{
         String fileName = file.getOriginalFilename();  //图片名字
 
         //文件存放路径
-
-        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+        if(StringUtils.isEmpty(path))
+            path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
 //        String filePath = "/Users/yaya/Desktop/upload/";
         String filePath = path+"/upload/";
         System.out.println("======:   "+path);

@@ -15,6 +15,7 @@ export default class AddDialog extends Component {
     super(props);
     this.state = {
       visible: false,
+      filepath: '',
     };
     this.field = new Field(this);
   }
@@ -26,6 +27,7 @@ export default class AddDialog extends Component {
         console.log('Errors in form!!!');
         return;
       }
+      values.path = this.state.filepath;
       addApp(values).then((response) => {
         console.log(response.data.data);
         this.props.addNewItem(response.data.data);
@@ -51,6 +53,12 @@ export default class AddDialog extends Component {
       visible: false,
     });
   };
+
+  callback = (filepath) => {
+    this.setState({
+      filepath,
+    });
+  }
 
   render() {
     const init = this.field.init;
@@ -107,7 +115,7 @@ export default class AddDialog extends Component {
               />
             </FormItem>
             <FormItem label="上传JAR/WAR" {...formItemLayout}>
-              <UploadCore />
+              <UploadCore callback={this.callback.bind(this)} />
             </FormItem>
           </Form>
         </Dialog>

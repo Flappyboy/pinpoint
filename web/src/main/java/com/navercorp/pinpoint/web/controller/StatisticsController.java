@@ -76,10 +76,15 @@ public class StatisticsController {
             RecordSet recordSet = this.transactionInfoService.createRecordSet(callTreeIterator, dotList.get(i).getAcceptedTime(), dotList.get(i).getAgentId(), -1);
             statistics.statisticsRecord(recordSet);
         }
-        statistics.saveClass();
-        statistics.saveMethod();
-        System.out.println("statisc");
 
+        String mode = requestParam.get("mode");
+        if ("remote".equals(mode)){
+            String api= requestParam.get("api");
+            statistics.sendMethod(api);
+        }else {
+            statistics.saveClass();
+            statistics.saveMethod();
+        }
         return viewModel;
     }
     @RequestMapping(value = "/statistics/{page}")

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.edu.nju.software.pinpoint.statistics.dao.PartitionResultEdgeCallMapper" >
+  <resultMap id="BaseResultMap" type="cn.edu.nju.software.pinpoint.statistics.entity.PartitionResultEdgeCall" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="edgeId" property="edgeid" jdbcType="VARCHAR" />
+    <result column="callId" property="callid" jdbcType="VARCHAR" />
+    <result column="callType" property="calltype" jdbcType="INTEGER" />
+    <result column="createdAt" property="createdat" jdbcType="TIMESTAMP" />
+    <result column="updatedAt" property="updatedat" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, edgeId, callId, callType, createdAt, updatedAt
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.PartitionResultEdgeCallExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from partition_result_edge_call
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from partition_result_edge_call
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from partition_result_edge_call
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.PartitionResultEdgeCallExample" >
+    delete from partition_result_edge_call
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.PartitionResultEdgeCall" >
+    insert into partition_result_edge_call (id, edgeId, callId, 
+      callType, createdAt, updatedAt
+      )
+    values (#{id,jdbcType=VARCHAR}, #{edgeid,jdbcType=VARCHAR}, #{callid,jdbcType=VARCHAR}, 
+      #{calltype,jdbcType=INTEGER}, #{createdat,jdbcType=TIMESTAMP}, #{updatedat,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.PartitionResultEdgeCall" >
+    insert into partition_result_edge_call
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="edgeid != null" >
+        edgeId,
+      </if>
+      <if test="callid != null" >
+        callId,
+      </if>
+      <if test="calltype != null" >
+        callType,
+      </if>
+      <if test="createdat != null" >
+        createdAt,
+      </if>
+      <if test="updatedat != null" >
+        updatedAt,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="edgeid != null" >
+        #{edgeid,jdbcType=VARCHAR},
+      </if>
+      <if test="callid != null" >
+        #{callid,jdbcType=VARCHAR},
+      </if>
+      <if test="calltype != null" >
+        #{calltype,jdbcType=INTEGER},
+      </if>
+      <if test="createdat != null" >
+        #{createdat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedat != null" >
+        #{updatedat,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.PartitionResultEdgeCallExample" resultType="java.lang.Integer" >
+    select count(*) from partition_result_edge_call
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update partition_result_edge_call
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edgeid != null" >
+        edgeId = #{record.edgeid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.callid != null" >
+        callId = #{record.callid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.calltype != null" >
+        callType = #{record.calltype,jdbcType=INTEGER},
+      </if>
+      <if test="record.createdat != null" >
+        createdAt = #{record.createdat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatedat != null" >
+        updatedAt = #{record.updatedat,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update partition_result_edge_call
+    set id = #{record.id,jdbcType=VARCHAR},
+      edgeId = #{record.edgeid,jdbcType=VARCHAR},
+      callId = #{record.callid,jdbcType=VARCHAR},
+      callType = #{record.calltype,jdbcType=INTEGER},
+      createdAt = #{record.createdat,jdbcType=TIMESTAMP},
+      updatedAt = #{record.updatedat,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.PartitionResultEdgeCall" >
+    update partition_result_edge_call
+    <set >
+      <if test="edgeid != null" >
+        edgeId = #{edgeid,jdbcType=VARCHAR},
+      </if>
+      <if test="callid != null" >
+        callId = #{callid,jdbcType=VARCHAR},
+      </if>
+      <if test="calltype != null" >
+        callType = #{calltype,jdbcType=INTEGER},
+      </if>
+      <if test="createdat != null" >
+        createdAt = #{createdat,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedat != null" >
+        updatedAt = #{updatedat,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.edu.nju.software.pinpoint.statistics.entity.PartitionResultEdgeCall" >
+    update partition_result_edge_call
+    set edgeId = #{edgeid,jdbcType=VARCHAR},
+      callId = #{callid,jdbcType=VARCHAR},
+      callType = #{calltype,jdbcType=INTEGER},
+      createdAt = #{createdat,jdbcType=TIMESTAMP},
+      updatedAt = #{updatedat,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

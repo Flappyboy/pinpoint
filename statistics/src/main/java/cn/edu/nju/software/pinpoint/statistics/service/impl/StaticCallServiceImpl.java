@@ -86,13 +86,7 @@ public class StaticCallServiceImpl implements StaticCallService {
         HashMap<String, ClassNode> classNodes = ClassAdapter.classNodes;
         HashMap<String, StaticCallInfo> classEdges = MethodAdapter.classEdges;
 
-        App app = new App();
-        app.setId(appid);
-        app.setStatus(1);
-        app.setClasscount(classNodes.size());
-        app.setFunctioncount(methodnoedes.size());
-        app.setInterfacecount(ClassAdapter.interfaceNum);
-        appMapper.updateByPrimaryKeySelective(app);
+
 
         System.out.println("保存类结点");
         saveClassNode(classNodes, appid);
@@ -102,6 +96,14 @@ public class StaticCallServiceImpl implements StaticCallService {
         saveMethodNode(methodnoedes, appid);
         System.out.println("保存方法边");
         saveMethodEdge(methodedges, appid);
+
+        App app = new App();
+        app.setId(appid);
+        app.setStatus(1);
+        app.setClasscount(classNodes.size());
+        app.setFunctioncount(methodnoedes.size());
+        app.setInterfacecount(ClassAdapter.interfaceNum);
+        appMapper.updateByPrimaryKeySelective(app);
 
         try {
             Thread.sleep(100);

@@ -41,21 +41,21 @@ export default {
 };
 
 
-// const ip = 'localhost';
+const ip = 'localhost';
 // const ip = '172.19.240.73';
 // const ip = '172.19.163.242';
 // const port = '8029';
-// const port = '8088';
+const port = '8088';
 // const base = '/mock/api';
 const base = '/api';
 const baseLocation = `http://${ip}:${port}${base}`;
 
-
-export class Base {
-  ip = ip;
-  port = port;
-  base = base;
-}
+global.base = {
+  ip,
+  port,
+  base,
+  baseLocation,
+};
 
 const app = 'app';
 const appBase = `${baseLocation}/${app}`;
@@ -136,9 +136,9 @@ export async function addPartition(params) {
   });
 }
 export async function queryPartitionList(inParams) {
-  inParams.dynamicInfoId = 1;
-  inParams.algorithmsId = 1;
-  inParams.type = 1;
+  // inParams.dynamicInfoId = 1;
+  // inParams.algorithmsId = 1;
+  // inParams.type = 1;
   return axios({
     url: partitionBase,
     method: 'get',
@@ -168,14 +168,14 @@ export async function queryClassList(inParams) {
   });
 }
 
-const pD = `${baseLocation}/partition`;
+const pD = `${baseLocation}/partition-detail`;
 export async function queryPartitionDetail(inParams) {
-  return axios.get(pD, {
+  return axios.get(`${pD}/${inParams}`, {
     params: inParams,
   });
 }
 
-const node = 'node';
+const node = 'partition-detail-node';
 const nodeBase = `${baseLocation}/${node}`;
 export async function queryNode(inParams) {
   return axios({
@@ -184,7 +184,7 @@ export async function queryNode(inParams) {
     params: inParams,
   });
 }
-const edge = 'edge';
+const edge = 'partition-detail-edge';
 const edgeBase = `${baseLocation}/${edge}`;
 export async function queryEdge(inParams) {
   return axios({

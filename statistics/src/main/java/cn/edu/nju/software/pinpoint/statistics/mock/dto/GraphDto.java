@@ -31,4 +31,12 @@ public class GraphDto {
     public void setLinks(List<EdgeDto> links) {
         this.links = links;
     }
+
+    public void addNode(NodeDto nodeDto){
+        nodes.add(nodeDto);
+    }
+
+    public void addEdge(EdgeDto edgeDto){
+        links.add(edgeDto);
+    }
 }

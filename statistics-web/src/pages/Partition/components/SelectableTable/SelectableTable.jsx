@@ -68,16 +68,17 @@ export default class SelectableTable extends Component {
     // 声明一个自定义事件
     // 在组件装载完成以后
     this.eventEmitter = emitter.addListener('query_partitions', this.queryPartition);
-    if (this.props.search) {
+    // if (this.props.search) {
 
-      this.addNewItem({
-        id: 1004123120,
-        statisticsId: this.getQueryString('addAppId'),
-        status: false,
-      });
-    } else {
-      this.updateList(1);
-    }
+    //   this.addNewItem({
+    //     id: 1004123120,
+    //     statisticsId: this.getQueryString('addAppId'),
+    //     status: false,
+    //   });
+    // } else {
+    //   this.updateList(1);
+    // }
+    this.updateList(1);
   }
 
   // 组件销毁前移除事件监听

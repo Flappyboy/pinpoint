@@ -18,7 +18,7 @@ export default class SelectableTable extends Component {
 
   preprocess = (dataList) => {
     dataList.forEach(data => {
-      data.createTime = moment(data.createTime).format(DATE_FORMAT);
+      data.createTime = moment(data.createdat).format(DATE_FORMAT);
       if (!data.status) {
         data.status = true;
       }
@@ -153,10 +153,10 @@ export default class SelectableTable extends Component {
     };
     addPartition(param).then((response) => {
       console.log(response.data.data);
-      // this.setState({
-      //   redirectToPartitionParam: id,
-      //   redirectToPartition: true,
-      // });
+      this.setState({
+        // redirectToPartitionParam: id,
+        redirectToPartition: true,
+      });
     })
       .catch((error) => {
         console.log(error);
@@ -181,9 +181,20 @@ export default class SelectableTable extends Component {
     });
     this.updateList(current);
   }
+  showAttach = (target, record) => {
+    const data = this.state.dataSource;
+
+    let app = null;
+    data.forEach((item) => {
+      if (item.id === record.id) {
+        app = item;
+      }
+    });
+    emitter.emit('show_attach', target, app);
+  }
 
   renderOperator = (value, index, record) => {
-    if (record.status == 0 || record.status == false) {
+    if (record.status !== 1 ) {
       return (
         <div>
           <Icon type="loading" />
@@ -192,10 +203,10 @@ export default class SelectableTable extends Component {
     }
     return (
       <div>
-        <a onClick={this.partition.bind(this, record)}>划分</a>
-        <a style={styles.removeBtn} onClick={this.deleteItem.bind(this, record)} >
-          删除
-        </a>
+        <a style={{ cursor: 'pointer' }} onClick={this.showAttach.bind(this, 'partition', record)} >划分</a>
+        <a style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={this.showAttach.bind(this, 'dynamic', record)} >动态数据</a>
+        <a style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={this.showAttach.bind(this, 'git', record)} >git数据</a>
+        <a style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={this.deleteItem.bind(this, record)} >删除</a>
       </div>
     );
   };
@@ -245,19 +256,19 @@ export default class SelectableTable extends Component {
               selectedRowKeys: this.state.selectedRowKeys,
             }}
           >
-            <Table.Column title="编码" dataIndex="id" width={120} />
+            <Table.Column title="编码" dataIndex="id" width={130} />
             <Table.Column title="应用" dataIndex="name" width={120} />
-            <Table.Column title="创建日期" dataIndex="createTime" width={150} />
-            <Table.Column title="类数" dataIndex="classcount" width={120} />
-            <Table.Column title="接口数" dataIndex="interfacecount" width={120} />
-            <Table.Column title="方法数" dataIndex="functioncount" width={120} />
-            <Table.Column title="接口方法数" dataIndex="interfacefunctioncount" width={120} />
+            <Table.Column title="创建日期" dataIndex="createTime" width={140} />
+            <Table.Column title="类数" dataIndex="classcount" width={100} />
+            <Table.Column title="接口数" dataIndex="interfacecount" width={100} />
+            <Table.Column title="方法数" dataIndex="functioncount" width={100} />
+            <Table.Column title="接口方法数" dataIndex="interfacefunctioncount" width={100} />
             <Table.Column title="描述" dataIndex="desc" width={160} />
             <Table.Column
               title="操作"
               cell={this.renderOperator}
               lock="right"
-              width={120}
+              width={200}
             />
           </Table>
           <div style={styles.pagination}>

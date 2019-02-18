@@ -28,8 +28,6 @@ public class PartitionController {
     @RequestMapping(value = "/partition", method = RequestMethod.POST)
     public JSONResult addPartition(@RequestBody PartitionInfo partition) throws Exception {
         partitionService.addPartition(partition);
-
-
         return JSONResult.ok();
     }
 

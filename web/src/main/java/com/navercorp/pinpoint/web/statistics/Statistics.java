@@ -22,11 +22,10 @@ import java.util.*;
 
 public class Statistics {
 
-    private String packagename ="";
+    private Set<String>  packagenameSet = new HashSet<>();
 
-    public Statistics(String packagename) {
-        if (packagename!=null)
-            this.packagename = packagename;
+    public Statistics(List<String> packagenameList) {
+        this.packagenameSet.addAll(packagenameList);
     }
 
     Map<String, Method> methodMap = new HashMap<>();
@@ -58,6 +57,16 @@ public class Statistics {
         public String toClass(){return caller.getClassName() + "," + callee.getClassName() + "," + count;}
 
         public String toMethod(){return caller.getName() + "," + callee.getName() + "," + count;}
+
+        public DynamicCallInfo toDynamicCallInfoForClass(String analysisId){
+            DynamicCallInfo dynamicCallInfo = new DynamicCallInfo();
+            dynamicCallInfo.setDynamicanalysisinfoid(analysisId);
+            dynamicCallInfo.setType(0);
+            dynamicCallInfo.setCaller(caller.getClassName());
+            dynamicCallInfo.setCallee(callee.getClassName());
+            dynamicCallInfo.setCount(Math.toIntExact(count));
+            return dynamicCallInfo;
+        }
 
         public void call(){
             count++;
@@ -160,22 +169,33 @@ public class Statistics {
             recordMap.put(record.getId(),record);
         }
         for(Record record: recordList){
-            if(!check(getMethodName(record)))
+            if(!check(getClassName(record)))
                 continue;
             Record parentRecord = recordMap.get(record.getParentId());
-            Boolean tag = check(getMethodName(parentRecord));
+            Boolean tag = check(getClassName(parentRecord));
             while (!tag){
                 if (parentRecord==null)
                     break;
                 parentRecord = recordMap.get(parentRecord.getParentId());
                 if (parentRecord==null)
                     break;
-                tag = check(getMethodName(parentRecord));
+                tag = check(getClassName(parentRecord));
             }
             if (parentRecord==null)
                 continue;
             this.call(record,parentRecord);
         }
+    }
+    private String getClassName(Record record){
+        String methodName = getMethodName(record);
+        int bracketIndex = methodName.indexOf("(");
+        if(bracketIndex!=-1){
+            int dotIndex = methodName.lastIndexOf(".", bracketIndex);
+            if(dotIndex!=-1) {
+                return methodName.substring(0, dotIndex);
+            }
+        }
+        return methodName;
     }
     private String getMethodName(Record record){
         if (record==null)
@@ -190,7 +210,7 @@ public class Statistics {
     }
 
     private Boolean check(String className){
-        if(className.startsWith(packagename)){
+        if(this.packagenameSet.contains(className)){
             return true;
         }
         return false;
@@ -199,7 +219,7 @@ public class Statistics {
     public void saveClass(){
         FileWriter fileWriter = null;
         try {
-            fileWriter = new FileWriter("E:\\workspace\\project\\pinpoint\\statics-class-"+packagename+".txt");
+            fileWriter = new FileWriter("E:\\workspace\\project\\pinpoint\\statics-class-"+""+".txt");
             for (Map.Entry<String, Statistics.Call> entry: callMap.entrySet()){
                 fileWriter.write(entry.getValue().toClass()+"\n");
             }
@@ -213,7 +233,7 @@ public class Statistics {
     public void saveMethod(){
         FileWriter fileWriter = null;
         try {
-            fileWriter = new FileWriter("E:\\workspace\\project\\pinpoint\\statics-method-"+packagename+".txt");
+            fileWriter = new FileWriter("E:\\workspace\\project\\pinpoint\\statics-method-"+""+".txt");
             for (Map.Entry<String, Statistics.Call> entry: callMap.entrySet()){
                 fileWriter.write(entry.getValue().toMethod()+"\n");
             }
@@ -225,15 +245,23 @@ public class Statistics {
         }
     }
 
-    public String sendPre(String api){
-        Map<String, Object> param = new HashMap<>();
-        DynamicCallInfo dynamicCallInfo = new DynamicCallInfo();
-        param.put("dynamicAnalysisInfo",dynamicCallInfo);
-        return doPost(api,param);
-    }
+//    public String sendPre(String api){
+//        Map<String, Object> param = new HashMap<>();
+//        DynamicCallInfo dynamicCallInfo = new DynamicCallInfo();
+//        param.put("dynamicAnalysisInfo",dynamicCallInfo);
+//        return doPost(api,param);
+//    }
 
     public void sendMethod(String api){
 
+    }
+
+    public List<DynamicCallInfo> allCallsForDynamicCallInfo(String analysisId){
+        List<DynamicCallInfo> list = new ArrayList<>();
+        for (Map.Entry<String, Statistics.Call> entry: callMap.entrySet()){
+            list.add(entry.getValue().toDynamicCallInfoForClass(analysisId));
+        }
+        return list;
     }
 
     private String getMethodName(String fullName){
@@ -254,71 +282,5 @@ public class Statistics {
         String str = " a b";
         String[] strList = str.split(" ");
         System.out.println(strList);
-    }
-
-    public static String doPost(String url, Map<String, Object> paramMap) {
-        CloseableHttpClient httpClient = null;
-        CloseableHttpResponse httpResponse = null;
-        String result = "";
-        // 创建httpClient实例
-        httpClient = HttpClients.createDefault();
-        // 创建httpPost远程连接实例
-        HttpPost httpPost = new HttpPost(url);
-        // 配置请求参数实例
-        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(35000)// 设置连接主机服务超时时间
-                .setConnectionRequestTimeout(35000)// 设置连接请求超时时间
-                .setSocketTimeout(60000)// 设置读取数据连接超时时间
-                .build();
-        // 为httpPost实例设置配置
-        httpPost.setConfig(requestConfig);
-        // 设置请求头
-        httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        // 封装post请求参数
-        if (null != paramMap && paramMap.size() > 0) {
-            List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-            // 通过map集成entrySet方法获取entity
-            Set<Map.Entry<String, Object>> entrySet = paramMap.entrySet();
-            // 循环遍历，获取迭代器
-            Iterator<Map.Entry<String, Object>> iterator = entrySet.iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, Object> mapEntry = iterator.next();
-                nvps.add(new BasicNameValuePair(mapEntry.getKey(), mapEntry.getValue().toString()));
-            }
-
-            // 为httpPost设置封装好的请求参数
-            try {
-                httpPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            // httpClient对象执行post请求,并返回响应参数对象
-            httpResponse = httpClient.execute(httpPost);
-            // 从响应对象中获取响应内容
-            HttpEntity entity = httpResponse.getEntity();
-            result = EntityUtils.toString(entity);
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            // 关闭资源
-            if (null != httpResponse) {
-                try {
-                    httpResponse.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (null != httpClient) {
-                try {
-                    httpClient.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return result;
     }
 }

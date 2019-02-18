@@ -13,8 +13,8 @@ public interface DynamicAnalysisInfoService {
 
     public DynamicAnalysisInfo queryDAnalysisInfoById(String dAnalysisInfoId);
 
-    public List<DynamicAnalysisInfo> queryDAnalysisInfoListPaged(Integer page, Integer pageSize,String appName,String desc);
+    public List<DynamicAnalysisInfo> queryDAnalysisInfoListPaged(Integer page, Integer pageSize,String appId, String appName,String desc);
 
-    public int countOfDAnalysisInfo(String appName,String desc);
+    public int countOfDAnalysisInfo(String appId, String appName,String desc);
 
 }

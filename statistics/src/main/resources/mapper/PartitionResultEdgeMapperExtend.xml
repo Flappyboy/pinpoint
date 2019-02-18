@@ -12,7 +12,7 @@
 		<result column="updatedAt" property="updatedat" jdbcType="TIMESTAMP" />
 	</resultMap>
 
-	<select id="queryEdgeByPartitionId"  resultMap="ResultMapStaticCalls">
+	<select id="queryEdgeByPartitionId"  resultMap="BaseResultMap">
 		SELECT
 			pre.*
 		FROM
@@ -36,7 +36,7 @@
     </collection>
   </resultMap>
 
-  <select id="statisticsEdges"  resultMap="ResultMapStaticCalls">
+  <select id="statisticsEdgesFromStatic"  resultMap="ResultMapStaticCalls">
 SELECT
 	ci.id callId,
 	ci.callee calleeId,
@@ -56,7 +56,7 @@ LEFT JOIN (
 		partition_result ps
 	WHERE
 		pd.patitionResultId = ps.id
-	AND ps.partitionId = '190214953TWR54M8'
+	AND ps.partitionId = #{partitionId}
 ) p1 ON p1.nodeId = ci.caller
 LEFT JOIN (
 	SELECT
@@ -67,10 +67,57 @@ LEFT JOIN (
 		partition_result ps
 	WHERE
 		pd.patitionResultId = ps.id
-	AND ps.partitionId = '190214953TWR54M8'
+	AND ps.partitionId = #{partitionId}
 ) p2 ON p2.nodeId = ci.callee
 WHERE
-	ci.appId = '190213BH898H4DAW'
+	ci.appId = #{appId}
+</select>
+	<resultMap id="ResultMapDynamicCalls" type="cn.edu.nju.software.pinpoint.statistics.entity.PartitionResultEdge" >
+		<result column="patitionResultAId" property="patitionresultaid" jdbcType="VARCHAR" />
+		<result column="patitionResultBId" property="patitionresultbid" jdbcType="VARCHAR" />
+		<collection property="dynamicCallInfoList" ofType="cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfo" >
+			<id column="callId" jdbcType="VARCHAR" property="id" />
+			<result column="callerId" jdbcType="VARCHAR" property="caller" />
+			<result column="calleeId" jdbcType="VARCHAR" property="callee" />
+			<result column="callCount" jdbcType="INTEGER" property="count"/>
+			<result column="callType" property="type" jdbcType="INTEGER" />
+		</collection>
+	</resultMap>
+	<select id="statisticsEdgesFromDynamic"  resultMap="ResultMapDynamicCalls">
+SELECT
+	ci.id callId,
+	ci.callee calleeId,
+	ci.caller callerId,
+	ci.count callCount,
+	ci.type callType,
+	p1.patitionResultId patitionResultAId,
+	p2.patitionResultId patitionResultBId
+FROM
+	dynamic_call_info ci
+LEFT JOIN (
+	SELECT
+		pd.nodeId,
+		pd.patitionResultId
+	FROM
+		partition_detail pd,
+		partition_result ps
+	WHERE
+		pd.patitionResultId = ps.id
+	AND ps.partitionId = #{partitionId}
+) p1 ON p1.nodeId = ci.caller
+LEFT JOIN (
+	SELECT
+		pd.nodeId,
+		pd.patitionResultId
+	FROM
+		partition_detail pd,
+		partition_result ps
+	WHERE
+		pd.patitionResultId = ps.id
+	AND ps.partitionId = #{partitionId}
+) p2 ON p2.nodeId = ci.callee
+WHERE
+	ci.dynamicAnalysisInfoId = #{dynamicAnalysisInfoId}
 </select>
 
 </mapper>

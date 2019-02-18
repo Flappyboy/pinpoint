@@ -10,6 +10,8 @@ public class PartitionResultEdgeCall implements Serializable {
 
     private String callid;
 
+    private Object call;
+
     private Integer calltype;
 
     private Date createdat;
@@ -17,6 +19,14 @@ public class PartitionResultEdgeCall implements Serializable {
     private Date updatedat;
 
     private static final long serialVersionUID = 1L;
+
+    public Object getCall() {
+        return call;
+    }
+
+    public void setCall(Object call) {
+        this.call = call;
+    }
 
     public String getId() {
         return id;

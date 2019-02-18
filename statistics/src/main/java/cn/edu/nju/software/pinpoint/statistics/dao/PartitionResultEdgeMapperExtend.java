@@ -7,7 +7,9 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface PartitionResultEdgeMapperExtend {
-    List<PartitionResultEdge> statisticsEdges();
+    List<PartitionResultEdge> statisticsEdgesFromStatic(String partitionId, String appId);
+
+    List<PartitionResultEdge> statisticsEdgesFromDynamic(String partitionId, String dynamicAnalysisInfoId);
 
     List<PartitionResultEdge> queryEdgeByPartitionId(String partitionId);
 }

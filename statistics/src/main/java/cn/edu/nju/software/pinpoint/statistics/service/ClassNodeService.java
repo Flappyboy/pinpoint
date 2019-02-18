@@ -9,4 +9,6 @@ public interface ClassNodeService {
     public ClassNode findById(String id);
 
     public List<ClassNode> findBycondition(String name, String appid);
+
+    List<ClassNode> findByAppid(String appid);
 }

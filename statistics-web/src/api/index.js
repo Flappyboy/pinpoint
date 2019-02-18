@@ -179,7 +179,7 @@ const node = 'partition-detail-node';
 const nodeBase = `${baseLocation}/${node}`;
 export async function queryNode(inParams) {
   return axios({
-    url: nodeBase,
+    url: `${nodeBase}/${inParams.id}`,
     method: 'get',
     params: inParams,
   });
@@ -188,7 +188,7 @@ const edge = 'partition-detail-edge';
 const edgeBase = `${baseLocation}/${edge}`;
 export async function queryEdge(inParams) {
   return axios({
-    url: edgeBase,
+    url: `${edgeBase}/${inParams.id}`,
     method: 'get',
     params: inParams,
   });

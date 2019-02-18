@@ -13,6 +13,7 @@
     ".eslintrc"
   ],
   "dependencies": {
+    "@alifd/next": "^1.12.4",
     "@antv/data-set": "^0.9.5",
     "@icedesign/base": "^0.2.5",
     "@icedesign/container": "^0.1.6",

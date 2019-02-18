@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { addApp } from '../../../../../api';
 import { Dialog, Button, Form, Input, Field } from '@icedesign/base';
-import UploadCore from './UploadCore';
-
+import { Upload } from '@alifd/next';
+// import My from './My';
+import '../../../../../api';
 
 const FormItem = Form.Item;
 
@@ -70,7 +71,7 @@ export default class AddDialog extends Component {
         span: 14,
       },
     };
-
+    const action = `${global.base.baseLocation}/upload`;
     return (
       <div style={styles.editDialog}>
         <Button
@@ -115,12 +116,48 @@ export default class AddDialog extends Component {
               />
             </FormItem>
             <FormItem label="上传JAR/WAR" {...formItemLayout}>
-              <UploadCore callback={this.callback.bind(this)} />
+              {/* <My callback={this.callback.bind(this)} /> */}
+              <Upload
+                action={action}
+                limit={1}
+                listType="text"
+                onSuccess={this.onSuccess}
+                onError={this.onError}
+                name="file"
+                accept=""
+                formatter={(res, file) => {
+                  // 函数里面根据当前服务器返回的响应数据
+                  // 重新拼装符合组件要求的数据格式
+                  console.log('lalala');
+                  console.log(res);
+                  const result = {
+                    success: res.status === 200,
+                    url: res.data.path,
+                    message: res.msg,
+                  };
+                  console.log(result);
+                  return result;
+                }}
+              >
+                <Button type="primary" style={{ margin: '0 0 10px' }}>点击上传</Button>
+              </Upload>
             </FormItem>
+
           </Form>
+
         </Dialog>
       </div>
     );
+  }
+  onSuccess = (res, file) => {
+    console.log('onSuccess callback : ', res, file);
+    this.setState({
+      filepath: res.url,
+    });
+  }
+
+  onError = (err, res, file) => {
+    console.log('onError callback : ', err, res, file);
   }
 }
 

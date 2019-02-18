@@ -130,9 +130,9 @@ public class MockController {
     }
     private CallDto getCallDto(long id){
         CallDto callDto = new CallDto();
-        callDto.setId(id);
-        callDto.setCalleeName("TestCallee");
-        callDto.setCallerName("TestCaller");
+//        callDto.setId(id);
+//        callDto.setCalleeName("TestCallee");
+//        callDto.setCallerName("TestCaller");
         callDto.setCount(new Random().nextInt(1000));
         return callDto;
     }
@@ -202,9 +202,9 @@ public class MockController {
     }
     private ClassDto getClassDto(long id){
         ClassDto classDto = new ClassDto();
-        classDto.setId(id);
-        classDto.setPackageName("com.edu.nju.test");
-        classDto.setSimpleName("Test");
+//        classDto.setId(id);
+//        classDto.setPackageName("com.edu.nju.test");
+//        classDto.setSimpleName("Test");
         return classDto;
     }
 

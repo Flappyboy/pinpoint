@@ -1,19 +1,25 @@
 package cn.edu.nju.software.pinpoint.statistics.controller;
 
-import cn.edu.nju.software.pinpoint.statistics.entity.PartitionResult;
-import cn.edu.nju.software.pinpoint.statistics.entity.PartitionResultEdge;
-import cn.edu.nju.software.pinpoint.statistics.entity.PartitionResultEdgeCall;
+import cn.edu.nju.software.pinpoint.statistics.dao.DynamicCallInfoMapper;
+import cn.edu.nju.software.pinpoint.statistics.dao.StaticCallInfoMapper;
+import cn.edu.nju.software.pinpoint.statistics.entity.*;
 import cn.edu.nju.software.pinpoint.statistics.entity.common.JSONResult;
+import cn.edu.nju.software.pinpoint.statistics.mock.dto.CallDto;
+import cn.edu.nju.software.pinpoint.statistics.mock.dto.ClassDto;
+import cn.edu.nju.software.pinpoint.statistics.mock.dto.EdgeDto;
 import cn.edu.nju.software.pinpoint.statistics.mock.dto.GraphDto;
-import cn.edu.nju.software.pinpoint.statistics.service.PartitionDetailService;
-import cn.edu.nju.software.pinpoint.statistics.service.PartitionResultEdgeService;
-import cn.edu.nju.software.pinpoint.statistics.service.PartitionResultService;
+import cn.edu.nju.software.pinpoint.statistics.service.*;
+import cn.edu.nju.software.pinpoint.statistics.utils.NameUtil;
+import cn.edu.nju.software.pinpoint.statistics.utils.louvain.Edge;
 import io.swagger.annotations.*;
+import jdk.nashorn.internal.codegen.CompilerConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +95,7 @@ public class PartitionResultController {
     @ApiOperation(value = "执行划分", notes = "返回状态200成功")
     @RequestMapping(value = "/partitionResult/do", method = RequestMethod.GET)
     public JSONResult doPartition(String appid,String algorithmsid,String dynamicanalysisinfoid,int type,String partitionId) throws Exception {
-        partitionResultService.partition(appid,algorithmsid,dynamicanalysisinfoid,type,partitionId);
+        //partitionResultService.partition(appid,algorithmsid,dynamicanalysisinfoid,type,partitionId);
         return JSONResult.ok();
     }
 
@@ -102,34 +108,93 @@ public class PartitionResultController {
     }
 
     @RequestMapping(value = "/partition-detail-node/{id}", method = RequestMethod.GET)
-    public JSONResult partitionResultDetailNodes(@PathVariable String id, int type, Integer page, Integer pageSize) throws Exception {
+    public JSONResult partitionResultDetailNodes(@PathVariable String id, Integer page, Integer pageSize) throws Exception {
         if (page == null) {
             page = 1;
         }
         if (pageSize == null) {
-            pageSize = 100;
+            pageSize = 10;
         }
-        List<HashMap<String, String>> partitionDetails = partitionDetailService.queryPartitionDetailListPaged(id, type, page, pageSize);
-        int count = partitionDetailService.countOfPartitionDetail(id, type);
-        HashMap<String ,Object> result = new HashMap<String ,Object>();
-        result.put("list",partitionDetails);
+        List<Object> nodes = partitionDetailService.queryPartitionDetailByResultId(id, page, pageSize);
+        int count = partitionDetailService.countOfPartitionDetailByResultId(id);
+        HashMap<String ,Object> result = new HashMap<>();
+        result.put("list",wrapNodes(nodes));
+        result.put("total",count);
+        return JSONResult.ok(result);
+    }
+    private List<Object> wrapNodes(List<Object> nodes){
+        List<Object> list = new ArrayList<>();
+        for (Object node:nodes) {
+            Object o = null;
+            if(node instanceof ClassNode){
+                ClassNode classNode = (ClassNode) node;
+                o = new ClassDto();
+                ((ClassDto) o).setId(classNode.getId());
+                ((ClassDto) o).setName(classNode.getName());
+            }else if (node instanceof MethodNode){
+                log.error("node class type Method");
+            }else{
+                log.error("node class type wrong");
+            }
+            list.add(o);
+        }
+        return list;
+    }
+
+    @RequestMapping(value = "/partition-detail-edge/{id}", method = RequestMethod.GET)
+    public JSONResult partitionResultDetailEdges(@PathVariable String id, Integer page, Integer pageSize) throws Exception {
+        if (page == null) {
+            page = 1;
+        }
+        if (pageSize == null) {
+            pageSize = 10;
+        }
+        List<PartitionResultEdgeCall> list = partitionResultEdgeService.findPartitionResultEdgeCallByEdgeId(id, page, pageSize);
+        int count = partitionResultEdgeService.countOfPartitionResultEdgeCallByEdgeId(id);
+        HashMap<String ,Object> result = new HashMap<>();
+        result.put("list",wrapEdges(list));
         result.put("total",count);
         return JSONResult.ok(result);
     }
 
-    @RequestMapping(value = "/partition-detail-edge/{id}", method = RequestMethod.GET)
-    public JSONResult partitionResultDetailEdges(@PathVariable String id, int type, Integer page, Integer pageSize) throws Exception {
-        if (page == null) {
-            page = 1;
+    private List<CallDto> wrapEdges(List<PartitionResultEdgeCall> edges){
+        List<CallDto> list = new ArrayList<>();
+        for (PartitionResultEdgeCall edge:edges) {
+            CallDto callDto = new CallDto();
+            callDto.setId(edge.getId());
+            Object call = edge.getCall();
+            if (call instanceof StaticCallInfo){
+                StaticCallInfo staticCallInfo = (StaticCallInfo) call;
+                Object caller = staticCallInfo.getCallerObj();
+                callDto.setCaller(wrapCallObj(caller));
+                Object callee = staticCallInfo.getCalleeObj();
+                callDto.setCallee(wrapCallObj(callee));
+            }else if(call instanceof DynamicCallInfo){
+                DynamicCallInfo dynamicCallInfo = (DynamicCallInfo) call;
+                Object caller = dynamicCallInfo.getCallerObj();
+                callDto.setCaller(wrapCallObj(caller));
+                Object callee = dynamicCallInfo.getCalleeObj();
+                callDto.setCallee(wrapCallObj(callee));
+            }else{
+
+            }
+            list.add(callDto);
         }
-        if (pageSize == null) {
-            pageSize = 100;
+        return list;
+    }
+
+    private Object wrapCallObj(Object callObj){
+        if (callObj instanceof ClassNode){
+            ClassNode callerClass = (ClassNode) callObj;
+            ClassDto classDto = new ClassDto();
+            classDto.setId(callerClass.getId());
+            classDto.setName(callerClass.getName());
+            return classDto;
+        }else if(callObj instanceof  MethodNode){
+            log.error("caller class type method");
+        }else{
+            log.error("caller class type wrong");
         }
-        List<HashMap<String, String>> partitionDetails = partitionDetailService.queryPartitionDetailListPaged(id, type, page, pageSize);
-        int count = partitionDetailService.countOfPartitionDetail(id, type);
-        HashMap<String ,Object> result = new HashMap<String ,Object>();
-        result.put("list",partitionDetails);
-        result.put("total",count);
-        return JSONResult.ok(result);
+        return null;
     }
 }

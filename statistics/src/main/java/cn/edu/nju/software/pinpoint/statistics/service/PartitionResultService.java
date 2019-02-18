@@ -1,5 +1,6 @@
 package cn.edu.nju.software.pinpoint.statistics.service;
 
+import cn.edu.nju.software.pinpoint.statistics.entity.PartitionInfo;
 import cn.edu.nju.software.pinpoint.statistics.entity.PartitionResult;
 import cn.edu.nju.software.pinpoint.statistics.mock.dto.GraphDto;
 
@@ -21,7 +22,7 @@ public interface PartitionResultService {
 
     List<PartitionResult> queryPartitionResult(String partitionId);
 
-    public void partition(String appid,String algorithmsid,String dynamicanalysisinfoid,int type,String partitionId) throws IOException;
+    public void partition(PartitionInfo partitionInfo) throws IOException;
 
     public int countOfPartitionResult(String dynamicInfoId,String algorithmsId,int type);
 

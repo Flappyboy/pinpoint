@@ -55,6 +55,11 @@ public class PartitionServiceImpl implements PartitionService {
     private Sid sid;
 
     @Override
+    public PartitionInfo findPartitionById(String partitionId) {
+        return partitionMapper.selectByPrimaryKey(partitionId);
+    }
+
+    @Override
     @Transactional(propagation = Propagation.SUPPORTS)
     public void addPartition(PartitionInfo partition) {
         String id = sid.nextShort();
@@ -71,7 +76,7 @@ public class PartitionServiceImpl implements PartitionService {
             public void run() {
                 try {
                     log.debug("partion start: "+partition);
-                    partitionResultService.partition(partition.getAppid(),partition.getAlgorithmsid(),partition.getDynamicanalysisinfoid(),partition.getType(),partition.getId());
+                    partitionResultService.partition(partition);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

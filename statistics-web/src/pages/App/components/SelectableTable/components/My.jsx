@@ -1,10 +1,10 @@
-import { Upload } from '@icedesign/base';
+import { Upload, Button } from '@icedesign/base';
 import React, { Component } from 'react';
 import '../../../../../api';
 
-const { Core } = Upload;
+// const { Core } = Upload;
 
-export default class UploadCore extends Component {
+export default class My extends Component {
   constructor(props) {
     super(props);
 
@@ -42,8 +42,7 @@ export default class UploadCore extends Component {
     const action = `${global.base.baseLocation}/upload`;
     return (
       <div>
-        <Core
-          ref="inner"
+        {/* <Upload
           style={{
             display: 'block',
             textAlign: 'center',
@@ -54,14 +53,13 @@ export default class UploadCore extends Component {
             borderRadius: '5px',
             fontSize: '12px',
           }}
+          limit={1}
+          listType="text"
           action={action}
           accept=""
           name="file"
           disabled={this.state.disabled}
-          multiple
           dragable={this.state.dragable}
-          // multipart={{ _token: 'sdj23da' }}
-          // headers={{ Authorization: 'user_1' }}
           beforeUpload={this.beforeUpload}
           onStart={this.onStart}
           onProgress={this.onProgress}
@@ -70,7 +68,31 @@ export default class UploadCore extends Component {
           onAbort={this.onAbort}
         >
           {this.state.disabled ? '禁止上传' : this.state.dragable ? '点击或者拖拽上传' : '点击上传'}
-        </Core>
+        </Upload> */}
+        <Upload
+          action={action}
+          limit={1}
+          listType="text"
+          onSuccess={this.onSuccess}
+          onError={this.onError}
+          name="file"
+          accept=""
+          formatter={(res, file) => {
+            // 函数里面根据当前服务器返回的响应数据
+            // 重新拼装符合组件要求的数据格式
+            console.log('lalala');
+            console.log(res);
+            const result = {
+              success: res.status === 200,
+              // url: res.data.path,
+              message: res.msg,
+            };
+            console.log(result);
+            return result;
+          }}
+        >
+          <Button type="primary" style={{ margin: '0 0 10px' }}>点击上传</Button>
+        </Upload>
         {/* <br />
         <div>
           <Button type="primary" onClick={this.onDisabledHandler}>
@@ -112,5 +134,3 @@ export default class UploadCore extends Component {
     console.log('onAbort callback : ', e, file);
   }
 }
-
-

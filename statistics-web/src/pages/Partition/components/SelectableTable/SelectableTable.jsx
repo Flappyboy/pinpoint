@@ -21,9 +21,7 @@ export default class SelectableTable extends Component {
   static defaultProps = {};
   preprocess = (dataList) => {
     dataList.forEach(data => {
-      data.createTime = moment(data.createTime).format(DATE_FORMAT);
-      data.startTime = moment(data.startTime).format(DATE_FORMAT);
-      data.endTime = moment(data.endTime).format(DATE_FORMAT);
+      data.createTime = moment(data.createdat).format(DATE_FORMAT);
       if (!('status' in data)) {
         data.status = true;
       }
@@ -46,7 +44,9 @@ export default class SelectableTable extends Component {
         isLoading: false,
         total: response.data.data.total,
       });
-      callBack();
+      if (callBack) {
+        callBack();
+      };
     })
       .catch((error) => {
         console.log(error);
@@ -175,13 +175,13 @@ export default class SelectableTable extends Component {
 
   addNewItem = (values) => {
     this.updateList(1, () => {
-      const data = this.state.dataSource;
-      console.log(values);
-      values.status = false;
-      data.splice(0, 0, values);
-      this.setState({
-        dataSource: data,
-      });
+      // const data = this.state.dataSource;
+      // console.log(values);
+      // values.status = false;
+      // data.splice(0, 0, values);
+      // this.setState({
+      //   dataSource: data,
+      // });
     });
   };
 
@@ -195,8 +195,8 @@ export default class SelectableTable extends Component {
     }
     return (
       <div>
-        <a onClick={this.queryDetail.bind(this, record)}>详细</a>
-        <a style={styles.removeBtn} onClick={this.deleteItem.bind(this, record)} >
+        <a style={{ cursor: 'pointer' }} onClick={this.queryDetail.bind(this, record)}>详细</a>
+        <a style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={this.deleteItem.bind(this, record)} >
           删除
         </a>
       </div>
@@ -240,7 +240,7 @@ export default class SelectableTable extends Component {
           >
             <Table.Column title="编码" dataIndex="id" width={120} />
             <Table.Column title="应用" dataIndex="appName" width={120} />
-            <Table.Column title="类型" dataIndex="type" width={120} />
+            <Table.Column title="类型" dataIndex="typeName" width={120} />
             <Table.Column title="统计编码" dataIndex="dynamicanalysisinfoid" width={120} />
             <Table.Column title="创建日期" dataIndex="createTime" width={150} />
             <Table.Column title="算法" dataIndex="algorithmName" width={150} />

@@ -24,6 +24,9 @@ public class StaticCallInfo implements Serializable {
 
     private String desc;
 
+    private Object callerObj;
+    private Object calleeObj;
+
     private static final long serialVersionUID = 1L;
 
     public String getId() {
@@ -104,6 +107,22 @@ public class StaticCallInfo implements Serializable {
 
     public void setDesc(String desc) {
         this.desc = desc == null ? null : desc.trim();
+    }
+
+    public Object getCallerObj() {
+        return callerObj;
+    }
+
+    public void setCallerObj(Object callerObj) {
+        this.callerObj = callerObj;
+    }
+
+    public Object getCalleeObj() {
+        return calleeObj;
+    }
+
+    public void setCalleeObj(Object calleeObj) {
+        this.calleeObj = calleeObj;
     }
 
     @Override

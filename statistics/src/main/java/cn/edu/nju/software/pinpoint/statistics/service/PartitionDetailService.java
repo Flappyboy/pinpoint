@@ -19,4 +19,7 @@ public interface PartitionDetailService {
     public int countOfPartitionDetail(String partitionResultId, int type);
 
     int countOfPartitionDetail(String partitionResultId);
+
+    List<Object> queryPartitionDetailByResultId(String partitionResultId, Integer page, Integer pageSize);
+    int countOfPartitionDetailByResultId(String partitionResultId);
 }

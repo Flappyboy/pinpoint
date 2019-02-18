@@ -12,6 +12,7 @@ export default class AddDialog extends Component {
     super(props);
     this.state = {
       visible: false,
+      id: props.id,
     };
     this.field = new Field(this);
   }
@@ -23,11 +24,14 @@ export default class AddDialog extends Component {
         return;
       }
 
-      values.createTime = (new Date()).getTime();
-      this.props.addNewStatistics(values);
-
-      this.setState({
-        visible: false,
+      // values.createTime = (new Date()).getTime();
+      if (this.state.app) {
+        values.appid = this.state.app;
+      }
+      this.props.addNewStatistics(values, () => {
+        this.setState({
+          visible: false,
+        });
       });
     });
   };
@@ -54,7 +58,15 @@ export default class AddDialog extends Component {
         span: 14,
       },
     };
-
+    let appInput = null;
+    if (!this.state.app) {
+      appInput = (<FormItem label="应用：" {...formItemLayout}>
+        <Input
+          {...init('appid', {
+            rules: [{ required: true, message: '必填选项' }],
+          })}
+        /> </FormItem>);
+    }
     return (
       <div style={styles.editDialog}>
         <Button
@@ -74,17 +86,10 @@ export default class AddDialog extends Component {
           title="统计数据"
         >
           <Form direction="ver" field={this.field}>
-            <FormItem label="应用：" {...formItemLayout}>
-              <Input
-                {...init('app', {
-                  rules: [{ required: true, message: '必填选项' }],
-                })}
-              />
-            </FormItem>
-
+            {appInput}
             <FormItem label="开始时间：" {...formItemLayout}>
               <Input
-                {...init('startTime', {
+                {...init('starttine', {
                   rules: [{ required: false }],
                 })}
               />
@@ -92,7 +97,7 @@ export default class AddDialog extends Component {
 
             <FormItem label="结束时间：" {...formItemLayout}>
               <Input
-                {...init('endTime', {
+                {...init('endtime', {
                   rules: [{ required: false }],
                 })}
               />

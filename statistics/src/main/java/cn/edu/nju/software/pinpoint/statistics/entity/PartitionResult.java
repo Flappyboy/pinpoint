@@ -24,6 +24,8 @@ public class PartitionResult implements Serializable {
 
     private Integer type;
 
+    private String typeName;
+
     private Integer order;
 
     private String partitionid;
@@ -124,6 +126,13 @@ public class PartitionResult implements Serializable {
 
     public void setPartitionid(String partitionid) {
         this.partitionid = partitionid == null ? null : partitionid.trim();
+    }
+
+    public String getTypeName() {
+        if(type==0)
+            return "Class";
+        else
+            return  "Method";
     }
 
     @Override

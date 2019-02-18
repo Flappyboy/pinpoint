@@ -1,5 +1,6 @@
 package cn.edu.nju.software.pinpoint.statistics.service;
 
+import cn.edu.nju.software.pinpoint.statistics.entity.DynamicAnalysisInfo;
 import cn.edu.nju.software.pinpoint.statistics.entity.DynamicCallInfo;
 
 import java.util.HashMap;
@@ -8,9 +9,13 @@ import java.util.List;
 public interface DynamicCallService {
     public void saveDCallInfo(DynamicCallInfo dynamicCallInfo);
 
+    public void statisticsCallInfo(DynamicAnalysisInfo dynamicAnalysisInfo);
+
     public void updateDCallInfo(DynamicCallInfo dynamicCallInfo);
 
     public void deleteDCallInfo(String dynamicCallInfoId);
+
+    DynamicCallInfo queryCallById(String id);
 
     public DynamicCallInfo queryDCallInfo(String dynamicCallInfoId);
 

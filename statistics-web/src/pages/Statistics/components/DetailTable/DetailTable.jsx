@@ -13,9 +13,9 @@ export default class DetailTable extends Component {
 
   static defaultProps = {};
 
-  updateList = (pageNum, param) => {
+  updateList = (pageNum) => {
     const queryParam = {
-      dynamicAnalysisInfoId: param,
+      dynamicAnalysisInfoId: this.state.dynamicAnalysisInfoId,
       type: 0,
       pageSize: this.state.pageSize,
       page: pageNum,
@@ -47,6 +47,10 @@ export default class DetailTable extends Component {
 
   componentDidMount() {
     this.eventEmitter = emitter.addListener('query_statistics_detail', this.queryStatisticsDetail);
+    // 找到锚点
+    const anchorElement = document.getElementById('statistics-detail');
+    // 如果对应id的锚点存在，就跳转到锚点
+    if (anchorElement) { anchorElement.scrollIntoView(); }
   }
 
   componentWillUnmount() {
@@ -65,11 +69,13 @@ export default class DetailTable extends Component {
   }
 
   queryStatisticsDetail = (param) => {
+    this.state.dynamicAnalysisInfoId = param;
     this.setState({
+      dynamicAnalysisInfoId: param,
       show: true,
       isLoading: true,
     });
-    this.updateList(1,param);
+    this.updateList(1);
     console.log('query aha ', param);
   };
 

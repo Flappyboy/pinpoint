@@ -126,6 +126,8 @@ public class PartitionResultServiceImpl implements PartitionResultService {
         List<PartitionResultEdge> partitionResultEdgeList = partitionResultEdgeService.findPartitionResultEdge(partitionId);
         for (PartitionResultEdge p: partitionResultEdgeList) {
             EdgeDto edgeDto = new EdgeDto();
+            edgeDto.setId(p.getId());
+            edgeDto.setCount(partitionResultEdgeService.countOfPartitionResultEdgeCallByEdgeId(p.getId()));
             edgeDto.setSource(p.getPatitionresultaid());
             edgeDto.setTarget(p.getPatitionresultbid());
             graphDto.addEdge(edgeDto);
@@ -144,7 +146,12 @@ public class PartitionResultServiceImpl implements PartitionResultService {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
-    public void partition(String appid, String algorithmsid, String dynamicanalysisinfoid, int type, String partitionId) throws IOException {
+    public void partition(PartitionInfo partitionInfo) throws IOException {
+        String appid = partitionInfo.getAppid();
+        String algorithmsid = partitionInfo.getAlgorithmsid();
+        String dynamicanalysisinfoid = partitionInfo.getDynamicanalysisinfoid();
+        int type = partitionInfo.getType();
+        String partitionId = partitionInfo.getId();
         StaticCallInfoExample staticCallInfoExample = new StaticCallInfoExample();
         StaticCallInfoExample.Criteria sccriteria = staticCallInfoExample.createCriteria();
         sccriteria.andFlagEqualTo(1).andAppidEqualTo(appid).andTypeEqualTo(type);
@@ -275,12 +282,12 @@ public class PartitionResultServiceImpl implements PartitionResultService {
         FileUtil.delete(outputPath);
         FileUtil.delete(filePath);
 
-        partitionResultEdgeService.statisticsPartitionResultEdge(partitionId);
+        partitionResultEdgeService.statisticsPartitionResultEdge(partitionInfo);
 
-        PartitionInfo partitionInfo = new PartitionInfo();
-        partitionInfo.setId(partitionId);
-        partitionInfo.setStatus(1);
-        partitionInfoMapper.updateByPrimaryKeySelective(partitionInfo);
+        PartitionInfo newPartitionInfo = new PartitionInfo();
+        newPartitionInfo.setId(partitionId);
+        newPartitionInfo.setStatus(1);
+        partitionInfoMapper.updateByPrimaryKeySelective(newPartitionInfo);
     }
 
     @Override

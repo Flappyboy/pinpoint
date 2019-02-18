@@ -1,31 +1,36 @@
 package cn.edu.nju.software.pinpoint.statistics.mock.dto;
 
+import cn.edu.nju.software.pinpoint.statistics.entity.ClassNode;
+import cn.edu.nju.software.pinpoint.statistics.utils.NameUtil;
+
 public class ClassDto {
-    private Long id;
+    private String id;
+    private String name;
     private String packageName;
     private String simpleName;
 
-    public Long getId() {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
     public String getPackageName() {
-        return packageName;
-    }
-
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
+        return NameUtil.getPackageNameFromClassName(name);
     }
 
     public String getSimpleName() {
-        return simpleName;
+        return NameUtil.getSimpleNameFromClassName(name);
     }
 
-    public void setSimpleName(String simpleName) {
-        this.simpleName = simpleName;
-    }
 }

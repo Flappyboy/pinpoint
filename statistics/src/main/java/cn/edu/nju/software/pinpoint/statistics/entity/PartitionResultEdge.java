@@ -21,6 +21,8 @@ public class PartitionResultEdge implements Serializable {
 
     private List<StaticCallInfo> staticCallInfoList;
 
+    private List<DynamicCallInfo> dynamicCallInfoList;
+
     private static final long serialVersionUID = 1L;
 
     public PartitionResultEdge() {
@@ -98,6 +100,18 @@ public class PartitionResultEdge implements Serializable {
 
     public void setStaticCallInfoList(List<StaticCallInfo> staticCallInfoList) {
         this.staticCallInfoList = staticCallInfoList;
+    }
+
+    public List<DynamicCallInfo> getDynamicCallInfoList() {
+        return dynamicCallInfoList;
+    }
+
+    public void setDynamicCallInfoList(List<DynamicCallInfo> dynamicCallInfoList) {
+        this.dynamicCallInfoList = dynamicCallInfoList;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
     }
 
     @Override

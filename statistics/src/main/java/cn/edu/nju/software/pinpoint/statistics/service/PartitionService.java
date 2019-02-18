@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface PartitionService {
+    PartitionInfo findPartitionById(String partitionId);
     public void addPartition(PartitionInfo partition);
     public void delPartition(String partitionInfoId);
     public void updatePartition(PartitionInfo partition);

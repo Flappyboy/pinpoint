@@ -211,7 +211,7 @@ public class StaticCallServiceImpl implements StaticCallService {
             StaticCallInfo methodEdge = entry.getValue();
 
 //            System.out.println("getSource   :    " + methodEdge.getCaller());
-            String sCallerName = methodEdge.getCaller();
+            String sCallerName = methodEdge.getCaller().replace("--!--",".").replace("-!-","");
 //            String[] scallerArr = sCallerName.split("-!-");
             MethodNodeExample example1 = new MethodNodeExample();
             MethodNodeExample.Criteria criteria1 = example1.createCriteria();

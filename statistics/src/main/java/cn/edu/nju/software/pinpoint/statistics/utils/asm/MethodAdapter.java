@@ -67,7 +67,7 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
             }
         }
 
-        String sourceMethodName = (this.className + "-!-" + this.name +"-!-"+ this.desc).replace("/", ".")
+        String sourceMethodName = (this.className + "--!--" + this.name +"-!-"+ this.desc).replace("/", ".")
                 .replace(";", ",")
                 .replace("(L", "(")
                 .replace(",)", ")")
@@ -77,7 +77,7 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
         sourceMethodName = sourceMethodName.substring(0, index1 + 1);
 
 //        String targetMethodName = owner+"."+name+desc;
-        String targetMethodName = (owner + "-!-" + name +"-!-"+ desc).replace("/", ".")
+        String targetMethodName = (owner + "--!--" + name +"-!-"+ desc).replace("/", ".")
                 .replace(";", ",")
                 .replace("(L", "(")
                 .replace(",)", ")")

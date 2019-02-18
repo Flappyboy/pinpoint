@@ -1,5 +1,6 @@
 package com.navercorp.pinpoint.web.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navercorp.pinpoint.common.util.TransactionId;
 import com.navercorp.pinpoint.web.calltree.span.CallTreeIterator;
 import com.navercorp.pinpoint.web.filter.Filter;
@@ -26,6 +27,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,25 +64,49 @@ public class StatisticsController {
      */
     @RequestMapping(value = "/statistcsallcall")
     @ResponseBody
-    public TransactionMetaDataViewModel statistcsallcall(@RequestParam Map<String, String> requestParam) {
-        TransactionMetaDataViewModel viewModel = new TransactionMetaDataViewModel();
-        String an = requestParam.get("an");//"jpetstore"
+    public JSONResult statistcsallcall(@RequestParam Map<String, String> requestParam) {
+        String an = (String) requestParam.get("an");//"jpetstore"
+        String pnListStr = requestParam.get("pnList");
+
+        ObjectMapper MAPPER = new ObjectMapper();
+        List<String> pnList=null;
+        try {
+            pnList = MAPPER.readValue(pnListStr, List.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return JSONResult.errorMsg("pnList wrong for:"+pnListStr);
+        }
+
+
+
         LimitedScanResult<List<TransactionId>> limitedScanResult = flow.selectTraceIdsFromApplicationTraceIndex(an);
         Filter filter = new FilterChain();
         List<Dot> dotList = scatter.selectScatterData(limitedScanResult.getScanData(),an,filter);
         List<SpanResult> spanResultList =  spanService.selectSpans(dotList);
-        Statistics statistics = new Statistics(requestParam.get("pn"));
+        Statistics statistics = new Statistics(pnList);
         for (int i=0; i<spanResultList.size(); i++){
             SpanResult spanResult = spanResultList.get(i);
             final CallTreeIterator callTreeIterator = spanResult.getCallTree();
             RecordSet recordSet = this.transactionInfoService.createRecordSet(callTreeIterator, dotList.get(i).getAcceptedTime(), dotList.get(i).getAgentId(), -1);
             statistics.statisticsRecord(recordSet);
         }
-        statistics.saveClass();
-        statistics.saveMethod();
-        System.out.println("statisc");
 
-        return viewModel;
+//        String mode = requestParam.get("mode");
+//        if ("remote".equals(mode)){
+//            String api= requestParam.get("api");
+//            statistics.sendMethod(api);
+//        }else {
+//            statistics.saveClass();
+//            statistics.saveMethod();
+//        }
+
+
+
+        List list = statistics.allCallsForDynamicCallInfo(requestParam.get("analysisId"));
+        HashMap<String ,Object> result = new HashMap<>();
+        result.put("list",list);
+        result.put("flag",0);
+        return JSONResult.ok(result);
     }
     @RequestMapping(value = "/statistics/{page}")
     @ResponseBody
@@ -104,7 +130,7 @@ public class StatisticsController {
                 String[] strArray = str.split(",");
                 if (strArray.length!=3)
                     continue;
-                Statistics statistics = new Statistics("");
+                Statistics statistics = new Statistics(new ArrayList<String>());
                 Statistics.Call call = statistics.new Call( statistics.new Method(strArray[0]), statistics.new Method(strArray[1]), Long.parseLong(strArray[2]));
                 callList.add(call);
             }

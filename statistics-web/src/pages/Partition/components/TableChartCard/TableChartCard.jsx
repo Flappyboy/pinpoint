@@ -36,6 +36,7 @@ export default class TableChartCard extends Component {
       show: true,
       isLoading: true,
     });
+    console.log('parma:');
     console.log(param);
     queryPartitionDetail(param).then((response) => {
       console.log(response.data.data);

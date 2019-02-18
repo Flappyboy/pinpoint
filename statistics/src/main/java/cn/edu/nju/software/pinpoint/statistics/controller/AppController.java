@@ -3,6 +3,7 @@ package cn.edu.nju.software.pinpoint.statistics.controller;
 import cn.edu.nju.software.pinpoint.statistics.entity.App;
 import cn.edu.nju.software.pinpoint.statistics.entity.common.JSONResult;
 import cn.edu.nju.software.pinpoint.statistics.service.AppService;
+import cn.edu.nju.software.pinpoint.statistics.service.StaticCallService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +19,15 @@ public class AppController {
     @Autowired
     private AppService appService;
 
+
     @ApiModelProperty(value = "app", notes = "项目信息的json串")
     @ApiOperation(value = "新增项目", notes = "返回状态200成功")
     @RequestMapping(value = "/app", method = RequestMethod.POST)
     public JSONResult addApp(@RequestBody App app) throws Exception {
         appService.saveApp(app);
-        return JSONResult.ok();
+
+
+        return JSONResult.ok(app);
     }
 
     @ApiModelProperty(value = "app", notes = "项目信息的json串")
@@ -60,7 +64,7 @@ public class AppController {
     })
     @ApiOperation(value = "分页查询项目列表", notes = "返回状态200成功")
     @RequestMapping(value = "/app", method = RequestMethod.GET)
-    public JSONResult queryAppListPaged(Integer page, Integer pageSize,String appName,String desc) {
+    public JSONResult queryAppListPaged(Integer page, Integer pageSize,String appName, String desc) {
         if (page == null) {
             page = 1;
         }

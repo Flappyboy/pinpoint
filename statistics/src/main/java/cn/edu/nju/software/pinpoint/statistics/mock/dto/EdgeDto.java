@@ -1,28 +1,43 @@
 package cn.edu.nju.software.pinpoint.statistics.mock.dto;
 
 public class EdgeDto {
+    String id;
+    private String source;
+    private String target;
+    private int count;
 
-    private Long source;
-    private Long target;
-
-    public EdgeDto(Long source, Long target) {
-        this.source = source;
-        this.target = target;
+    public EdgeDto() {
     }
 
-    public Long getSource() {
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getSource() {
         return source;
     }
 
-    public void setSource(Long source) {
+    public void setSource(String source) {
         this.source = source;
     }
 
-    public Long getTarget() {
+    public String getTarget() {
         return target;
     }
 
-    public void setTarget(Long target) {
+    public void setTarget(String target) {
         this.target = target;
     }
 }

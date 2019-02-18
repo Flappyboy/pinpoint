@@ -1,42 +1,33 @@
 package cn.edu.nju.software.pinpoint.statistics.mock.dto;
 
 public class CallDto {
-    private Long id;
-    private Long CallerId;
-    private String CallerName;
-    private String CalleeName;
+    private String id;
+    private Object caller;
+    private Object callee;
     private Integer count;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Long getCallerId() {
-        return CallerId;
+    public Object getCaller() {
+        return caller;
     }
 
-    public void setCallerId(Long callerId) {
-        CallerId = callerId;
+    public void setCaller(Object caller) {
+        this.caller = caller;
     }
 
-    public String getCallerName() {
-        return CallerName;
+    public Object getCallee() {
+        return callee;
     }
 
-    public void setCallerName(String callerName) {
-        CallerName = callerName;
-    }
-
-    public String getCalleeName() {
-        return CalleeName;
-    }
-
-    public void setCalleeName(String calleeName) {
-        CalleeName = calleeName;
+    public void setCallee(Object callee) {
+        this.callee = callee;
     }
 
     public Integer getCount() {

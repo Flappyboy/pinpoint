@@ -37,4 +37,13 @@ public class ClassNodeServiceImpl implements ClassNodeService {
         List<ClassNode> calleeNodes = classNodeMapper.selectByExample(classNodeExample);
         return calleeNodes;
     }
+
+    @Override
+    public List<ClassNode> findByAppid(String appid) {
+        ClassNodeExample classNodeExample = new ClassNodeExample();
+        ClassNodeExample.Criteria classNodeCriteria = classNodeExample.createCriteria();
+        classNodeCriteria.andAppidEqualTo(appid).andFlagEqualTo(1);
+        List<ClassNode> calleeNodes = classNodeMapper.selectByExample(classNodeExample);
+        return calleeNodes;
+    }
 }

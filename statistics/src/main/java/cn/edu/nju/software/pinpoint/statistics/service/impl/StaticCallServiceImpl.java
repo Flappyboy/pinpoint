@@ -1,9 +1,6 @@
 package cn.edu.nju.software.pinpoint.statistics.service.impl;
 
-import cn.edu.nju.software.pinpoint.statistics.dao.AppMapper;
-import cn.edu.nju.software.pinpoint.statistics.dao.ClassNodeMapper;
-import cn.edu.nju.software.pinpoint.statistics.dao.MethodNodeMapper;
-import cn.edu.nju.software.pinpoint.statistics.dao.StaticCallInfoMapper;
+import cn.edu.nju.software.pinpoint.statistics.dao.*;
 import cn.edu.nju.software.pinpoint.statistics.entity.*;
 import cn.edu.nju.software.pinpoint.statistics.service.ClassNodeService;
 import cn.edu.nju.software.pinpoint.statistics.service.MethodNodeService;
@@ -32,6 +29,8 @@ public class StaticCallServiceImpl implements StaticCallService {
     @Autowired
     private ClassNodeMapper classNodeMapper;
     @Autowired
+    private ClassNodeMapperExtend classNodeMapperExtend;
+    @Autowired
     private MethodNodeMapper methodNodeMapper;
     @Autowired
     private StaticCallInfoMapper staticCallInfoMapper;
@@ -43,6 +42,24 @@ public class StaticCallServiceImpl implements StaticCallService {
     private AppMapper appMapper;
     @Autowired
     private Sid sid;
+
+    @Override
+    public StaticCallInfo queryCallById(String id) {
+        StaticCallInfo staticCallInfo = staticCallInfoMapper.selectByPrimaryKey(id);
+        if (staticCallInfo!=null){
+            staticCallInfo.setCallerObj(queryCallObj(staticCallInfo.getCaller(),staticCallInfo.getType()));
+            staticCallInfo.setCalleeObj(queryCallObj(staticCallInfo.getCallee(),staticCallInfo.getType()));
+        }
+        return staticCallInfo;
+    }
+
+    private Object queryCallObj(String id, int type){
+        if(type==0){
+            return classNodeMapper.selectByPrimaryKey(id);
+        }else{
+            return methodNodeMapper.selectByPrimaryKey(id);
+        }
+    }
 
     @Override
     @Async
@@ -86,6 +103,17 @@ public class StaticCallServiceImpl implements StaticCallService {
         HashMap<String, ClassNode> classNodes = ClassAdapter.classNodes;
         HashMap<String, StaticCallInfo> classEdges = MethodAdapter.classEdges;
 
+
+
+        System.out.println("保存类结点");
+        saveClassNode(classNodes, appid);
+        System.out.println("保存类边");
+        saveClassEdge(classEdges, appid);
+        System.out.println("保存方法结点");
+//        saveMethodNode(methodnoedes, appid);
+        System.out.println("保存方法边");
+//        saveMethodEdge(methodedges, appid);
+
         App app = new App();
         app.setId(appid);
         app.setStatus(1);
@@ -93,15 +121,6 @@ public class StaticCallServiceImpl implements StaticCallService {
         app.setFunctioncount(methodnoedes.size());
         app.setInterfacecount(ClassAdapter.interfaceNum);
         appMapper.updateByPrimaryKeySelective(app);
-
-        System.out.println("保存类结点");
-        saveClassNode(classNodes, appid);
-        System.out.println("保存类边");
-        saveClassEdge(classEdges, appid);
-        System.out.println("保存方法结点");
-        saveMethodNode(methodnoedes, appid);
-        System.out.println("保存方法边");
-        saveMethodEdge(methodedges, appid);
 
         try {
             Thread.sleep(100);
@@ -203,6 +222,47 @@ public class StaticCallServiceImpl implements StaticCallService {
         }
 
     }
+    private void saveMethodNodeBatch(HashMap<String, MethodNode> methodnoedes, String appid) {
+        int methodKey = 0;
+        for (Map.Entry<String, MethodNode> entry : methodnoedes.entrySet()) {
+            MethodNode methodNode = entry.getValue();
+            MethodNodeExample example = new MethodNodeExample();
+            MethodNodeExample.Criteria criteria = example.createCriteria();
+            criteria.andFullNameEqualTo(methodNode.getFullname())
+                    .andAppidEqualTo(appid).andFlagEqualTo(1);
+            List<MethodNode> mnodes = methodNodeMapper.selectByExampleWithBLOBs(example);
+
+            methodKey += 1;
+
+            if (mnodes.size() == 0 || mnodes == null) {
+                String id = sid.nextShort();
+
+                String classId = "";
+                ClassNodeExample classexample = new ClassNodeExample();
+                ClassNodeExample.Criteria classcriteria = classexample.createCriteria();
+                classcriteria.andNameEqualTo(methodNode.getClassname()).andAppidEqualTo(appid).andFlagEqualTo(1);
+                List<ClassNode> cnodes = classNodeMapper.selectByExample(classexample);
+                if (cnodes.size() != 0 && cnodes != null) {
+                    ClassNode cn = cnodes.get(0);
+                    classId = cn.getId();
+                }
+
+                methodNode.setId(id);
+                methodNode.setClassid(classId);
+                methodNode.setAppid(appid);
+                methodNode.setFlag(1);
+                methodNode.setKey(methodKey);
+                methodNode.setCreatedat(new Date());
+                methodNode.setUpdatedat(new Date());
+                methodNodeMapper.insert(methodNode);
+            } else {
+                MethodNode mn = mnodes.get(0);
+                mn.setKey(methodKey);
+                methodNodeMapper.updateByPrimaryKeySelective(mn);
+            }
+        }
+
+    }
 
     private void saveMethodEdge(HashMap<String, StaticCallInfo> methodedges, String appid) {
         for (Map.Entry<String, StaticCallInfo> entry : methodedges.entrySet()) {
@@ -296,6 +356,25 @@ public class StaticCallServiceImpl implements StaticCallService {
                 classNodeMapper.updateByExampleSelective(cn, example1);
             }
         }
+    }
+    private void saveClassNodeBatch(HashMap<String, ClassNode> classNodes, String appid) {
+        int classKey = 0;
+
+        for (Map.Entry<String, ClassNode> entry : classNodes.entrySet()) {
+            ClassNode classNode = entry.getValue();
+
+            classKey += 1;
+
+            String id = sid.nextShort();
+            classNode.setId(id);
+            classNode.setAppid(appid);
+            classNode.setFlag(1);
+            classNode.setKey(classKey);
+            classNode.setCreatedat(new Date());
+            classNode.setUpdatedat(new Date());
+        }
+        List<ClassNode> classNodeList = new ArrayList<>(classNodes.values());
+        classNodeMapperExtend.insertBatch(classNodeList);
     }
 
     private void saveClassEdge(HashMap<String, StaticCallInfo> classEdges, String appid) {

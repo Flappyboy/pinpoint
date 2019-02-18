@@ -2,7 +2,7 @@ package cn.edu.nju.software.pinpoint.statistics.mock.dto;
 
 public class NodeDto {
     private String name;
-    private Long id;
+    private String id;
     private Integer size;
 
     public String getName() {
@@ -13,11 +13,11 @@ public class NodeDto {
         this.name = name;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

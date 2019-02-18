@@ -8,6 +8,8 @@ public class DynamicAnalysisInfo implements Serializable {
 
     private String appid;
 
+    private String appName;
+
     private Date starttine;
 
     private Date endtime;
@@ -25,6 +27,18 @@ public class DynamicAnalysisInfo implements Serializable {
     private Integer status;
 
     private static final long serialVersionUID = 1L;
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
 
     public String getId() {
         return id;

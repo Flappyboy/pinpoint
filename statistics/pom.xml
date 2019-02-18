@@ -146,7 +146,6 @@
             <scope>provided</scope>
         </dependency>
 
-
         <!-- https://mvnrepository.com/artifact/org.kohsuke/github-api -->
         <dependency>
             <groupId>org.kohsuke</groupId>

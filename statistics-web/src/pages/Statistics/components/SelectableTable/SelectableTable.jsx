@@ -6,7 +6,7 @@ import emitter from '../ev';
 import AddDialog from './components/AddDialog';
 import DeleteBalloon from './components/DeleteBalloon';
 import { BrowserRouter as Router, Route, Link, Redirect, withRouter } from 'react-router-dom';
-import { queryStatisticsList, queryStatistics, delStatistics } from '../../../../api';
+import { queryStatisticsList, queryStatistics, delStatistics, addStatistics, addPartition } from '../../../../api';
 // 注意：下载数据的功能，强烈推荐通过接口实现数据输出，并下载
 // 因为这样可以有下载鉴权和日志记录，包括当前能不能下载，以及谁下载了什么
 const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
@@ -19,20 +19,31 @@ export default class SelectableTable extends Component {
 
   preprocess = (dataList) => {
     dataList.forEach(data => {
-      data.createTime = moment(data.createTime).format(DATE_FORMAT);
-      data.startTime = moment(data.startTime).format(DATE_FORMAT);
-      data.endTime = moment(data.endTime).format(DATE_FORMAT);
+      data.createTime = moment(data.createdat).format(DATE_FORMAT);
+      if(data.starttine)
+        data.startTime = moment(data.starttine).format(DATE_FORMAT);
+      if(data.endtime)
+        data.endTime = moment(data.endtime).format(DATE_FORMAT);
       if (!('status' in data)) {
         data.status = true;
       }
     });
   }
 
-  updateList = (pageNum) => {
-    const queryParam = {
-      pageSize: this.state.pageSize,
-      page: pageNum,
-    };
+  updateList = (pageNum, queryParam) => {
+    // const queryParam = {
+    //   pageSize: this.state.pageSize,
+    //   page: pageNum,
+    // };
+    if (!queryParam) {
+      queryParam = {};
+    }
+    if (this.state.app) {
+      queryParam.appid = this.state.app.id;
+    }
+    queryParam.pageSize = this.state.pageSize;
+    queryParam.page = pageNum;
+
     this.setState({
       isLoading: true,
     });
@@ -58,12 +69,21 @@ export default class SelectableTable extends Component {
     // 声明一个自定义事件
     // 在组件装载完成以后
     this.eventEmitter = emitter.addListener('query_statistics', this.queryStatistics);
+
     this.updateList(1);
   }
 
   // 组件销毁前移除事件监听
   componentWillUnmount() {
     emitter.removeListener('query_statistics', this.queryStatistics);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      app: nextProps.app,
+    });
+    this.state.app = nextProps.app;
+    this.updateList(1);
   }
 
   constructor(props) {
@@ -96,6 +116,7 @@ export default class SelectableTable extends Component {
       redirectToPartition: false,
       pageSize: 10,
       total: 0,
+      app: props.app,
     };
   }
 
@@ -145,26 +166,45 @@ export default class SelectableTable extends Component {
   partition = (record) => {
     const data = this.state.dataSource;
 
-    let id;
+    let target;
     data.forEach((item) => {
       if (item.id === record.id) {
-        id = item.id;
+        target = item;
       }
     });
-    this.setState({
-      redirectToPartitionParam: id,
-      redirectToPartition: true,
-    });
+    const param = {
+      appid: target.appid,
+      algorithmsid: 1,
+      dynamicanalysisinfoid: target.id,
+      type: 0,
+    };
+    addPartition(param).then((response) => {
+      console.log(response.data.data);
+      this.setState({
+        // redirectToPartitionParam: id,
+        redirectToPartition: true,
+      });
+    })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  addNewStatistics = (values) => {
-    const data = this.state.dataSource;
-    console.log(values);
-    values.status = false;
-    data.splice(0, 0, values);
-    this.setState({
-      dataSource: data,
-    });
+  addNewStatistics = (values, callback) => {
+    addStatistics(values).then((response) => {
+      console.log(response.data.data);
+      const data = this.state.dataSource;
+      console.log(values);
+      values.status = false;
+      data.splice(0, 0, values);
+      this.setState({
+        dataSource: data,
+      });
+      callback();
+    })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   queryDetail = (record) => {
@@ -174,7 +214,7 @@ export default class SelectableTable extends Component {
   };
 
   renderOperator = (value, index, record) => {
-    if (!record.status) {
+    if (record.status !== 1) {
       return (
         <div>
           <Icon type="loading" />
@@ -183,9 +223,9 @@ export default class SelectableTable extends Component {
     }
     return (
       <div>
-        <a onClick={this.queryDetail.bind(this, record)}>详细</a>
-        <a style={styles.removeBtn} onClick={this.partition.bind(this, record)}>划分</a>
-        <a style={styles.removeBtn} onClick={this.deleteItem.bind(this, record)} >
+        <a style={{ cursor: 'pointer' }} onClick={this.queryDetail.bind(this, record)}>详细</a>
+        <a style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={this.partition.bind(this, record)}>划分</a>
+        <a style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={this.deleteItem.bind(this, record)} >
           删除
         </a>
       </div>
@@ -193,16 +233,20 @@ export default class SelectableTable extends Component {
   };
 
   render() {
+    let title = null;
+    if (this.state.app) {
+      title = `${this.state.app.name} 动态统计数据`;
+    }
     if (this.state.redirectToPartition) {
       return (
         <Redirect to={{ pathname: '/partition', search: `?addAppId=${this.state.redirectToPartitionParam}` }} />
       );
     }
     return (
-      <IceContainer className="selectable-table" style={styles.selectableTable}>
+      <IceContainer title={title} className="selectable-table" style={styles.selectableTable}>
         <div style={styles.IceContainer}>
           <div>
-            <AddDialog addNewStatistics={this.addNewStatistics} />
+            <AddDialog addNewStatistics={this.addNewStatistics} app={this.state.app} />
             {/* <Button onClick={this.addStatistics} size="small" style={styles.batchBtn}>
               <Icon type="add" />增加
             </Button> */}

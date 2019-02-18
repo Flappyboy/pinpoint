@@ -8,10 +8,26 @@ export default class Statistics extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      app: props.app,
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      app: nextProps.app,
+    });
   }
 
   render() {
+    if (this.state.app) {
+      return (
+        <div className="statistics-page">
+          <SelectableTable app={this.state.app} />
+          <DetailTable />
+        </div>
+      );
+    }
     return (
       <div className="statistics-page">
         <ColumnForm />

@@ -1,5 +1,6 @@
 package cn.edu.nju.software.pinpoint.statistics.controller;
 
+import cn.edu.nju.software.pinpoint.statistics.entity.App;
 import cn.edu.nju.software.pinpoint.statistics.entity.DynamicAnalysisInfo;
 import cn.edu.nju.software.pinpoint.statistics.entity.common.JSONResult;
 import cn.edu.nju.software.pinpoint.statistics.service.DynamicAnalysisInfoService;
@@ -21,7 +22,7 @@ public class DynamicAnalysisController {
     @ApiModelProperty(value = "dynamicAnalysisInfo", notes = "动态分析信息的json串")
     @ApiOperation(value = "新增动态分析信息", notes = "返回状态200成功")
     @RequestMapping(value = "/dynaInfo", method = RequestMethod.POST)
-    public JSONResult addApp(@RequestBody DynamicAnalysisInfo dynamicAnalysisInfo) throws Exception {
+    public JSONResult addAnalysis(@RequestBody DynamicAnalysisInfo dynamicAnalysisInfo) throws Exception {
         DynamicAnalysisInfo dynamicAnalysisInfo1 = dynamicAnalysisInfoService.saveDAnalysisInfo(dynamicAnalysisInfo);
         return JSONResult.ok(dynamicAnalysisInfo1.getId());
     }
@@ -32,15 +33,15 @@ public class DynamicAnalysisController {
     })
     @ApiOperation(value = "分页查询动态分析信息", notes = "返回状态200成功")
     @RequestMapping(value = "/dynaInfo", method = RequestMethod.GET)
-    public JSONResult queryAppListPaged(Integer page, Integer pageSize,String appName,String desc) {
+    public JSONResult queryAnalysisListPaged(Integer page, Integer pageSize, String appid, String appName, String desc) {
         if (page == null) {
             page = 1;
         }
         if (pageSize == null) {
             pageSize = 100;
         }
-        List<DynamicAnalysisInfo> mylist = dynamicAnalysisInfoService.queryDAnalysisInfoListPaged(page, pageSize,appName,desc);
-        int count = dynamicAnalysisInfoService.countOfDAnalysisInfo(appName,desc);
+        List<DynamicAnalysisInfo> mylist = dynamicAnalysisInfoService.queryDAnalysisInfoListPaged(page, pageSize,appid, appName,desc);
+        int count = dynamicAnalysisInfoService.countOfDAnalysisInfo(appid, appName, desc);
         HashMap<String ,Object> result = new HashMap<String ,Object>();
         result.put("list",mylist);
         result.put("total",count);

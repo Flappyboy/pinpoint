@@ -4,6 +4,7 @@ import cn.edu.nju.software.pinpoint.statistics.dao.AppMapper;
 import cn.edu.nju.software.pinpoint.statistics.entity.App;
 import cn.edu.nju.software.pinpoint.statistics.entity.AppExample;
 import cn.edu.nju.software.pinpoint.statistics.service.AppService;
+import cn.edu.nju.software.pinpoint.statistics.service.StaticCallService;
 import com.github.pagehelper.PageHelper;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class AppServiceImpl implements AppService {
     private AppMapper appMapper;
 
     @Autowired
+    private StaticCallService staticCallService;
+
+    @Autowired
     private Sid sid;
 
     @Override
@@ -31,6 +35,20 @@ public class AppServiceImpl implements AppService {
         app.setUpdatedat(new Date());
         app.setFlag(1);
         appMapper.insert(app);
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    System.out.println(app);
+                    staticCallService.saveStaticAnalysis(app.getId(), app.getPath(), 1);
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                }
+            }
+        });
+        thread.start();
+
         return app;
     }
 
@@ -84,7 +102,7 @@ public class AppServiceImpl implements AppService {
             criteria.andNameEqualTo(appName);
         if(desc!=""&&desc!=null&&!desc.isEmpty())
             criteria.andDescLike(desc);
-        example.setOrderByClause("createdat");
+        example.setOrderByClause("createdat desc");
         List<App> appList = appMapper.selectByExample(example);
         return appList;
     }

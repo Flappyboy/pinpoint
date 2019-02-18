@@ -3,21 +3,29 @@ package com.navercorp.pinpoint.web.statistics;
 import com.mysql.jdbc.StringUtils;
 import com.navercorp.pinpoint.web.vo.callstacks.Record;
 import com.navercorp.pinpoint.web.vo.callstacks.RecordSet;
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 public class Statistics {
 
-    private String packagename ="";
+    private Set<String>  packagenameSet = new HashSet<>();
 
-    public Statistics(String packagename) {
-        if (packagename!=null)
-            this.packagename = packagename;
+    public Statistics(List<String> packagenameList) {
+        this.packagenameSet.addAll(packagenameList);
     }
 
     Map<String, Method> methodMap = new HashMap<>();
@@ -49,6 +57,16 @@ public class Statistics {
         public String toClass(){return caller.getClassName() + "," + callee.getClassName() + "," + count;}
 
         public String toMethod(){return caller.getName() + "," + callee.getName() + "," + count;}
+
+        public DynamicCallInfo toDynamicCallInfoForClass(String analysisId){
+            DynamicCallInfo dynamicCallInfo = new DynamicCallInfo();
+            dynamicCallInfo.setDynamicanalysisinfoid(analysisId);
+            dynamicCallInfo.setType(0);
+            dynamicCallInfo.setCaller(caller.getClassName());
+            dynamicCallInfo.setCallee(callee.getClassName());
+            dynamicCallInfo.setCount(Math.toIntExact(count));
+            return dynamicCallInfo;
+        }
 
         public void call(){
             count++;
@@ -151,22 +169,33 @@ public class Statistics {
             recordMap.put(record.getId(),record);
         }
         for(Record record: recordList){
-            if(!check(getMethodName(record)))
+            if(!check(getClassName(record)))
                 continue;
             Record parentRecord = recordMap.get(record.getParentId());
-            Boolean tag = check(getMethodName(parentRecord));
+            Boolean tag = check(getClassName(parentRecord));
             while (!tag){
                 if (parentRecord==null)
                     break;
                 parentRecord = recordMap.get(parentRecord.getParentId());
                 if (parentRecord==null)
                     break;
-                tag = check(getMethodName(parentRecord));
+                tag = check(getClassName(parentRecord));
             }
             if (parentRecord==null)
                 continue;
             this.call(record,parentRecord);
         }
+    }
+    private String getClassName(Record record){
+        String methodName = getMethodName(record);
+        int bracketIndex = methodName.indexOf("(");
+        if(bracketIndex!=-1){
+            int dotIndex = methodName.lastIndexOf(".", bracketIndex);
+            if(dotIndex!=-1) {
+                return methodName.substring(0, dotIndex);
+            }
+        }
+        return methodName;
     }
     private String getMethodName(Record record){
         if (record==null)
@@ -181,7 +210,7 @@ public class Statistics {
     }
 
     private Boolean check(String className){
-        if(className.startsWith(packagename)){
+        if(this.packagenameSet.contains(className)){
             return true;
         }
         return false;
@@ -190,7 +219,7 @@ public class Statistics {
     public void saveClass(){
         FileWriter fileWriter = null;
         try {
-            fileWriter = new FileWriter("E:\\workspace\\project\\pinpoint\\statics-class-"+packagename+".txt");
+            fileWriter = new FileWriter("E:\\workspace\\project\\pinpoint\\statics-class-"+""+".txt");
             for (Map.Entry<String, Statistics.Call> entry: callMap.entrySet()){
                 fileWriter.write(entry.getValue().toClass()+"\n");
             }
@@ -204,7 +233,7 @@ public class Statistics {
     public void saveMethod(){
         FileWriter fileWriter = null;
         try {
-            fileWriter = new FileWriter("E:\\workspace\\project\\pinpoint\\statics-method-"+packagename+".txt");
+            fileWriter = new FileWriter("E:\\workspace\\project\\pinpoint\\statics-method-"+""+".txt");
             for (Map.Entry<String, Statistics.Call> entry: callMap.entrySet()){
                 fileWriter.write(entry.getValue().toMethod()+"\n");
             }
@@ -214,6 +243,25 @@ public class Statistics {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+//    public String sendPre(String api){
+//        Map<String, Object> param = new HashMap<>();
+//        DynamicCallInfo dynamicCallInfo = new DynamicCallInfo();
+//        param.put("dynamicAnalysisInfo",dynamicCallInfo);
+//        return doPost(api,param);
+//    }
+
+    public void sendMethod(String api){
+
+    }
+
+    public List<DynamicCallInfo> allCallsForDynamicCallInfo(String analysisId){
+        List<DynamicCallInfo> list = new ArrayList<>();
+        for (Map.Entry<String, Statistics.Call> entry: callMap.entrySet()){
+            list.add(entry.getValue().toDynamicCallInfoForClass(analysisId));
+        }
+        return list;
     }
 
     private String getMethodName(String fullName){

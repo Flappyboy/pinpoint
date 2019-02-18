@@ -78,12 +78,12 @@ public class PartitionDetailServiceImpl implements PartitionDetailService {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
-    public List<HashMap<String, String>> queryPartitionDetailListPaged(String partitionId, int type, Integer page, Integer pageSize) {
+    public List<HashMap<String, String>> queryPartitionDetailListPaged(String id, int type, Integer page, Integer pageSize) {
         List<HashMap<String, String>> nodes = new ArrayList<>();
         PageHelper.startPage(page, pageSize);
         PartitionDetailExample example = new PartitionDetailExample();
         PartitionDetailExample.Criteria criteria = example.createCriteria();
-        criteria.andFlagEqualTo(1).andPatitionresultidEqualTo(partitionId).andTypeEqualTo(type);
+        criteria.andFlagEqualTo(1).andPatitionresultidEqualTo(id).andTypeEqualTo(type);
         example.setOrderByClause("createdat");
         List<PartitionDetail> mylist = partitionDetailMapper.selectByExample(example);
         for (PartitionDetail pd : mylist) {
@@ -97,17 +97,54 @@ public class PartitionDetailServiceImpl implements PartitionDetailService {
                 nodemap.put("nodeName", node.getName());
             }
             nodes.add(nodemap);
-
         }
         return nodes;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public int countOfPartitionDetail(String partitionId, int type) {
+    public int countOfPartitionDetail(String id, int type) {
         PartitionDetailExample example = new PartitionDetailExample();
         PartitionDetailExample.Criteria criteria = example.createCriteria();
-        criteria.andFlagEqualTo(1).andPatitionresultidEqualTo(partitionId).andTypeEqualTo(type);
+        criteria.andFlagEqualTo(1).andPatitionresultidEqualTo(id).andTypeEqualTo(type);
+        return partitionDetailMapper.countByExample(example);
+    }
+
+    @Override
+    public int countOfPartitionDetail(String id) {
+        PartitionDetailExample example = new PartitionDetailExample();
+        PartitionDetailExample.Criteria criteria = example.createCriteria();
+        criteria.andFlagEqualTo(1).andPatitionresultidEqualTo(id);
+        return partitionDetailMapper.countByExample(example);
+    }
+
+    @Override
+    public List<Object> queryPartitionDetailByResultId(String partitionResultId, Integer page, Integer pageSize) {
+        PageHelper.startPage(page, pageSize);
+        PartitionDetailExample example = new PartitionDetailExample();
+        PartitionDetailExample.Criteria criteria = example.createCriteria();
+        criteria.andFlagEqualTo(1).andPatitionresultidEqualTo(partitionResultId);
+        example.setOrderByClause("createdat");
+        List<PartitionDetail> mylist = partitionDetailMapper.selectByExample(example);
+        List<Object> nodes = new ArrayList();
+        for (PartitionDetail pd : mylist) {
+            Object node;
+            int type = pd.getType();
+            if (type == 0) {
+                node = classNodeService.findById(pd.getNodeid());
+            }else{
+                node = methodNodeService.findById(pd.getNodeid());
+            }
+            nodes.add(node);
+        }
+        return nodes;
+    }
+
+    @Override
+    public int countOfPartitionDetailByResultId(String id) {
+        PartitionDetailExample example = new PartitionDetailExample();
+        PartitionDetailExample.Criteria criteria = example.createCriteria();
+        criteria.andFlagEqualTo(1).andPatitionresultidEqualTo(id);
         return partitionDetailMapper.countByExample(example);
     }
 }

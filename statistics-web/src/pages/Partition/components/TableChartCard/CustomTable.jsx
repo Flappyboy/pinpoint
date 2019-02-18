@@ -58,8 +58,8 @@ export default class CustomTable extends Component {
     return (
       <div style={styles.table}>
         <Table dataSource={this.state.dataSource} hasBorder={false} isLoading={this.state.isLoading}>
-          <Table.Column title="调用类" dataIndex="callerName" />
-          <Table.Column title="被调类" dataIndex="calleeName" />
+          <Table.Column title="调用类" dataIndex="caller.simpleName" />
+          <Table.Column title="被调类" dataIndex="callee.simpleName" />
         </Table>
         <div style={styles.pagination}>
           <Pagination pageSize={this.state.pageSize} total={this.state.total} onChange={this.handleChange} />
@@ -77,6 +77,7 @@ export default class CustomTable extends Component {
       call = queryEdge;
     }
     const queryParam = {
+      id: this.state.data.id,
       pageSize: this.state.pageSize,
       page: pageNum,
     };
@@ -86,9 +87,9 @@ export default class CustomTable extends Component {
     });
     call(queryParam).then((response) => {
       this.setState({
-        dataSource: response.data.data,
+        dataSource: response.data.data.list,
         isLoading: false,
-        total: response.data.total,
+        total: response.data.data.total,
       });
     })
       .catch((error) => {
@@ -98,11 +99,12 @@ export default class CustomTable extends Component {
         });
       });
   }
-  queryNodeAndEdge = (type) => {
+  queryNodeAndEdge = (type, data) => {
     this.setState({
       dataType: type,
+      data,
     });
-    this.updateList(1);
+    this.updateList(1, data);
   };
 }
 const styles = {

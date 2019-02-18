@@ -3,14 +3,18 @@ package cn.edu.nju.software.pinpoint.statistics.controller;
 import cn.edu.nju.software.pinpoint.statistics.entity.PartitionInfo;
 import cn.edu.nju.software.pinpoint.statistics.entity.bean.PartitionGraph;
 import cn.edu.nju.software.pinpoint.statistics.entity.common.JSONResult;
+import cn.edu.nju.software.pinpoint.statistics.service.PartitionResultService;
 import cn.edu.nju.software.pinpoint.statistics.service.PartitionService;
 import io.swagger.annotations.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+@Slf4j
 @CrossOrigin
 @RestController
 @Api(value = "划分相关接口")

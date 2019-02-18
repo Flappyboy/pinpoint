@@ -1,17 +1,20 @@
 package cn.edu.nju.software.pinpoint.statistics.service.impl;
 
-import cn.edu.nju.software.pinpoint.statistics.dao.DynamicCallInfoMapper;
-import cn.edu.nju.software.pinpoint.statistics.dao.PartitionResultMapper;
-import cn.edu.nju.software.pinpoint.statistics.dao.StaticCallInfoMapper;
+import cn.edu.nju.software.pinpoint.statistics.dao.*;
 import cn.edu.nju.software.pinpoint.statistics.entity.*;
 import cn.edu.nju.software.pinpoint.statistics.entity.bean.EdgeBean;
+import cn.edu.nju.software.pinpoint.statistics.mock.dto.EdgeDto;
+import cn.edu.nju.software.pinpoint.statistics.mock.dto.GraphDto;
+import cn.edu.nju.software.pinpoint.statistics.mock.dto.NodeDto;
 import cn.edu.nju.software.pinpoint.statistics.service.PartitionDetailService;
+import cn.edu.nju.software.pinpoint.statistics.service.PartitionResultEdgeService;
 import cn.edu.nju.software.pinpoint.statistics.service.PartitionResultService;
 import cn.edu.nju.software.pinpoint.statistics.utils.FileUtil;
 import cn.edu.nju.software.pinpoint.statistics.utils.louvain.LouvainUtil;
 import com.github.pagehelper.PageHelper;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +25,14 @@ import java.util.*;
 
 @Service
 public class PartitionResultServiceImpl implements PartitionResultService {
+    @Value("${filepath}")
+    private String path;
+
     @Autowired
     private PartitionResultMapper partitionResultMapper;
+
+    @Autowired
+    private PartitionInfoMapper partitionInfoMapper;
 
     @Autowired
     private StaticCallInfoMapper staticCallInfoMapper;
@@ -33,6 +42,9 @@ public class PartitionResultServiceImpl implements PartitionResultService {
 
     @Autowired
     private PartitionDetailService partitionDetailService;
+
+    @Autowired
+    private PartitionResultEdgeService partitionResultEdgeService;
 
     @Autowired
     private Sid sid;
@@ -99,8 +111,47 @@ public class PartitionResultServiceImpl implements PartitionResultService {
     }
 
     @Override
+    public GraphDto queryPartitionResultForDto(String partitionId) {
+        GraphDto graphDto = new GraphDto();
+
+        List<PartitionResult> partitionResults = queryPartitionResult(partitionId);
+        for (PartitionResult p: partitionResults) {
+            NodeDto nodeDto = new NodeDto();
+            int count = partitionDetailService.countOfPartitionDetail(p.getId());
+            nodeDto.setId(p.getId());
+            nodeDto.setName(p.getName());
+            nodeDto.setSize(count);
+            graphDto.addNode(nodeDto);
+        }
+        List<PartitionResultEdge> partitionResultEdgeList = partitionResultEdgeService.findPartitionResultEdge(partitionId);
+        for (PartitionResultEdge p: partitionResultEdgeList) {
+            EdgeDto edgeDto = new EdgeDto();
+            edgeDto.setId(p.getId());
+            edgeDto.setCount(partitionResultEdgeService.countOfPartitionResultEdgeCallByEdgeId(p.getId()));
+            edgeDto.setSource(p.getPatitionresultaid());
+            edgeDto.setTarget(p.getPatitionresultbid());
+            graphDto.addEdge(edgeDto);
+        }
+        return graphDto;
+    }
+
+    @Override
+    public List<PartitionResult> queryPartitionResult(String partitionId) {
+        PartitionResultExample example = new PartitionResultExample();
+        PartitionResultExample.Criteria criteria = example.createCriteria();
+        criteria.andFlagEqualTo(1).andPartitionidEqualTo(partitionId);
+        List<PartitionResult> partitionResultList = partitionResultMapper.selectByExample(example);
+        return partitionResultList;
+    }
+
+    @Override
     @Transactional(propagation = Propagation.SUPPORTS)
-    public void partition(String appid, String algorithmsid, String dynamicanalysisinfoid, int type, String partitionId) throws IOException {
+    public void partition(PartitionInfo partitionInfo) throws IOException {
+        String appid = partitionInfo.getAppid();
+        String algorithmsid = partitionInfo.getAlgorithmsid();
+        String dynamicanalysisinfoid = partitionInfo.getDynamicanalysisinfoid();
+        int type = partitionInfo.getType();
+        String partitionId = partitionInfo.getId();
         StaticCallInfoExample staticCallInfoExample = new StaticCallInfoExample();
         StaticCallInfoExample.Criteria sccriteria = staticCallInfoExample.createCriteria();
         sccriteria.andFlagEqualTo(1).andAppidEqualTo(appid).andTypeEqualTo(type);
@@ -177,7 +228,7 @@ public class PartitionResultServiceImpl implements PartitionResultService {
         }
 
         //生成算法处理的输入文件
-        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+//        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
         String edgePath = path + "/partition/";
         String edgeFileName = System.currentTimeMillis() + "_edge.txt";
         FileUtil.creatFile(edgePath, edgeFileName);
@@ -230,6 +281,13 @@ public class PartitionResultServiceImpl implements PartitionResultService {
         }
         FileUtil.delete(outputPath);
         FileUtil.delete(filePath);
+
+        partitionResultEdgeService.statisticsPartitionResultEdge(partitionInfo);
+
+        PartitionInfo newPartitionInfo = new PartitionInfo();
+        newPartitionInfo.setId(partitionId);
+        newPartitionInfo.setStatus(1);
+        partitionInfoMapper.updateByPrimaryKeySelective(newPartitionInfo);
     }
 
     @Override
@@ -239,6 +297,14 @@ public class PartitionResultServiceImpl implements PartitionResultService {
         PartitionResultExample.Criteria criteria = example.createCriteria();
         criteria.andFlagEqualTo(1).andDynamicanalysisinfoidEqualTo(dynamicInfoId).
                 andAlgorithmsidEqualTo(algorithmsId).andTypeEqualTo(type);
+        return partitionResultMapper.countByExample(example);
+    }
+
+    @Override
+    public int countOfPartitionResult(String id) {
+        PartitionResultExample example = new PartitionResultExample();
+        PartitionResultExample.Criteria criteria = example.createCriteria();
+        criteria.andFlagEqualTo(1).andPartitionidEqualTo(id);
         return partitionResultMapper.countByExample(example);
     }
 }

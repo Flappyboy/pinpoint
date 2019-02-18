@@ -48,7 +48,6 @@ class Graph extends Component {
         animation: false,
         label: {
           normal: {
-            position: 'right',
             formatter: '{b}',
           },
         },
@@ -60,18 +59,40 @@ class Graph extends Component {
             symbolSize: node.size,
             x: null,
             y: null,
-            draggable: true,
+            // draggable: true,
           };
         }),
-        // categories: json.categories,
+        focusNodeAdjacency: true,
+        categories: json.categories,
         force: {
           // initLayout: 'circular'
           // repulsion: 20,
-          // edgeLength: 20,
+          // edgeLength: [10, 100],
           repulsion: 200,
-          // gravity: 0.2,
+          gravity: 0.2,
         },
-        edges: json.links,
+        edgeSymbol: ['circle', 'arrow'],
+        edgeLabel: {
+          formatter(params) {
+            return `${json.links[params.dataIndex].count}`;
+          },
+        },
+        edges: json.links.map((link, idx) => {
+          return {
+            id: link.id,
+            source: link.source,
+            target: link.target,
+            symbolSize: [2, 0],
+            label: {
+              show: true,
+            },
+            lineStyle: {
+              normal: {
+                curveness: 0.1,
+              },
+            },
+          };
+        }),
       }],
     };
 
@@ -80,11 +101,11 @@ class Graph extends Component {
       if (params.seriesType === 'graph') {
         if (params.dataType === 'edge') {
           // 点击到了 graph 的 edge（边）上。
-          emitter.emit('query_partition_detail_ne', 'edge');
+          emitter.emit('query_partition_detail_ne', 'edge', params.data);
         } else {
           // 点击到了 graph 的 node（节点）上。
           console.log(params);
-          emitter.emit('query_partition_detail_ne', 'node');
+          emitter.emit('query_partition_detail_ne', 'node', params.data);
         }
       }
     });

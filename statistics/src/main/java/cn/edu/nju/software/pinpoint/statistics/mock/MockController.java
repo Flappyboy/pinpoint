@@ -130,9 +130,9 @@ public class MockController {
     }
     private CallDto getCallDto(long id){
         CallDto callDto = new CallDto();
-        callDto.setId(id);
-        callDto.setCalleeName("TestCallee");
-        callDto.setCallerName("TestCaller");
+//        callDto.setId(id);
+//        callDto.setCalleeName("TestCallee");
+//        callDto.setCallerName("TestCaller");
         callDto.setCount(new Random().nextInt(1000));
         return callDto;
     }
@@ -202,9 +202,9 @@ public class MockController {
     }
     private ClassDto getClassDto(long id){
         ClassDto classDto = new ClassDto();
-        classDto.setId(id);
-        classDto.setPackageName("com.edu.nju.test");
-        classDto.setSimpleName("Test");
+//        classDto.setId(id);
+//        classDto.setPackageName("com.edu.nju.test");
+//        classDto.setSimpleName("Test");
         return classDto;
     }
 
@@ -215,31 +215,31 @@ public class MockController {
         char c = 'A';
         for(int i=0; i< 10; i++){
             NodeDto nodeDto = new NodeDto();
-            nodeDto.setId(i+1l);
+            //nodeDto.setId(i+1l);
             nodeDto.setName(String.valueOf(c+i));
             nodeDto.setSize(new Random().nextInt(40)+10);
             graphDto.getNodes().add(nodeDto);
         }
-        EdgeDto edgeDto1 = new EdgeDto(1l,2l);
-        EdgeDto edgeDto2 = new EdgeDto(3l,4l);
-        EdgeDto edgeDto3 = new EdgeDto(5l,5l);
-        EdgeDto edgeDto4 = new EdgeDto(2l,7l);
-        EdgeDto edgeDto5 = new EdgeDto(7l,4l);
-        EdgeDto edgeDto6 = new EdgeDto(4l,1l);
-        EdgeDto edgeDto7 = new EdgeDto(3l,8l);
-        EdgeDto edgeDto8 = new EdgeDto(7l,2l);
-        EdgeDto edgeDto9 = new EdgeDto(4l,2l);
-        EdgeDto edgeDto10 = new EdgeDto(3l,10l);
-        graphDto.getLinks().add(edgeDto1);
-        graphDto.getLinks().add(edgeDto2);
-        graphDto.getLinks().add(edgeDto3);
-        graphDto.getLinks().add(edgeDto4);
-        graphDto.getLinks().add(edgeDto5);
-        graphDto.getLinks().add(edgeDto6);
-        graphDto.getLinks().add(edgeDto7);
-        graphDto.getLinks().add(edgeDto8);
-        graphDto.getLinks().add(edgeDto9);
-        graphDto.getLinks().add(edgeDto10);
+//        EdgeDto edgeDto1 = new EdgeDto(1l,2l);
+//        EdgeDto edgeDto2 = new EdgeDto(3l,4l);
+//        EdgeDto edgeDto3 = new EdgeDto(5l,5l);
+//        EdgeDto edgeDto4 = new EdgeDto(2l,7l);
+//        EdgeDto edgeDto5 = new EdgeDto(7l,4l);
+//        EdgeDto edgeDto6 = new EdgeDto(4l,1l);
+//        EdgeDto edgeDto7 = new EdgeDto(3l,8l);
+//        EdgeDto edgeDto8 = new EdgeDto(7l,2l);
+//        EdgeDto edgeDto9 = new EdgeDto(4l,2l);
+//        EdgeDto edgeDto10 = new EdgeDto(3l,10l);
+//        graphDto.getLinks().add(edgeDto1);
+//        graphDto.getLinks().add(edgeDto2);
+//        graphDto.getLinks().add(edgeDto3);
+//        graphDto.getLinks().add(edgeDto4);
+//        graphDto.getLinks().add(edgeDto5);
+//        graphDto.getLinks().add(edgeDto6);
+//        graphDto.getLinks().add(edgeDto7);
+//        graphDto.getLinks().add(edgeDto8);
+//        graphDto.getLinks().add(edgeDto9);
+//        graphDto.getLinks().add(edgeDto10);
         ResponseDto responseDto = new ResponseDto();
         responseDto.setData(graphDto);
         return responseDto;

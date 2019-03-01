@@ -26,6 +26,9 @@ export default class SelectableTable extends Component {
   }
 
   updateList = (pageNum) => {
+    this.setState({
+      currentPage: pageNum,
+    });
     const queryParam = {
       pageSize: this.state.pageSize,
       page: pageNum,
@@ -95,7 +98,7 @@ export default class SelectableTable extends Component {
   }
 
   queryApps = (param) => {
-    console.log('query aha ', param);
+    this.updateList(1);
   };
 
   clearSelectedKeys = () => {
@@ -194,18 +197,23 @@ export default class SelectableTable extends Component {
   }
 
   renderOperator = (value, index, record) => {
-    if (record.status !== 1 ) {
+    if (record.status !== 1) {
       return (
         <div>
           <Icon type="loading" />
         </div>
       );
     }
+    let plugin = null;
+    if (record.pinpointPluginStatus == 1) {
+      plugin = <a style={{ cursor: 'pointer', marginLeft: '10px' }} href={`${global.base.baseLocation}/plugin/download/${record.id}`} >下载插件</a>;
+    }
     return (
       <div>
         <a style={{ cursor: 'pointer' }} onClick={this.showAttach.bind(this, 'partition', record)} >划分</a>
         <a style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={this.showAttach.bind(this, 'dynamic', record)} >动态数据</a>
         <a style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={this.showAttach.bind(this, 'git', record)} >git数据</a>
+        {plugin}
         <a style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={this.deleteItem.bind(this, record)} >删除</a>
       </div>
     );
@@ -272,7 +280,7 @@ export default class SelectableTable extends Component {
             />
           </Table>
           <div style={styles.pagination}>
-            <Pagination pageSize={this.state.pageSize} total={this.state.total} onChange={this.handleChange} />
+            <Pagination pageSize={this.state.pageSize} current={this.state.currentPage} total={this.state.total} onChange={this.handleChange} />
           </div>
         </div>
         {/* <form action="http://172.19.163.242:8088/api/upload" method="post" enctype="multipart/form-data">

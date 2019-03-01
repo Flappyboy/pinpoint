@@ -55,6 +55,9 @@ public class FileCompress {
     public static File unZip(String fileName, String destDir){
         return unCompress(new File(fileName), destDir, ArchiveStreamFactory.ZIP);
     }
+    public static File unZip(File file, String destDir){
+        return unCompress(file, destDir, ArchiveStreamFactory.ZIP);
+    }
 
     public static File unCompress(File file, String destDir, String type) {
         // 如果 destDir 为 null, 空字符串, 或者全是空格, 则解压到压缩文件所在目录

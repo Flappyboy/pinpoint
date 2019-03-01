@@ -1,5 +1,6 @@
 package cn.edu.nju.software.pinpoint.plugin;
 
+import cn.edu.nju.software.pinpoint.statistics.utils.FileUtil;
 import cn.edu.nju.software.pinpoint.statistics.utils.file.FileCompress;
 import cn.edu.nju.software.pinpoint.utils.command.CommandResult;
 import cn.edu.nju.software.pinpoint.utils.command.CommandUtils;
@@ -8,12 +9,14 @@ import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.ResourceUtils;
 
 import java.io.*;
 import java.util.Properties;
 
 @Slf4j
 public class Generate {
+    public static final String relativeBasePath = "/plugin";
     public static final String BUILD_BAT_FILE = "/build.bat";
     public static final String BUILD_SHELL_FILE = "/build.sh";
     public static final String START_UP_BAT_FILE = "/startup.bat";
@@ -21,7 +24,10 @@ public class Generate {
     public static final String PLUGIN_PROPERTIES_FILE= "/resources/plugin.properties";
     public static final String ALL_CLASS_FILE = "/src/main/resources/allclass.txt";
 
-    private String pluginGenerateZipFilePath = "E:\\workspace\\project\\pinpoint-plugin-generate\\build\\distributions\\pinpoint-plugin-generate-1.0.5-released.zip";
+
+    public static final String SAVE_JAR_PATH = "/plugin/generate/jar";
+
+
 
     private Properties properties = new Properties();
 
@@ -32,9 +38,65 @@ public class Generate {
 
     private String allClassName;
 
-    public Generate(String name, String allClassName) {
-        this.name = name;
+    private String appId;
+
+    private String generateId;
+
+    public Generate(String name, String allClassName, String appId) {
+        this(name, appId);
         this.allClassName = allClassName;
+    }
+
+    public Generate(String name, String appId) {
+        this.name = name;
+        this.appId = appId;
+    }
+
+    public File getJar(){
+        File dir = new File(filePath+SAVE_JAR_PATH+"/"+appId);
+        if(!dir.exists()){
+            return null;
+        }
+        File[] files = dir.listFiles( new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                if(name.endsWith(".jar"))
+                    return true;
+                return false;
+            }
+        });
+        if(files.length==0){
+            return null;
+        }
+        return files[0];
+    }
+
+    private String getGeneratePath(){
+        return filePath+relativeBasePath+"/"+ generateId;
+    }
+
+    private String getGenerateJarDirPath(){
+        return filePath+relativeBasePath+"/"+generateId+"/"+getPluginName()+"/build/dist";
+    }
+
+    private File getGenerateJar() {
+
+        File dir = new File(getGenerateJarDirPath());
+        if(!dir.exists()){
+            return null;
+        }
+        File[] files = dir.listFiles( new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                if(name.endsWith(".jar"))
+                    return true;
+                return false;
+            }
+        });
+        if(files.length==0){
+            return null;
+        }
+        return files[0];
     }
 
     public File generateJar(){
@@ -46,12 +108,28 @@ public class Generate {
         CommandResult commandResult2 = CommandUtils.exec(file.getAbsolutePath()+"/"+getPluginName()+BUILD_BAT_FILE);
         System.out.println(commandResult2.getOutputForString());
         System.out.println(commandResult2.getErrorOutputForString());
-//        try {
-//            FileUtils.deleteDirectory(file);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        File jar = getGenerateJar();
+        saveJar(jar);
+        try {
+            FileUtils.deleteDirectory(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return null;
+    }
+
+    private void saveJar(File jar){
+        File dir = new File(filePath+SAVE_JAR_PATH+"/"+appId);
+        try {
+            if(dir.exists()) {
+                FileUtils.cleanDirectory(dir);
+            }else{
+                dir.mkdirs();
+            }
+            FileUtils.copyFileToDirectory(jar, dir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void writeAllClassFile(File pluginGenerateDir){
@@ -115,9 +193,19 @@ public class Generate {
     }
 
     private File uncompressPluginGenerate(){
-        File file = FileCompress.unZip(pluginGenerateZipFilePath,
-                filePath+"/plugin/"+ Sid.next());
-        return file;
+        String id = Sid.next();
+        generateId = id;
+        //private String pluginGenerateZipFilePath = "E:\\workspace\\project\\pinpoint-plugin-generate\\build\\distributions\\pinpoint-plugin-generate-1.0.5-released.zip";
+        File zipFile = null;
+        try {
+            zipFile = ResourceUtils.getFile("classpath:tools/pinpoint-plugin-generate-1.0.5-released.zip");
+            File file = FileCompress.unZip(zipFile, getGeneratePath());
+            return file;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public String getServiceName(){
@@ -126,9 +214,11 @@ public class Generate {
 
     private void setPropertiesFile(File pluginGenerateDir){
         File file = new File(pluginGenerateDir.getAbsolutePath()+PLUGIN_PROPERTIES_FILE);
+        FileInputStream iFile = null;
         FileOutputStream oFile = null;
         try {
-            properties.load(new FileInputStream(file));
+            iFile = new FileInputStream(file);
+            properties.load(iFile);
             properties.setProperty("plugin.author","nju");
             properties.setProperty("plugin.name",getPluginName());
             properties.setProperty("plugin.serviceName",getServiceName());
@@ -141,6 +231,7 @@ public class Generate {
         } finally {
             try {
                 oFile.close();
+                iFile.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -154,7 +245,7 @@ static{
 
 }
     public static void main(String[] args) {
-        Generate generate = new Generate("jsh",testallclass);
+        Generate generate = new Generate("jsherp",testallclass, "190216G9CMGFD680");
         generate.generateJar();
     }
 

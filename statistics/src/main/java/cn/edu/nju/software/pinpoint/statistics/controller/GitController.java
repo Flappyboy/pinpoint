@@ -1,26 +1,39 @@
-//package cn.edu.nju.software.pinpoint.statistics.controller;
-//
-//import cn.edu.nju.software.pinpoint.statistics.entity.common.JSONResult;
-//import cn.edu.nju.software.pinpoint.statistics.entity.common.git.GitCommitRetn;
-//import cn.edu.nju.software.pinpoint.statistics.service.git.GitService;
-//import io.swagger.annotations.Api;
-//import org.eclipse.jgit.api.errors.GitAPIException;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.web.bind.annotation.CrossOrigin;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RequestMethod;
-//import org.springframework.web.bind.annotation.RestController;
-//
-//import java.io.IOException;
-//
-//@CrossOrigin
-//@RestController
-//@Api(value = "git相关接口")
-//@RequestMapping(value = "/api")
-//public class GitController {
-//    @Autowired
-//    private GitService gitService;
-//
+package cn.edu.nju.software.pinpoint.statistics.controller;
+
+import cn.edu.nju.software.pinpoint.statistics.entity.Git;
+import cn.edu.nju.software.pinpoint.statistics.entity.common.JSONResult;
+import cn.edu.nju.software.pinpoint.statistics.entity.common.git.GitCommitRetn;
+
+import cn.edu.nju.software.pinpoint.statistics.service.GitService;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import io.swagger.annotations.Api;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+
+@CrossOrigin
+@RestController
+@Api(value = "git相关接口")
+@RequestMapping(value = "/api")
+public class GitController {
+    @Autowired
+    private GitService gitService;
+
+    @RequestMapping(value= "/git", method = RequestMethod.GET)
+    public JSONResult getGit(Git git, Integer page, Integer pageSize){
+        Page pageHelper = PageHelper.startPage(page, pageSize, true);
+        List<Git> gitList = gitService.queryGit(git);
+        HashMap<String ,Object> result = new HashMap<String ,Object>();
+        result.put("list",gitList);
+        result.put("total",pageHelper.getTotal());
+        return JSONResult.ok(result);
+    }
+
 //    @RequestMapping(value = "/git", method = RequestMethod.GET)
 //    public JSONResult getGitCommitInfo(Integer flag, String path) throws IOException, GitAPIException {
 //        GitCommitRetn gitCommitRetn = new GitCommitRetn();
@@ -44,11 +57,11 @@
 //
 //        return JSONResult.ok(gitCommitRetn);
 //    }
-//
-//    public static void main(String[] args) {
-//        String a = "https://github.com/WCXwcx/PetStore.git";
-//        String[] a1 = a.substring(19).split("/");
-//        int index = a1[1].lastIndexOf(".");
-//        System.out.println(a1[1].substring(0, index));
-//    }
-//}
+
+    public static void main(String[] args) {
+        String a = "https://github.com/WCXwcx/PetStore.git";
+        String[] a1 = a.substring(19).split("/");
+        int index = a1[1].lastIndexOf(".");
+        System.out.println(a1[1].substring(0, index));
+    }
+}

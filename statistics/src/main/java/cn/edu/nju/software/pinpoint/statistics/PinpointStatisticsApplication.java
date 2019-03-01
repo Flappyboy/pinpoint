@@ -9,7 +9,9 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 //扫描 mybatis mapper 包路径
+@tk.mybatis.spring.annotation.MapperScan(basePackages = "cn.edu.nju.software.pinpoint.statistics.dao")
 @MapperScan(basePackages = "cn.edu.nju.software.pinpoint.statistics.dao")
+
 //扫描 所有需要的包, 包含一些自用的工具类包 所在的路径
 @ComponentScan(basePackages= {"cn.edu.nju.software.pinpoint.statistics", "org.n3r.idworker"})
 public class PinpointStatisticsApplication extends SpringBootServletInitializer {

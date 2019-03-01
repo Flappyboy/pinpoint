@@ -1,15 +1,15 @@
 package cn.edu.nju.software.pinpoint.statistics.service.impl;
 
+import cn.edu.nju.software.pinpoint.plugin.Generate;
 import cn.edu.nju.software.pinpoint.statistics.dao.*;
 import cn.edu.nju.software.pinpoint.statistics.entity.*;
-import cn.edu.nju.software.pinpoint.statistics.service.ClassNodeService;
-import cn.edu.nju.software.pinpoint.statistics.service.MethodNodeService;
-import cn.edu.nju.software.pinpoint.statistics.service.StaticCallService;
+import cn.edu.nju.software.pinpoint.statistics.service.*;
 import cn.edu.nju.software.pinpoint.statistics.utils.FileUtil;
 import cn.edu.nju.software.pinpoint.statistics.utils.asm.ClassAdapter;
 import cn.edu.nju.software.pinpoint.statistics.utils.asm.MethodAdapter;
 import cn.edu.nju.software.pinpoint.statistics.utils.file.FileCompress;
 import com.github.pagehelper.PageHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.n3r.idworker.Sid;
 import org.springframework.asm.ClassReader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
 
+@Slf4j
 @Service
 public class StaticCallServiceImpl implements StaticCallService {
 
@@ -40,6 +41,8 @@ public class StaticCallServiceImpl implements StaticCallService {
     private MethodNodeService methodNodeService;
     @Autowired
     private AppMapper appMapper;
+    @Autowired
+    private PinpointPluginService pinpointPluginService;
     @Autowired
     private Sid sid;
 
@@ -64,7 +67,8 @@ public class StaticCallServiceImpl implements StaticCallService {
     @Override
     @Async
     @Transactional(propagation = Propagation.REQUIRED)
-    public void saveStaticAnalysis(String appid, String compressFile,Integer flag) throws Exception {
+    public void saveStaticAnalysis(App app,Integer flag) throws Exception {
+        String compressFile = app.getPath();
         ArrayList<String> myfiles = new ArrayList<String>();
         String path = "";
 
@@ -106,21 +110,25 @@ public class StaticCallServiceImpl implements StaticCallService {
 
 
         System.out.println("保存类结点");
-        saveClassNode(classNodes, appid);
+        saveClassNode(classNodes, app.getId());
         System.out.println("保存类边");
-        saveClassEdge(classEdges, appid);
+        saveClassEdge(classEdges, app.getId());
         System.out.println("保存方法结点");
 //        saveMethodNode(methodnoedes, appid);
         System.out.println("保存方法边");
 //        saveMethodEdge(methodedges, appid);
 
-        App app = new App();
-        app.setId(appid);
-        app.setStatus(1);
-        app.setClasscount(classNodes.size());
-        app.setFunctioncount(methodnoedes.size());
-        app.setInterfacecount(ClassAdapter.interfaceNum);
-        appMapper.updateByPrimaryKeySelective(app);
+        log.debug("开始生成pinpoint插件");
+
+        pinpointPluginService.generatePlugin(app);
+
+        App new_app = new App();
+        new_app.setId(app.getId());
+        new_app.setStatus(1);
+        new_app.setClasscount(classNodes.size());
+        new_app.setFunctioncount(methodnoedes.size());
+        new_app.setInterfacecount(ClassAdapter.interfaceNum);
+        appMapper.updateByPrimaryKeySelective(new_app);
 
         try {
             Thread.sleep(100);

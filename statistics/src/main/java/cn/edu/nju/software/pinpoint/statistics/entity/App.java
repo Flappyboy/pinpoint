@@ -1,5 +1,7 @@
 package cn.edu.nju.software.pinpoint.statistics.entity;
 
+import cn.edu.nju.software.pinpoint.plugin.Generate;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -30,7 +32,25 @@ public class App implements Serializable {
 
     private Integer status;
 
+    private Integer pinpointPluginStatus;
+
     private static final long serialVersionUID = 1L;
+
+    public Integer getPinpointPluginStatus() {
+        if(pinpointPluginStatus!=null) {
+            return pinpointPluginStatus;
+        }else if(name != null && id!=null) {
+            Generate generate = new Generate(name, id);
+            if (generate.getJar()!=null && generate.getJar().exists()) {
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    public void setPinpointPluginStatus(Integer pinpointPluginStatus) {
+        this.pinpointPluginStatus = pinpointPluginStatus;
+    }
 
     public String getId() {
         return id;

@@ -121,7 +121,8 @@ export default class SelectableTable extends Component {
 
   queryPartition = (param) => {
     console.log('query aha ', param);
-    emitter.emit('query_partition_detail', 'Hello');
+    // emitter.emit('query_partition_detail', 'Hello');
+    this.updateList(1);
   };
 
   clearSelectedKeys = () => {

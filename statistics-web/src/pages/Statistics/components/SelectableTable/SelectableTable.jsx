@@ -20,9 +20,9 @@ export default class SelectableTable extends Component {
   preprocess = (dataList) => {
     dataList.forEach(data => {
       data.createTime = moment(data.createdat).format(DATE_FORMAT);
-      if(data.starttine)
+      if (data.starttine)
         data.startTime = moment(data.starttine).format(DATE_FORMAT);
-      if(data.endtime)
+      if (data.endtime)
         data.endTime = moment(data.endtime).format(DATE_FORMAT);
       if (!('status' in data)) {
         data.status = true;
@@ -84,6 +84,7 @@ export default class SelectableTable extends Component {
     });
     this.state.app = nextProps.app;
     this.updateList(1);
+    emitter.emit('clear_statistics_detail');
   }
 
   constructor(props) {
@@ -208,9 +209,7 @@ export default class SelectableTable extends Component {
   };
 
   queryDetail = (record) => {
-
     emitter.emit('query_statistics_detail', record.id);
-
   };
 
   renderOperator = (value, index, record) => {
@@ -224,7 +223,7 @@ export default class SelectableTable extends Component {
     return (
       <div>
         <a style={{ cursor: 'pointer' }} onClick={this.queryDetail.bind(this, record)}>详细</a>
-        <a style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={this.partition.bind(this, record)}>划分</a>
+        {/* <a style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={this.partition.bind(this, record)}>划分</a> */}
         <a style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={this.deleteItem.bind(this, record)} >
           删除
         </a>

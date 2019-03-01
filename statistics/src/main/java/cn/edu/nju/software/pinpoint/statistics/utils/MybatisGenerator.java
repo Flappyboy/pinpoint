@@ -19,6 +19,7 @@ public class MybatisGenerator {
         //指定 逆向工程配置文件
 //        File configFile = new File("mybatis-generator/generatorConfig.xml");
         File configFile = ResourceUtils.getFile("classpath:mybatis-generator/generatorConfig2.xml");
+//        File configFile = ResourceUtils.getFile("classpath:mybatis-generator/generatorTkConfig.xml");
         ConfigurationParser cp = new ConfigurationParser(warnings);
         Configuration config = cp.parseConfiguration(configFile);
         DefaultShellCallback callback = new DefaultShellCallback(overwrite);

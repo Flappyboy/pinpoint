@@ -36,6 +36,20 @@ class Graph extends Component {
     // 基于准备好的dom，初始化echarts实例
     // 绘制图表
 
+    let sizeMax = 0;
+    let sizeMin = 9999;
+    let sizeRangeMin = 5;
+    let sizeRangeMax = 30;
+
+    json.nodes.forEach(element => {
+      if (element.size > sizeMax) {
+        sizeMax = element.size;
+      }
+      if (element.size < sizeMin) {
+        sizeMin = element.size;
+      }
+    });
+
     myChart.hideLoading();
 
     const option = {
@@ -56,7 +70,7 @@ class Graph extends Component {
           return {
             id: node.id,
             name: node.name,
-            symbolSize: node.size,
+            symbolSize: (sizeRangeMax * (node.size - sizeMin) + sizeRangeMin * (sizeMax - node.size)) / (sizeMax - sizeMin),
             x: null,
             y: null,
             // draggable: true,

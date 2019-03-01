@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import IceContainer from '@icedesign/container';
-import { Input, Button, Select, Checkbox, Form, NumberPicker, SplitButton, Table, Pagination } from '@alifd/next';
-import { queryStatisticsList, queryStatistics, delStatistics, addStatistics, addPartition } from '../../../../api';
+import { Input, Button, Select, Checkbox, Form, NumberPicker, SplitButton, Table, Pagination, Grid } from '@alifd/next';
+import { queryStatisticsList, queryStatistics, delStatistics, addStatistics, addPartition, queryGitList } from '../../../../api';
 import { BrowserRouter as Router, Route, Link, Redirect, withRouter } from 'react-router-dom';
 import moment from 'moment';
+
+const { Row, Col } = Grid;
 
 import emitter from '../ev';
 
@@ -33,10 +35,33 @@ export default class Partition extends Component {
           id: null,
         },
       },
+      git: {
+        dataSource: [],
+        isLoading: true,
+        pageSize: 10,
+        total: 0,
+        selected: {
+          id: null,
+        },
+      },
       form: {
-
+        factors: [
+          { label: '逻辑耦合', value: 'logic' },
+          { label: '修改频率', value: 'modify' },
+          { label: '可靠性', value: 'reliability' },
+        ],
       },
     };
+  }
+
+  componentDidMount() {
+    // 找到锚点
+    const anchorElement = document.getElementById('micro-partition');
+    // 如果对应id的锚点存在，就跳转到锚点
+    if (anchorElement) { anchorElement.scrollIntoView(); }
+
+    this.dynamicUpdateList(1);
+    this.gitUpdateList(1);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -51,8 +76,23 @@ export default class Partition extends Component {
           id: null,
         },
       },
+      git: {
+        dataSource: [],
+        isLoading: true,
+        pageSize: 10,
+        total: 0,
+        selected: {
+          id: null,
+        },
+      },
       form: {
         dynamic: undefined,
+        git: undefined,
+        factors: [
+          { label: '逻辑耦合', value: 'logic' },
+          { label: '修改频率', value: 'modify' },
+          { label: '可靠性', value: 'reliability' },
+        ],
       },
     };
     this.setState({});
@@ -115,7 +155,7 @@ export default class Partition extends Component {
     if (this.state.app) {
       queryParam.appid = this.state.app.id;
     }
-    queryParam.pageSize = this.state.pageSize;
+    queryParam.pageSize = this.state.git.pageSize;
     queryParam.page = pageNum;
 
     this.state.dynamic.isLoading = true;
@@ -137,12 +177,12 @@ export default class Partition extends Component {
       });
   }
 
-  dynamicHhandleChange = (current) => {
+  dynamicHandleChange = (current) => {
     console.log(current);
-    this.updateList(current);
+    this.dynamicUpdateList(current);
   }
 
-  setRowProps = (record, index) => {
+  setDynamicRowProps = (record, index) => {
     if (this.state.dynamic.selected != null) {
       if (record.id === this.state.dynamic.selected.id) {
         return propsConf;
@@ -150,19 +190,59 @@ export default class Partition extends Component {
     }
   }
 
-  componentDidMount() {
-    // 找到锚点
-    const anchorElement = document.getElementById('micro-partition');
-    // 如果对应id的锚点存在，就跳转到锚点
-    if (anchorElement) { anchorElement.scrollIntoView(); }
-
-    this.dynamicUpdateList(1);
-  }
-
   selectDynamic = (record, index, e) => {
     console.log(`select : ${record.id} ${this.state.dynamic.dataSource[index].id}`);
     this.state.dynamic.selected = record;
     this.state.form.dynamic = record.id;
+    this.setState({});
+  }
+
+  gitUpdateList = (pageNum, queryParam) => {
+    if (!queryParam) {
+      queryParam = {};
+    }
+    if (this.state.app) {
+      queryParam.appId = this.state.app.id;
+    }
+    queryParam.pageSize = this.state.git.pageSize;
+    queryParam.page = pageNum;
+
+    this.state.git.isLoading = true;
+    this.setState({
+      git: this.state.git,
+    });
+    queryGitList(queryParam).then((response) => {
+      console.log(response.data.data);
+      this.preprocess(response.data.data.list);
+      this.state.git.dataSource = response.data.data.list;
+      this.state.git.isLoading = false;
+      this.state.git.total = response.data.data.total;
+      this.setState({
+        git: this.state.git,
+      });
+    })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  gitHandleChange = (current) => {
+    console.log(current);
+    this.gitUpdateList(current);
+  }
+
+  setGitRowProps = (record, index) => {
+    if (this.state.git.selected != null) {
+      if (record.id === this.state.git.selected.id) {
+        return propsConf;
+      }
+    }
+  }
+
+  selectGit = (record, index, e) => {
+    console.log(`select : ${record.id} ${this.state.git.dataSource[index].id}`);
+    this.state.git.selected = record;
+    this.state.form.git = record.id;
     this.setState({});
   }
 
@@ -174,6 +254,8 @@ export default class Partition extends Component {
       );
     }
     const title = `${this.state.app.name} 微服务划分`;
+    const clearDynamicButton = <Button type="normal" onClick={() => { this.state.dynamic.selected = null; this.state.form.dynamic = ''; this.setState({}); }} >clear</Button>;
+    const clearGitButton = <Button type="normal" onClick={() => { this.state.git.selected = null; this.state.form.git = ''; this.setState({}); }} >clear</Button>;
     return (
       <div id="micro-partition" className="grouped-form">
         <IceContainer title={title} style={styles.container}>
@@ -182,19 +264,20 @@ export default class Partition extends Component {
               <div style={styles.subForm}>
                 <h3 style={styles.formTitle}>动态分析数据</h3>
                 <div>
+
                   <FormItem label="已选择  " {...formItemLayout}>
-                    <Input name="dynamic" readOnly />
+                    <Input name="dynamic" addonAfter={clearDynamicButton} readOnly />
                   </FormItem>
-                  <Table dataSource={this.state.dynamic.dataSource} loading={this.state.dynamic.isLoading} onRowClick={this.selectDynamic} getRowProps={this.setRowProps} getCellProps={this.setCellProps}>
+
+                  <Table dataSource={this.state.dynamic.dataSource} loading={this.state.dynamic.isLoading} onRowClick={this.selectDynamic} getRowProps={this.setDynamicRowProps}>
                     <Table.Column title="编码" dataIndex="id" width={120} />
-                    <Table.Column title="应用" dataIndex="appName" width={120} />
                     <Table.Column title="创建日期" dataIndex="createTime" width={150} />
                     <Table.Column title="开始日期" dataIndex="startTime" width={150} />
                     <Table.Column title="结束日期" dataIndex="endTime" width={160} />
                     <Table.Column title="描述" dataIndex="desc" width={160} />
                   </Table>
                   <div style={styles.pagination}>
-                    <Pagination pageSize={this.state.dynamic.pageSize} total={this.state.dynamic.total} onChange={this.dynamicHhandleChange} />
+                    <Pagination pageSize={this.state.dynamic.pageSize} total={this.state.dynamic.total} onChange={this.dynamicHandleChange} />
                   </div>
                 </div>
               </div>
@@ -202,14 +285,29 @@ export default class Partition extends Component {
               <div style={styles.subForm}>
                 <h3 style={styles.formTitle}>Git数据</h3>
                 <div>
+
+                  <FormItem label="已选择  " {...formItemLayout}>
+                    <Input name="git" addonAfter={clearGitButton} readOnly />
+                  </FormItem>
+
+                  <Table dataSource={this.state.git.dataSource} loading={this.state.git.isLoading} onRowClick={this.selectGit} getRowProps={this.setGitRowProps}>
+                    <Table.Column title="编码" dataIndex="id" width={120} />
+                    <Table.Column title="逻辑耦合" dataIndex="logicCouplingFactor" width={150} />
+                    <Table.Column title="修改频率" dataIndex="modifyFrequencyFactor" width={150} />
+                    <Table.Column title="可靠性" dataIndex="reliabilityFactor" width={160} />
+                    <Table.Column title="描述" dataIndex="desc" width={160} />
+                  </Table>
+                  <div style={styles.pagination}>
+                    <Pagination pageSize={this.state.git.pageSize} total={this.state.git.total} onChange={this.gitHandleChange} />
+                  </div>
+                </div>
+                <div>
                   <FormItem label="因素选择:  " {...formItemLayout}>
                     <CheckboxGroup
                       name="deliveryType"
-                      dataSource={[
-                        { label: '逻辑耦合', value: 'logic' },
-                        { label: '修改频率', value: 'modify' },
-                        { label: '可靠性', value: 'reliability' },
-                      ]}
+                      defaultValue={['logic', 'modify', 'reliability']}
+                      dataSource={this.state.form.factors}
+                      defaultChecked
                     />
                   </FormItem>
                   {/* <FormItem label="配送费用：" {...formItemLayout} required requiredMessage="请选择物流公司">
@@ -233,7 +331,7 @@ export default class Partition extends Component {
             </div>
           </Form>
         </IceContainer>
-      </div>
+      </div >
     );
   }
 }

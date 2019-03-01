@@ -47,6 +47,7 @@ export default class DetailTable extends Component {
 
   componentDidMount() {
     this.eventEmitter = emitter.addListener('query_statistics_detail', this.queryStatisticsDetail);
+    this.eventEmitter = emitter.addListener('clear_statistics_detail', this.clearStatisticsDetail);
     // 找到锚点
     const anchorElement = document.getElementById('statistics-detail');
     // 如果对应id的锚点存在，就跳转到锚点
@@ -55,6 +56,7 @@ export default class DetailTable extends Component {
 
   componentWillUnmount() {
     emitter.removeListener('query_statistics_detail', this.queryStatisticsDetail);
+    emitter.removeListener('clear_statistics_detail', this.clearStatisticsDetail);
   }
 
   constructor(props) {
@@ -78,6 +80,12 @@ export default class DetailTable extends Component {
     this.updateList(1);
     console.log('query aha ', param);
   };
+
+  clearStatisticsDetail = () => {
+    this.setState({
+      show: false,
+    });
+  }
 
   render() {
     if (!this.state.show) {

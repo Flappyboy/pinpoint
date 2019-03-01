@@ -47,7 +47,7 @@ export default class ColumnForm extends Component {
       if (error) {
         // 处理表单报错
       }
-      emitter.emit('query_statistics', 'Hello');
+      emitter.emit('query_partitions', 'Hello');
     });
   };
 

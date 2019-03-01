@@ -12,9 +12,16 @@ export default class AddDialog extends Component {
     super(props);
     this.state = {
       visible: false,
-      id: props.id,
+      app: props.app,
     };
     this.field = new Field(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      app: nextProps.app,
+    });
+    this.state.app = nextProps.app;
   }
 
   handleSubmit = () => {
@@ -26,7 +33,7 @@ export default class AddDialog extends Component {
 
       // values.createTime = (new Date()).getTime();
       if (this.state.app) {
-        values.appid = this.state.app;
+        values.appid = this.state.app.id;
       }
       this.props.addNewStatistics(values, () => {
         this.setState({

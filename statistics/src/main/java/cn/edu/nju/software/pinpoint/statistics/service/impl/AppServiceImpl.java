@@ -41,7 +41,7 @@ public class AppServiceImpl implements AppService {
             public void run() {
                 try {
                     System.out.println(app);
-                    staticCallService.saveStaticAnalysis(app.getId(), app.getPath(), 1);
+                    staticCallService.saveStaticAnalysis(app, 1);
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
                 }

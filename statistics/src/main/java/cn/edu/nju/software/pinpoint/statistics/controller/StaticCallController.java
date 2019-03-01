@@ -32,7 +32,7 @@ public class StaticCallController {
     public JSONResult doStaticAnalysis(String path, String appid,Integer flag) throws Exception {
         try {
             System.out.println(path);
-            staticCallService.saveStaticAnalysis(appid, path,flag);
+            //staticCallService.saveStaticAnalysis(appid, path,flag);
             return JSONResult.ok();
         } catch (Exception e) {
             return JSONResult.errorMsg(e.toString());

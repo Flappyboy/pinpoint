@@ -193,3 +193,20 @@ export async function queryEdge(inParams) {
     params: inParams,
   });
 }
+
+const git = 'git';
+const gitBase = `${baseLocation}/${git}`;
+export async function addGit(params) {
+  return axios({
+    url: gitBase,
+    method: 'post',
+    data: params,
+  });
+}
+export async function queryGitList(inParams) {
+  return axios({
+    url: gitBase,
+    method: 'get',
+    params: inParams,
+  });
+}

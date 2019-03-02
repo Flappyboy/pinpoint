@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Implementation: 1.9.0-SNAPSHOT
-Implementation-ProductID: elasticsearchplugin
-Compile-Timestamp: 2019-02-20 16:48:28
-Compile-User: biaoping.yin
-Specification-Version: 1.9.0-SNAPSHOT
-Implementation-Vendor: bbossgroups
-

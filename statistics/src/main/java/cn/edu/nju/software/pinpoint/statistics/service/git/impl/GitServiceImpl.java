@@ -1,8 +1,8 @@
 //package cn.edu.nju.software.pinpoint.statistics.service.git.impl;
 //
-//import cn.edu.nju.software.pinpoint.statistics.entity.common.git.FileInfo;
-//import cn.edu.nju.software.pinpoint.statistics.entity.common.git.GitCommitInfo;
-//import cn.edu.nju.software.pinpoint.statistics.entity.common.git.GitCommitRetn;
+//import cn.edu.nju.software.git.entity.FileInfo;
+//import cn.edu.nju.software.git.entity.GitCommitInfo;
+//import cn.edu.nju.software.git.entity.GitCommitRetn;
 //import cn.edu.nju.software.pinpoint.statistics.entity.common.github.CommitDetail;
 //import cn.edu.nju.software.pinpoint.statistics.entity.common.github.CommitFile;
 //import cn.edu.nju.software.pinpoint.statistics.entity.common.github.CommitStats;

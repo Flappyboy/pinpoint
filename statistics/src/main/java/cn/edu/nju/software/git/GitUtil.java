@@ -1,8 +1,8 @@
 package cn.edu.nju.software.git;
 
-import cn.edu.nju.software.pinpoint.statistics.entity.common.git.FileInfo;
-import cn.edu.nju.software.pinpoint.statistics.entity.common.git.GitCommitInfo;
-import cn.edu.nju.software.pinpoint.statistics.entity.common.git.GitCommitRetn;
+import cn.edu.nju.software.git.entity.FileInfo;
+import cn.edu.nju.software.git.entity.GitCommitInfo;
+import cn.edu.nju.software.git.entity.GitCommitRetn;
 import cn.edu.nju.software.pinpoint.statistics.entity.common.github.CommitDetail;
 import cn.edu.nju.software.pinpoint.statistics.entity.common.github.CommitFile;
 import cn.edu.nju.software.pinpoint.statistics.entity.common.github.CommitStats;
@@ -25,8 +25,21 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class gitUtil {
+/**
+ * git项目信息获取工具
+ */
 
+public class GitUtil {
+
+
+    /**
+     * 获取提交信息
+     * @param flag  1-获取本地，2-获取github上的
+     * @param path  本地路径/github地址
+     * @return
+     * @throws IOException
+     * @throws GitAPIException
+     */
     public static GitCommitRetn getGitCommitInfo(Integer flag, String path) throws IOException, GitAPIException {
         GitCommitRetn gitCommitRetn = new GitCommitRetn();
 //        https://github.com/WCXwcx/PetStore.git
@@ -47,6 +60,13 @@ public class gitUtil {
         return gitCommitRetn;
     }
 
+    /**
+     * 获取本地提交信息
+     * @param path
+     * @return
+     * @throws IOException
+     * @throws GitAPIException
+     */
     public static GitCommitRetn getLocalCommit(String path) throws IOException, GitAPIException {
         List<GitCommitInfo> gitCommitInfos = new ArrayList<>();
         List<FileInfo> fileInfos = new ArrayList<>();
@@ -91,6 +111,12 @@ public class gitUtil {
         return gitCommitRetn;
     }
 
+    /**
+     * 获取github的提交信息
+     * @param userName
+     * @param repository
+     * @return
+     */
     public static GitCommitRetn getRepositoryCommits(String userName, String repository) {
         List<GitCommitInfo> gitCommitInfos = new ArrayList<>();
         List<FileInfo> fileInfos = new ArrayList<>();
@@ -172,6 +198,11 @@ public class gitUtil {
     }
 
 
+    /**
+     * 根据提交信息统计文件个数
+     * @param gitCommitInfos
+     * @return
+     */
     private static List<FileInfo> getFiles(List<GitCommitInfo> gitCommitInfos) {
         List<FileInfo> fileInfos = new ArrayList<>();
         HashMap<String, FileInfo> fileMap = new HashMap<>();
@@ -200,6 +231,16 @@ public class gitUtil {
     }
 
 
+    /**
+     * 比较两次提交之间修改了的文件
+     * @param repository
+     * @param git
+     * @param oldCommit
+     * @param newCommit
+     * @return
+     * @throws GitAPIException
+     * @throws IOException
+     */
     private static Set<String> listDiff(Repository repository, Git git, String oldCommit, String newCommit) throws GitAPIException, IOException {
         Set<String> files = new HashSet<>();
         final List<DiffEntry> diffs = git.diff()

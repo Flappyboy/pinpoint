@@ -22,7 +22,7 @@ public interface PartitionResultService {
 
     List<PartitionResult> queryPartitionResult(String partitionId);
 
-    public void partition(PartitionInfo partitionInfo) throws IOException;
+    public void partition(PartitionInfo partitionInfo) throws Exception;
 
     public int countOfPartitionResult(String dynamicInfoId,String algorithmsId,int type);
 

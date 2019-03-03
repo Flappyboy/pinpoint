@@ -1,4 +1,4 @@
-package cn.edu.nju.software.pinpoint.statistics.entity.common.git;
+package cn.edu.nju.software.git.entity;
 
 import lombok.Getter;
 import lombok.Setter;

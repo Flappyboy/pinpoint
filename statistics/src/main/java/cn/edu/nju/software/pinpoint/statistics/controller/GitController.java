@@ -2,17 +2,14 @@ package cn.edu.nju.software.pinpoint.statistics.controller;
 
 import cn.edu.nju.software.pinpoint.statistics.entity.Git;
 import cn.edu.nju.software.pinpoint.statistics.entity.common.JSONResult;
-import cn.edu.nju.software.pinpoint.statistics.entity.common.git.GitCommitRetn;
 
 import cn.edu.nju.software.pinpoint.statistics.service.GitService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.swagger.annotations.Api;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 

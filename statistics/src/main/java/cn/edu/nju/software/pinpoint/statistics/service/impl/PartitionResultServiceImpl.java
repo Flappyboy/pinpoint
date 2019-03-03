@@ -1,11 +1,16 @@
 package cn.edu.nju.software.pinpoint.statistics.service.impl;
 
+import cn.edu.nju.software.git.GitDataUtil;
+import cn.edu.nju.software.git.GitUtil;
+import cn.edu.nju.software.git.entity.GitCommitFileEdge;
+import cn.edu.nju.software.git.entity.GitCommitRetn;
 import cn.edu.nju.software.pinpoint.statistics.dao.*;
 import cn.edu.nju.software.pinpoint.statistics.entity.*;
 import cn.edu.nju.software.pinpoint.statistics.entity.bean.EdgeBean;
 import cn.edu.nju.software.pinpoint.statistics.mock.dto.EdgeDto;
 import cn.edu.nju.software.pinpoint.statistics.mock.dto.GraphDto;
 import cn.edu.nju.software.pinpoint.statistics.mock.dto.NodeDto;
+import cn.edu.nju.software.pinpoint.statistics.service.ClassNodeService;
 import cn.edu.nju.software.pinpoint.statistics.service.PartitionDetailService;
 import cn.edu.nju.software.pinpoint.statistics.service.PartitionResultEdgeService;
 import cn.edu.nju.software.pinpoint.statistics.service.PartitionResultService;
@@ -45,6 +50,9 @@ public class PartitionResultServiceImpl implements PartitionResultService {
 
     @Autowired
     private PartitionResultEdgeService partitionResultEdgeService;
+
+    @Autowired
+    private ClassNodeService classNodeService;
 
     @Autowired
     private Sid sid;
@@ -115,7 +123,7 @@ public class PartitionResultServiceImpl implements PartitionResultService {
         GraphDto graphDto = new GraphDto();
 
         List<PartitionResult> partitionResults = queryPartitionResult(partitionId);
-        for (PartitionResult p: partitionResults) {
+        for (PartitionResult p : partitionResults) {
             NodeDto nodeDto = new NodeDto();
             int count = partitionDetailService.countOfPartitionDetail(p.getId());
             nodeDto.setId(p.getId());
@@ -124,7 +132,7 @@ public class PartitionResultServiceImpl implements PartitionResultService {
             graphDto.addNode(nodeDto);
         }
         List<PartitionResultEdge> partitionResultEdgeList = partitionResultEdgeService.findPartitionResultEdge(partitionId);
-        for (PartitionResultEdge p: partitionResultEdgeList) {
+        for (PartitionResultEdge p : partitionResultEdgeList) {
             EdgeDto edgeDto = new EdgeDto();
             edgeDto.setId(p.getId());
             edgeDto.setCount(partitionResultEdgeService.countOfPartitionResultEdgeCallByEdgeId(p.getId()));
@@ -146,12 +154,13 @@ public class PartitionResultServiceImpl implements PartitionResultService {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
-    public void partition(PartitionInfo partitionInfo) throws IOException {
+    public void partition(PartitionInfo partitionInfo) throws Exception {
         String appid = partitionInfo.getAppid();
         String algorithmsid = partitionInfo.getAlgorithmsid();
         String dynamicanalysisinfoid = partitionInfo.getDynamicanalysisinfoid();
         int type = partitionInfo.getType();
         String partitionId = partitionInfo.getId();
+        //获取静态数据，并标号
         StaticCallInfoExample staticCallInfoExample = new StaticCallInfoExample();
         StaticCallInfoExample.Criteria sccriteria = staticCallInfoExample.createCriteria();
         sccriteria.andFlagEqualTo(1).andAppidEqualTo(appid).andTypeEqualTo(type);
@@ -172,6 +181,7 @@ public class PartitionResultServiceImpl implements PartitionResultService {
             }
         }
 
+        //获取动态数据，补充标号
         List<DynamicCallInfo> dynamicCallInfos = new ArrayList<>();
         if (dynamicanalysisinfoid != null) {
             DynamicCallInfoExample dynamicCallInfoExample = new DynamicCallInfoExample();
@@ -190,6 +200,7 @@ public class PartitionResultServiceImpl implements PartitionResultService {
             }
         }
 
+        //静态数据边标号
         HashMap<String, EdgeBean> edges = new HashMap<String, EdgeBean>();
         for (StaticCallInfo staticCallInfo : staticCallInfos) {
             String edgeKey = staticCallInfo.getCaller() + "_" + staticCallInfo.getCallee();
@@ -204,6 +215,7 @@ public class PartitionResultServiceImpl implements PartitionResultService {
             edges.put(edgeKey, edge);
         }
 
+        //动态数据边标号
         if (dynamicCallInfos != null && dynamicCallInfos.size() > 0) {
             for (DynamicCallInfo dynamicCallInfo : dynamicCallInfos) {
                 String edgeKey = dynamicCallInfo.getCaller() + "_" + dynamicCallInfo.getCallee();
@@ -307,4 +319,40 @@ public class PartitionResultServiceImpl implements PartitionResultService {
         criteria.andFlagEqualTo(1).andPartitionidEqualTo(id);
         return partitionResultMapper.countByExample(example);
     }
+
+    // 结合gitcommit信息
+    private HashMap<String, EdgeBean> mergeCommitEdge(String gitPath,HashMap<String, EdgeBean> edges,HashMap<String, Integer> nodeKeys,String appId,int maxKey)throws Exception{
+        GitCommitRetn gitCommitRetn = GitUtil.getGitCommitInfo(1,gitPath);
+        Map<String, GitCommitFileEdge> gitCommitFileEdgeMap = GitDataUtil.getCommitFileGraph(gitCommitRetn);
+        for (Map.Entry<String, GitCommitFileEdge> entry : gitCommitFileEdgeMap.entrySet()) {
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+            GitCommitFileEdge gitCommitFileEdge =  entry.getValue();
+            List<ClassNode> sourceClassNodes = classNodeService.findBycondition(gitCommitFileEdge.getSourceName(),appId);
+            List<ClassNode> targetClassNodes = classNodeService.findBycondition(gitCommitFileEdge.getTargetName(),appId);
+            String sourceId = sourceClassNodes.get(0).getId();
+            String targetId =targetClassNodes.get(0).getId();
+            int sourceKey =  nodeKeys.get(sourceId);
+            int targetKey =  nodeKeys.get(targetId);
+
+            String edgeKey = sourceId + "_" + targetId;
+            EdgeBean edge = edges.get(edgeKey);
+            if (edge == null) {
+                EdgeBean newedge = new EdgeBean();
+                newedge.setSourceId(sourceId);
+                newedge.setSourceKey(sourceKey);
+                newedge.setTargetId(targetId);
+                newedge.setTargetKey(targetKey);
+                newedge.setWeight(gitCommitFileEdge.getCount());
+                edges.put(edgeKey, newedge);
+            } else {
+                int gitCount = gitCommitFileEdge.getCount();
+                int stCount = edge.getWeight();
+                edge.setWeight(gitCount + stCount);
+                edges.put(edgeKey, edge);
+            }
+
+        }
+      return edges;
+    }
+
 }

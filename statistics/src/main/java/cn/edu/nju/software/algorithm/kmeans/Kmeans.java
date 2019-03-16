@@ -50,8 +50,10 @@ public class Kmeans {
             this.iterations--;
             count++;
             printPoint(count,newCenter);
-            if(!isChange(newCenterPoints, newCenter))
+            if(!isChange(newCenterPoints, newCenter)) {
                 this.iterations = 0;
+                System.out.println("中心点一样停止迭代！");
+            }
             newCenterPoints = newCenter;
         }
 
@@ -64,7 +66,7 @@ public class Kmeans {
         Map<Integer, DijkstraResult> distance = new HashMap<Integer, DijkstraResult>();
         for (int i = 0; i < k; i++) {
             int[] prev = new int[graphUtil.getmVexNum()];
-            int[] dist = new int[graphUtil.getmVexNum()];
+            double[] dist = new double[graphUtil.getmVexNum()];
             List<DijkstraResult> dijkstraResults = graphUtil.dijkstra(centerPoints[i], prev, dist);
             for (DijkstraResult dijkstraResult : dijkstraResults) {
                 if (!isContains(centerPoints, dijkstraResult.getTargetData())) {
@@ -73,7 +75,8 @@ public class Kmeans {
                         distance.put(key, dijkstraResult);
                     } else {
                         DijkstraResult dijkstraResultOld = distance.get(key);
-                        if (dijkstraResultOld.getWeigth() < dijkstraResult.getWeigth())
+                        //
+                        if (dijkstraResultOld.getWeigth() > dijkstraResult.getWeigth())
                             distance.put(key, dijkstraResult);
                     }
                 }
@@ -133,19 +136,20 @@ public class Kmeans {
             String centerPoint = "";
             int centerDegree = 0;
 //            double weight = 0;
-            int weight = 0;
+            double weight = 0;
             for (int i = 0; i < vNodes.length; i++) {
                 String pointData = vNodes[i].data;
                 VNode node = nodeMap.get(pointData);
                 int degree = node.degree;
 //                double sumWeight = p.weight;
-                int sumWeight = node.sumWeight;
+                double sumWeight = node.sumWeight;
 
                 if (degree > centerDegree) {
                     centerDegree = degree;
                     centerPoint = pointData;
                     weight = sumWeight;
                 } else if (degree == centerDegree) {
+                    //
                     if (sumWeight < weight) {
                         centerDegree = degree;
                         centerPoint = pointData;
@@ -187,6 +191,7 @@ public class Kmeans {
                     centerPoint = pointData;
                     weight = sumWeight;
                 } else if (degree == centerDegree) {
+                    //
                     if (sumWeight < weight) {
                         centerDegree = degree;
                         centerPoint = pointData;

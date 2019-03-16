@@ -28,15 +28,18 @@ public class KmeansMain {
 
         Kmeans kmeans = new Kmeans(pG,2,point);
         List<GraphUtil> graphs = kmeans.run();
+        System.out.println("");
+        System.out.println("打印结果：");
+        int i = 1;
         for(GraphUtil graphUtil:graphs){
-//            System.out.println(graphUtil);
+            System.out.println("第"+i+"类：");
             printGraph(graphUtil);
         }
 
     }
 
     public static void printGraph(GraphUtil graphUtil){
-        System.out.println("#############");
+
         VNode[] nodes = graphUtil.getmVexs();
         for(int i=0;i<nodes.length;i++) {
             System.out.println(nodes[i].data);

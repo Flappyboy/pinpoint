@@ -24,7 +24,7 @@ public class Test {
         pG = new GraphUtil(vexs, edges);
 
         int[] prev = new int[vexs.length];
-        int[] dist = new int[vexs.length];
+        double[] dist = new double[vexs.length];
 
 
         // dijkstra算法获取"第4个顶点"到其它各个顶点的最短距离

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class GraphUtil {
-    private static int INF = Integer.MAX_VALUE;
+    private static double INF = Double.MAX_VALUE;
 
 //    // 邻接表中表对应的链表的顶点
 //    private class ENode {
@@ -69,7 +69,7 @@ public class GraphUtil {
             // 读取边的起始顶点和结束顶点
             String c1 = edges[i].start;
             String c2 = edges[i].end;
-            int weight = edges[i].weight;
+            double weight = edges[i].weight;
 
             // 读取边的起始顶点和结束顶点
             int p1 = getPosition(c1);
@@ -113,7 +113,7 @@ public class GraphUtil {
             VNode node = mVexs[i];
             ENode p = node.firstEdge;
             int degree = 0;
-            int sumWeight = 0;
+            double sumWeight = 0;
             while (p != null) {
                 degree++;
                 sumWeight += p.weight;
@@ -185,7 +185,7 @@ public class GraphUtil {
     /*
      * 获取边<start, end>的权值；若start和end不是连通的，则返回无穷大。
      */
-    private int getWeight(int start, int end) {
+    private double getWeight(int start, int end) {
 
         if (start == end)
             return 0;
@@ -233,7 +233,7 @@ public class GraphUtil {
      *     prev -- 前驱顶点数组。即，prev[i]的值是"顶点vs"到"顶点i"的最短路径所经历的全部顶点中，位于"顶点i"之前的那个顶点。
      *     dist -- 长度数组。即，dist[i]是"顶点vs"到"顶点i"的最短路径的长度。
      */
-    public List<DijkstraResult> dijkstra(String vsStr, int[] prev, int[] dist) {
+    public List<DijkstraResult> dijkstra(String vsStr, int[] prev, double[] dist) {
         List<DijkstraResult> dijkstraResults = new ArrayList<DijkstraResult>();
         // flag[i]=true表示"顶点vs"到"顶点i"的最短路径已成功获取。
         boolean[] flag = new boolean[mVexs.length];
@@ -254,7 +254,7 @@ public class GraphUtil {
         for (int i = 1; i < mVexs.length; i++) {
             // 寻找当前最小的路径；
             // 即，在未获取最短路径的顶点中，找到离vs最近的顶点(k)。
-            int min = INF;
+            double min = INF;
             for (int j = 0; j < mVexs.length; j++) {
                 if (flag[j] == false && dist[j] < min) {
                     min = dist[j];
@@ -267,7 +267,7 @@ public class GraphUtil {
             // 修正当前最短路径和前驱顶点
             // 即，当已经"顶点k的最短路径"之后，更新"未获取最短路径的顶点的最短路径和前驱顶点"。
             for (int j = 0; j < mVexs.length; j++) {
-                int tmp = getWeight(k, j);
+                double tmp = getWeight(k, j);
                 tmp = (tmp == INF ? INF : (min + tmp)); // 防止溢出
                 if (flag[j] == false && (tmp < dist[j])) {
                     dist[j] = tmp;
@@ -277,9 +277,9 @@ public class GraphUtil {
         }
 
         // 打印dijkstra最短路径的结果
-        System.out.printf("dijkstra(" + mVexs[vs].data + "): \n");
+//        System.out.printf("dijkstra(" + mVexs[vs].data + "): \n");
         for (int i = 0; i < mVexs.length; i++) {
-            System.out.printf("  shortest(" + mVexs[vs].data + ", " + mVexs[i].data + ")=%d\n", dist[i]);
+//            System.out.printf("  shortest(" + mVexs[vs].data + ", " + mVexs[i].data + ")="+dist[i]);
             DijkstraResult dijkstraResult = new DijkstraResult();
             dijkstraResult.setSourceData(mVexs[vs].data);
             dijkstraResult.setSourceId(mVexs[vs].ivex);

@@ -3,10 +3,10 @@ package cn.edu.nju.software.algorithm.kmeans;
 import java.util.*;
 
 public class Kmeans {
-    private GraphUtil graphUtil;
-    private int k;
-    private String[] centerPoints;
-    private int iterations = 20;
+    private GraphUtil graphUtil;//图
+    private int k;//中心店个数
+    private String[] centerPoints;//中心点
+    private int iterations = 20;//最多迭代次数
 
 
     public Kmeans(GraphUtil graphUtil, int k, String[] centerPoints) {

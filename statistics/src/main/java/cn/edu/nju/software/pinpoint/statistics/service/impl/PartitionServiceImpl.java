@@ -77,7 +77,7 @@ public class PartitionServiceImpl implements PartitionService {
                 try {
                     log.debug("partion start: "+partition);
                     partitionResultService.partition(partition);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

@@ -41,7 +41,8 @@ export default {
 };
 
 
-const ip = 'localhost';
+// const ip = 'localhost';
+const ip = '172.19.240.73';
 // const ip = '172.19.240.73';
 // const ip = '172.19.163.242';
 // const port = '8029';

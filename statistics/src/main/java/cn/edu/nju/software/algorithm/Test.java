@@ -12,6 +12,7 @@ import java.util.List;
 public class Test {
     public static void main(String[] args) throws Exception{
         StaticAnalysis analysis = new StaticAnalysis();
+        //静态分析结果构成图结构
         GraphUtil pG = analysis.doStaticAnalysis("/Users/yaya/Desktop/dddsample.jar");
 
         String[] point = {"Aa", "Bb"};//中心点

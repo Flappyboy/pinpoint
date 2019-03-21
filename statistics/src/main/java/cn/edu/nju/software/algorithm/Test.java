@@ -2,10 +2,7 @@ package cn.edu.nju.software.algorithm;
 
 //测试算法
 
-import cn.edu.nju.software.algorithm.kmeans.GraphUtil;
-import cn.edu.nju.software.algorithm.kmeans.Kmeans;
-import cn.edu.nju.software.algorithm.kmeans.StaticAnalysis;
-import cn.edu.nju.software.algorithm.kmeans.VNode;
+import cn.edu.nju.software.algorithm.kmeans.*;
 
 import java.util.List;
 
@@ -15,7 +12,9 @@ public class Test {
         //静态分析结果构成图结构
         GraphUtil pG = analysis.doStaticAnalysis("/Users/yaya/Desktop/dddsample.jar");
 
-        String[] point = {"Aa", "Bb"};//中心点
+        //获取中心点
+        //path为本地git信息路径"/xxx/xxx/.git"
+        String[] point = Initialization.findCenter("", 500, 5);//中心点
         int key = point.length;//中心点个数
 
         Kmeans kmeans = new Kmeans(pG,key,point);//kmeans算法

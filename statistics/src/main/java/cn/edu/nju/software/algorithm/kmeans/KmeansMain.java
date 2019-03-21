@@ -3,7 +3,7 @@ package cn.edu.nju.software.algorithm.kmeans;
 import java.util.List;
 
 public class KmeansMain {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         String[] vexs = {"Aa", "Bb", "Cc", "Dd", "Ee", "Ff", "Gg"};
         EData[] edges = {
                 // 起点 终点 权
@@ -24,7 +24,8 @@ public class KmeansMain {
 
         // 采用已有的"图"
         pG = new GraphUtil(vexs, edges);
-        String[] point = {"Aa", "Bb"};
+//        String[] point = {"Aa", "Bb"};
+        String[] point = Initialization.findCenter("D:\\SDA\\jpetstore-6", 30, 5);
 
         Kmeans kmeans = new Kmeans(pG,2,point);
         List<GraphUtil> graphs = kmeans.run();

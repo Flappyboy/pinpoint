@@ -54,8 +54,10 @@ public class StaticAnalysis {
 
         List<EData> edgeList = new ArrayList<>();
         for (Map.Entry<String, StaticCallInfo> entry : classEdges.entrySet()) {
-            EData eData = new EData(entry.getValue().getCaller(),entry.getValue().getCallee(),entry.getValue().getCount());
-            edgeList.add(eData);
+            EData eData1 = new EData(entry.getValue().getCaller(),entry.getValue().getCallee(),entry.getValue().getCount());
+            edgeList.add(eData1);
+            EData eData2 = new EData(entry.getValue().getCallee(),entry.getValue().getCaller(),entry.getValue().getCount());
+            edgeList.add(eData2);
         }
 
         String[] vexs = nodeList.toArray(new String[nodeList.size()]);

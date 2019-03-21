@@ -205,14 +205,14 @@ public class GraphUtil {
     /*
      * 返回ch位置
      */
-    private int getPosition(String ch) {
-        for (int i = 0; i < mVexs.length; i++) {
-//            System.out.println(mVexs[i].data);
-            if (mVexs[i].data.equals(ch))
-                return i;
-        }
-        return -1;
-    }
+//    private int getPosition(String ch) {
+//        for (int i = 0; i < mVexs.length; i++) {
+////            System.out.println(mVexs[i].data);
+//            if (mVexs[i].data.equals(ch))
+//                return i;
+//        }
+//        return -1;
+//    }
 
     /*
      * 获取边<start, end>的权值；若start和end不是连通的，则返回无穷大。
@@ -222,6 +222,10 @@ public class GraphUtil {
         if (start == end)
             return 0;
 
+        System.out.println("+++++++++++++++++");
+        System.out.println("start :     "+start);
+        System.out.println("end :     "+end);
+//        System.out.println("");
         ENode node = mVexs[start].firstEdge;
         while (node != null) {
             if (end == node.ivex)
@@ -269,7 +273,12 @@ public class GraphUtil {
         List<DijkstraResult> dijkstraResults = new ArrayList<DijkstraResult>();
         // flag[i]=true表示"顶点vs"到"顶点i"的最短路径已成功获取。
         boolean[] flag = new boolean[mVexs.length];
-        int vs = getPosition(vsStr);
+//        int vs = getPosition(vsStr);
+        System.out.println("打印点：");
+        System.out.println(vsStr);
+        int vs =-1;
+        if (nodeIndexMap.containsKey(vsStr))
+            vs = nodeIndexMap.get(vsStr);
         // 初始化
         for (int i = 0; i < mVexs.length; i++) {
             flag[i] = false;            // 顶点i的最短路径还没获取到。

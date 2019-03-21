@@ -14,7 +14,11 @@ public class Test {
 
         //获取中心点
         //path为本地git信息路径"/xxx/xxx/.git"
-        String[] point = Initialization.findCenter("", 500, 5);//中心点
+        String[] point = Initialization.findCenter("/Users/yaya/Desktop/dddsample-core", 500, 5);//中心点
+        System.out.println("中心点：");
+        for(int i =0;i<point.length;i++){
+            System.out.println(point[i]);
+        }
         int key = point.length;//中心点个数
 
         Kmeans kmeans = new Kmeans(pG,key,point);//kmeans算法

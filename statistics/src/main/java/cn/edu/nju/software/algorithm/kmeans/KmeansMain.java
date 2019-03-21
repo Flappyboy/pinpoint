@@ -24,7 +24,7 @@ public class KmeansMain {
 
         // 采用已有的"图"
         pG = new GraphUtil(vexs, edges);
-        String[] point = {"Aa", "Bb"};
+        String[] point = {"Cc", "Bb"};
 //        String[] point = Initialization.findCenter("D:\\SDA\\jpetstore-6", 30, 5);
 
         Kmeans kmeans = new Kmeans(pG,2,point);

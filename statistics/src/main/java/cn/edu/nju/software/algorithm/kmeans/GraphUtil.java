@@ -57,8 +57,8 @@ public class GraphUtil {
         int vlen = vexs.length;
         int elen = edges.length;
 
-        System.out.println(vlen);
-        System.out.println(elen);
+//        System.out.println(vlen);
+//        System.out.println(elen);
 
         // 初始化"顶点"
         mVexs = new VNode[vlen];
@@ -76,7 +76,7 @@ public class GraphUtil {
         mVexNum = vlen;
         for (int i = 0; i < elen; i++) {
             // 读取边的起始顶点和结束顶点
-            System.out.println(i);
+//            System.out.println(i);
             String c1 = edges[i].start;
             String c2 = edges[i].end;
             double weight = edges[i].weight;
@@ -84,10 +84,10 @@ public class GraphUtil {
             // 读取边的起始顶点和结束顶点
 //            int p1 = getPosition(c1);
 //            int p2 = getPosition(c2);
-            System.out.println("c1  " + c1);
-            System.out.println("c2  " + c2);
-            int p1 = -1;
-            int p2 = -1;
+//            System.out.println("c1  " + c1);
+//            System.out.println("c2  " + c2);
+            int p1 ;
+            int p2 ;
             if (nodeIndexMap.containsKey(c1))
                 p1 = nodeIndexMap.get(c1);
             else
@@ -96,8 +96,8 @@ public class GraphUtil {
                 p2 = nodeIndexMap.get(c2);
             else
                 continue;
-            System.out.println("p1  " + p1);
-            System.out.println("p2  " + p2);
+//            System.out.println("p1  " + p1);
+//            System.out.println("p2  " + p2);
 
 //            if(p1 == -1)
 //                continue;
@@ -207,7 +207,7 @@ public class GraphUtil {
      */
     private int getPosition(String ch) {
         for (int i = 0; i < mVexs.length; i++) {
-            System.out.println(mVexs[i].data);
+//            System.out.println(mVexs[i].data);
             if (mVexs[i].data.equals(ch))
                 return i;
         }

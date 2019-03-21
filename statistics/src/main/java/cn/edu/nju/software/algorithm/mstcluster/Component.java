@@ -1,6 +1,5 @@
 package cn.edu.nju.software.algorithm.mstcluster;
 
-import jdk.nashorn.internal.objects.annotations.Constructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

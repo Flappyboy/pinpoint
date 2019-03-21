@@ -31,7 +31,10 @@ public class Initialization {
         }
         String[] centerPoints = new String[list.size()];
         for (int i=0; i<list.size(); i++){
-            centerPoints[i] = new String(list.get(i));
+            String pth = new String(list.get(i));
+            String temp[] = pth.trim().split("\\.");
+            int t = temp.length;
+            centerPoints[i] = new String(temp[(t-1)]);
         }
         return centerPoints;
     }

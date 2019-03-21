@@ -10,7 +10,7 @@ public class Test {
     public static void main(String[] args) throws Exception{
         StaticAnalysis analysis = new StaticAnalysis();
         //静态分析结果构成图结构
-        GraphUtil pG = analysis.doStaticAnalysis("/Users/yaya/Desktop/dddsample.jar");
+        GraphUtil pG = analysis.doStaticAnalysis("D:\\SDA\\dddsample-core\\out\\artifacts\\dddsample_jar\\dddsample.jar");
 
         //获取中心点
         //path为本地git信息路径"/xxx/xxx/.git"
@@ -19,6 +19,7 @@ public class Test {
         for(int i =0;i<point.length;i++){
             System.out.println(point[i]);
         }
+
         int key = point.length;//中心点个数
 
         Kmeans kmeans = new Kmeans(pG,key,point);//kmeans算法

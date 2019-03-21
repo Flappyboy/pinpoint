@@ -1,8 +1,11 @@
 package cn.edu.nju.software.algorithm.kmeans;
 
+import org.jboss.jandex.Index;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GraphUtil {
     private static double INF = Double.MAX_VALUE;
@@ -26,7 +29,8 @@ public class GraphUtil {
     private int mEdgNum;    // 边的数量
     private int mVexNum;    //顶点数
     private VNode[] mVexs;  // 顶点数组
-    private HashMap<String,VNode> nodeMap = new HashMap<String, VNode>();
+    private Map<String, Integer> nodeIndexMap;
+    private HashMap<String, VNode> nodeMap = new HashMap<String, VNode>();
 
     public HashMap<String, VNode> getNodeMap() {
         return nodeMap;
@@ -53,13 +57,18 @@ public class GraphUtil {
         int vlen = vexs.length;
         int elen = edges.length;
 
+        System.out.println(vlen);
+        System.out.println(elen);
+
         // 初始化"顶点"
         mVexs = new VNode[vlen];
+        nodeIndexMap = new HashMap<>();
         for (int i = 0; i < mVexs.length; i++) {
             mVexs[i] = new VNode();
             mVexs[i].data = vexs[i];
             mVexs[i].firstEdge = null;
             mVexs[i].ivex = i;
+            nodeIndexMap.put(vexs[i], i);
         }
 
         // 初始化"边"
@@ -67,13 +76,33 @@ public class GraphUtil {
         mVexNum = vlen;
         for (int i = 0; i < elen; i++) {
             // 读取边的起始顶点和结束顶点
+            System.out.println(i);
             String c1 = edges[i].start;
             String c2 = edges[i].end;
             double weight = edges[i].weight;
 
             // 读取边的起始顶点和结束顶点
-            int p1 = getPosition(c1);
-            int p2 = getPosition(c2);
+//            int p1 = getPosition(c1);
+//            int p2 = getPosition(c2);
+            System.out.println("c1  " + c1);
+            System.out.println("c2  " + c2);
+            int p1 = -1;
+            int p2 = -1;
+            if (nodeIndexMap.containsKey(c1))
+                p1 = nodeIndexMap.get(c1);
+            else
+                continue;
+            if (nodeIndexMap.containsKey(c2))
+                p2 = nodeIndexMap.get(c2);
+            else
+                continue;
+            System.out.println("p1  " + p1);
+            System.out.println("p2  " + p2);
+
+//            if(p1 == -1)
+//                continue;
+//            if(p2 == -1)
+//                continue;
             // 初始化node1
             ENode node1 = new ENode();
             node1.ivex = p2;
@@ -101,12 +130,13 @@ public class GraphUtil {
     }
 
     //设置map
-    public void setNodeMap(VNode[] mVexs){
+    public void setNodeMap(VNode[] mVexs) {
         for (int i = 0; i < mVexs.length; i++) {
-            nodeMap.put(mVexs[i].data,mVexs[i]);
+            nodeMap.put(mVexs[i].data, mVexs[i]);
         }
 
     }
+
     //设置顶点的度
     public void setDegree(VNode[] mVexs) {
         for (int i = 0; i < mVexs.length; i++) {
@@ -176,9 +206,11 @@ public class GraphUtil {
      * 返回ch位置
      */
     private int getPosition(String ch) {
-        for (int i = 0; i < mVexs.length; i++)
-            if (mVexs[i].data == ch)
+        for (int i = 0; i < mVexs.length; i++) {
+            System.out.println(mVexs[i].data);
+            if (mVexs[i].data.equals(ch))
                 return i;
+        }
         return -1;
     }
 

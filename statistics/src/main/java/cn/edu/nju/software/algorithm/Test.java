@@ -9,22 +9,24 @@ import java.util.Set;
 
 public class Test {
     public static void main(String[] args) throws Exception{
-        StaticAnalysis analysis = new StaticAnalysis();
-        //静态分析结果构成图结构
-//        GraphUtil pG = analysis.doStaticAnalysis("D:\\SDA\\dddsample-core\\out\\artifacts\\dddsample_jar\\dddsample.jar");
-        GraphUtil pG = analysis.doStaticAnalysis("/Users/yaya/Desktop/dddsample.jar");
 
         //获取中心点
         //path为本地git信息路径"/xxx/xxx/.git"
-//        String[] point = Initialization.findCenter("D:\\SDA\\dddsample-core", 100, 5);//中心点
-        String[] point = Initialization.findCenter("/Users/yaya/Desktop/dddsample-core", 100, 5);//中心点
+        String[] point = Initialization.findCenter("D:\\SDA\\dddsample-core", 100, 5);//中心点
+//        String[] point = Initialization.findCenter("/Users/yaya/Desktop/dddsample-core", 100, 5);//中心点
         System.out.println("中心点：");
         for(int i =0;i<point.length;i++){
             System.out.println(point[i]);
         }
         System.out.println("");
 
+        StaticAnalysis analysis = new StaticAnalysis();
+        //静态分析结果构成图结构
+        GraphUtil pG = analysis.doStaticAnalysis("D:\\SDA\\dddsample-core\\out\\artifacts\\dddsample_jar\\dddsample.jar");
+//        GraphUtil pG = analysis.doStaticAnalysis("/Users/yaya/Desktop/dddsample.jar");
+
         int key = point.length;//中心点个数
+        System.out.println("key:   " + key);
 
         Kmeans kmeans = new Kmeans(pG,key,point);//kmeans算法
         List<Set<String>> graphs = kmeans.run();//运行算法

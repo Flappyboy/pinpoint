@@ -321,9 +321,10 @@ public class PartitionResultServiceImpl implements PartitionResultService {
     }
 
     // 结合gitcommit信息
-    private HashMap<String, EdgeBean> mergeCommitEdge(String gitPath,HashMap<String, EdgeBean> edges,HashMap<String, Integer> nodeKeys,String appId,int maxKey)throws Exception{
+    //添加了path参数 947
+    private HashMap<String, EdgeBean> mergeCommitEdge(String gitPath,HashMap<String, EdgeBean> edges,HashMap<String, Integer> nodeKeys,String appId,int maxKey, String path)throws Exception{
         GitCommitRetn gitCommitRetn = GitUtil.getGitCommitInfo(1,gitPath);
-        Map<String, GitCommitFileEdge> gitCommitFileEdgeMap = GitDataUtil.getCommitFileGraph(gitCommitRetn);
+        Map<String, GitCommitFileEdge> gitCommitFileEdgeMap = GitDataUtil.getCommitFileGraph(gitCommitRetn, path);
         for (Map.Entry<String, GitCommitFileEdge> entry : gitCommitFileEdgeMap.entrySet()) {
             System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
             GitCommitFileEdge gitCommitFileEdge =  entry.getValue();

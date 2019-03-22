@@ -10,9 +10,9 @@ import static cn.edu.nju.software.git.GitDataUtil.getCommitFileGraph;
 
 public class Test {
     public static void main(String[] args) throws Exception{
-        Map<String, GitCommitFileEdge> map = getCommitFileGraph(GitUtil.getLocalCommit("D:\\SDA\\dddsample-core"));
+        Map<String, GitCommitFileEdge> map = getCommitFileGraph(GitUtil.getLocalCommit("D:\\SDA\\dddsample-core"), "D:\\SDA\\dddsample-core");
 
-        Set<Component> components = new HashSet<>(MSTCluster.clusterWithSplit(MST.calcMST(MST.getEdges(map)), 500,5));
+        Set<Component> components = new HashSet<>(MSTCluster.clusterWithSplit(MST.calcMST(MST.getEdges(map)), 100,5));
         System.out.println("components.size = " + components.size());
 //        for (Component cpt : components){
 //            System.out.println("*******************************one components******************************");

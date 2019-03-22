@@ -21,7 +21,7 @@ import static cn.edu.nju.software.git.GitDataUtil.getCommitFileGraph;
 public class Initialization {
 
     public static String[] findCenter(String path, int splitThreshold, int numServices) throws Exception{
-        Map<String, GitCommitFileEdge> map = getCommitFileGraph(GitUtil.getLocalCommit(path));
+        Map<String, GitCommitFileEdge> map = getCommitFileGraph(GitUtil.getLocalCommit(path), path);
 
         Set<Component> components = new HashSet<>(MSTCluster.clusterWithSplit(MST.calcMST(MST.getEdges(map)), splitThreshold,numServices));
 
@@ -34,7 +34,7 @@ public class Initialization {
             String pth = new String(list.get(i));
             String temp[] = pth.trim().split("\\.");
             int t = temp.length;
-            centerPoints[i] = new String(temp[(t-1)]);
+            centerPoints[i] = new String(temp[(t-3)]+"."+temp[(t-2)]+"."+temp[(t-1)]);
         }
         return centerPoints;
     }

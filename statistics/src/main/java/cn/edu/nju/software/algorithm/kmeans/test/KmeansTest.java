@@ -6,6 +6,7 @@ import cn.edu.nju.software.algorithm.kmeans.Kmeans;
 import cn.edu.nju.software.algorithm.kmeans.VNode;
 
 import java.util.List;
+import java.util.Set;
 
 public class KmeansTest {
     public static void main(String[] args) throws Exception {
@@ -33,13 +34,14 @@ public class KmeansTest {
 //        String[] point = Initialization.findCenter("D:\\SDA\\jpetstore-6", 30, 5);
 
         Kmeans kmeans = new Kmeans(pG,2,point);
-        List<GraphUtil> graphs = kmeans.run();
+        List<Set<String>> graphs = kmeans.run();
         System.out.println("");
         System.out.println("打印结果：");
         int i = 1;
-        for(GraphUtil graphUtil:graphs){
+        for(Set<String> graphUtil:graphs){
             System.out.println("第"+i+"类：");
-            graphUtil.printGraph();
+            for(String mypoint : graphUtil)
+                System.out.println(mypoint);
             i++;
         }
 

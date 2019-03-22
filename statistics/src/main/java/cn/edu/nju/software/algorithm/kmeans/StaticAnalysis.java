@@ -6,7 +6,6 @@ import cn.edu.nju.software.pinpoint.statistics.utils.FileUtil;
 import cn.edu.nju.software.pinpoint.statistics.utils.asm.ClassAdapter;
 import cn.edu.nju.software.pinpoint.statistics.utils.asm.MethodAdapter;
 import cn.edu.nju.software.pinpoint.statistics.utils.file.FileCompress;
-import cn.edu.nju.software.pinpoint.statistics.utils.louvain.Edge;
 import org.springframework.asm.ClassReader;
 
 import java.io.File;
@@ -46,12 +45,14 @@ public class StaticAnalysis {
         HashMap<String, StaticCallInfo> classEdges = MethodAdapter.classEdges;
 
         List<String> nodeList = new ArrayList<>();
+//        System.out.println("静态分析的点：  开始=======================");
         for (Map.Entry<String, ClassNode> entry : classNodes.entrySet()) {
-            System.out.println(entry.getValue().getName());
             String className = entry.getValue().getName();
             String defaultName = changeName(className,'.',3);
+//            System.out.println(defaultName);
             nodeList.add(defaultName);
         }
+//        System.out.println("静态分析的点：  结束========================");
 
         List<EData> edgeList = new ArrayList<>();
         Map<String,EData> edgeMap = new HashMap<>();
@@ -66,7 +67,7 @@ public class StaticAnalysis {
             String key2 = calleeDefaultName+"-"+callerDefaultName;
 
             if((!edgeMap.containsKey(key1))&&(!edgeMap.containsKey(key2))){
-                System.out.println(key1);
+//                System.out.println(key1);
                 edgeMap.put(key1,new EData(callerDefaultName,calleeDefaultName,count));
             }else{
                 if(edgeMap.containsKey(key1)) {
@@ -89,7 +90,7 @@ public class StaticAnalysis {
             double weight = eData.getWeight();
             double newWeight = 1.0 / weight;
             eData.setWeight(newWeight);
-            System.out.println(eData.toString());
+//            System.out.println(eData.toString());
             edgeList.add(eData);
         }
 

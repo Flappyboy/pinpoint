@@ -104,7 +104,7 @@ public class GitUtil {
                 count++;
             }
             fileInfos = getFiles(gitCommitInfos);
-            System.out.println(count);
+//            System.out.println(count);
         }
         gitCommitRetn.setFileInfos(fileInfos);
         gitCommitRetn.setGitCommitInfos(gitCommitInfos);
@@ -125,8 +125,8 @@ public class GitUtil {
         List<CommitDetail> commitLists1 = new ArrayList<>();
 
         String listStr = HttpClientUtil.doGet("https://api.github.com/repos/" + userName + "/" + repository + "/commits");
-        System.out.println("1");
-        System.out.println(listStr);
+//        System.out.println("1");
+//        System.out.println(listStr);
         if (listStr == null)
             return null;
         JSONArray listArray = new JSONArray(listStr);
@@ -137,8 +137,8 @@ public class GitUtil {
 
             String url = "https://api.github.com/repos/" + userName + "/" + repository +"/commits/" + listJsonObject.getString("sha");
             String detailStr = HttpClientUtil.doGet(url);
-            System.out.println("2");
-            System.out.println(detailStr);
+//            System.out.println("2");
+//            System.out.println(detailStr);
             if (detailStr == null)
                 return null;
             JSONObject detailJsonObject = new JSONObject(detailStr);
@@ -224,7 +224,7 @@ public class GitUtil {
 
         }
         for (Map.Entry<String, FileInfo> entry : fileMap.entrySet()) {
-            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+//            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
             fileInfos.add(entry.getValue());
         }
         return fileInfos;
@@ -248,10 +248,10 @@ public class GitUtil {
                 .setNewTree(prepareTreeParser(repository, newCommit))
                 .call();
 
-        System.out.println("Found: " + diffs.size() + " differences");
+//        System.out.println("Found: " + diffs.size() + " differences");
         for (DiffEntry diff : diffs) {
-            System.out.println("Diff: " + diff.getChangeType() + ": " +
-                    (diff.getOldPath().equals(diff.getNewPath()) ? diff.getNewPath() : diff.getOldPath() + " -> " + diff.getNewPath()));
+//            System.out.println("Diff: " + diff.getChangeType() + ": " +
+//                    (diff.getOldPath().equals(diff.getNewPath()) ? diff.getNewPath() : diff.getOldPath() + " -> " + diff.getNewPath()));
             files.add(diff.getNewPath());
         }
         return files;
@@ -276,8 +276,8 @@ public class GitUtil {
     }
 
     public static void main(String[] args) throws IOException, GitAPIException {
-//        System.out.println(getLocalCommit("/Users/yaya/Documents/mycode/intelliJIdea/journey/"));
-//        System.out.println(getRepositoryCommits("yzgqy","journey"));
+        System.out.println(getLocalCommit("/Users/yaya/Documents/mycode/intelliJIdea/journey/"));
+        System.out.println(getRepositoryCommits("yzgqy","journey"));
         System.out.println(getGitCommitInfo(1,"/Users/yaya/Documents/mycode/intelliJIdea/journey/")
         );
 

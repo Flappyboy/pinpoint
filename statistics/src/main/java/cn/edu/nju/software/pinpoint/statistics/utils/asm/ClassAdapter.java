@@ -36,7 +36,6 @@ public class ClassAdapter extends ClassVisitor implements Opcodes {
 //                .replace(",)", ")")
 //                .replace(",L", ",");
         isInterface = (access & Opcodes.ACC_INTERFACE) != 0;
-//        System.out.println(name);
         ClassNode cnode = classNodes.get(classname);
         if (cnode == null) {
             ClassNode cnode1 = new ClassNode();

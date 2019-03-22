@@ -198,10 +198,6 @@ public class GraphUtil {
         if (start == end)
             return 0;
 
-//        System.out.println("+++++++++++++++++");
-//        System.out.println("start :     "+start);
-//        System.out.println("end :     "+end);
-//        System.out.println("");
         ENode node = mVexs[start].firstEdge;
         while (node != null) {
             if (end == node.ivex)
@@ -250,8 +246,8 @@ public class GraphUtil {
         // flag[i]=true表示"顶点vs"到"顶点i"的最短路径已成功获取。
         boolean[] flag = new boolean[mVexs.length];
 //        int vs = getPosition(vsStr);
-        System.out.println("打印点：");
-        System.out.println(vsStr);
+//        System.out.println("打印点：");
+//        System.out.println(vsStr);
         int vs =-1;
         if (nodeIndexMap.containsKey(vsStr))
             vs = nodeIndexMap.get(vsStr);
@@ -294,9 +290,9 @@ public class GraphUtil {
         }
 
         // 打印dijkstra最短路径的结果
-        System.out.printf("dijkstra(" + mVexs[vs].data + "): \n");
+//        System.out.printf("dijkstra(" + mVexs[vs].data + "): \n");
         for (int i = 0; i < mVexs.length; i++) {
-            System.out.printf("  shortest(" + mVexs[vs].data + ", " + mVexs[i].data + ")="+dist[i]);
+//            System.out.printf("  shortest(" + mVexs[vs].data + ", " + mVexs[i].data + ")="+dist[i]);
             DijkstraResult dijkstraResult = new DijkstraResult();
             dijkstraResult.setSourceData(mVexs[vs].data);
             dijkstraResult.setSourceId(mVexs[vs].ivex);

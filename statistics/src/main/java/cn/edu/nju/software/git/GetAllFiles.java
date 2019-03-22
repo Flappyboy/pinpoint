@@ -1,11 +1,5 @@
 package cn.edu.nju.software.git;
 
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
-
 import java.io.File;
 import java.util.*;
 
@@ -13,7 +7,7 @@ public class GetAllFiles {
     private  List<String> nowFiles;
 
     public static void main(String[] args){
-        String catalog = "D:\\SDA\\dddsample-core";
+        String catalog = "/Users/yaya/Desktop/dddsample-core";
         List<String> t = new GetAllFiles().getNowAllFiles(catalog);
         for (int i=0; i<t.size(); i++){
             System.out.println(t.get(i));
@@ -41,8 +35,8 @@ public class GetAllFiles {
             }
             else{
                 String name = f.getPath();
-                String[] temp = name.split("\\\\");
-                String[] cat = catalog.split("\\\\");
+                String[] temp = name.split("/");
+                String[] cat = catalog.split("/");
                 String path = temp[cat.length];
                 for (int i=cat.length+1; i<temp.length; i++){
                     path += "/"+temp[i];

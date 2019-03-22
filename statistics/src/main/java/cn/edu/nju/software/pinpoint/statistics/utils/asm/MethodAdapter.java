@@ -35,7 +35,7 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
 
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-        System.out.println(this.className + " " + this.name + "   call  " + owner + " " + name);
+//        System.out.println(this.className + " " + this.name + "   call  " + owner + " " + name);
         if (mv != null) {
             mv.visitMethodInsn(opcode, owner, name, desc, itf);
         }

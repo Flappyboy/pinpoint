@@ -18,50 +18,54 @@ public class Kmeans {
         this.centerPoints = centerPoints;
     }
 
-    public void printPoint(int count ,String[] centerPoints){
-        System.out.println("第" + count + "次迭代，中心点是：" );
-        for (int i =0 ;i<centerPoints.length;i++){
+    public void printPoint(int count, String[] centerPoints) {
+        System.out.println("第" + count + "次迭代，中心点是：");
+        for (int i = 0; i < centerPoints.length; i++) {
             System.out.println(centerPoints[i]);
         }
     }
 
 
-    public List<GraphUtil> run() {
+    //    public List<GraphUtil> run() {
+    public List<Set<String>> run() {
         int count = 1;
-        printPoint(count,this.centerPoints);
+        printPoint(count, this.centerPoints);
 
         //分别计算每个点和k个起始质点之间的距离
         Map<Integer, DijkstraResult> distance = calculateDistance(this.graphUtil, this.centerPoints, this.k);
         //归类
-        List<GraphUtil> graphs = classify(distance, graphUtil);
+//        List<GraphUtil> graphs = classify(distance, graphUtil);
+        List<Set<String>> pointClusters = classifyToNodes(distance, graphUtil);
         //重新计算中心点
 //        String[] newCenterPoints = calculateCenterPoints(graphs);
-        String[] newCenterPoints = calculateCenterPoints(graphs, this.graphUtil);
+        String[] newCenterPoints = calculateCenterPointsByClusters(pointClusters, this.graphUtil);
         count++;
-        printPoint(count,newCenterPoints);
+        printPoint(count, newCenterPoints);
         this.iterations--;
-        if(!isChange(centerPoints, newCenterPoints))
+        if (!isChange(centerPoints, newCenterPoints))
             this.iterations = 0;
         while (iterations > 0) {
             //分别计算每个点和k个起始质点之间的距离
             distance = calculateDistance(this.graphUtil, newCenterPoints, this.k);
             //归类
-            graphs = classify(distance, graphUtil);
+//            graphs = classify(distance, graphUtil);
+            pointClusters = classifyToNodes(distance, graphUtil);
             //重新计算中心点
 //            String[] newCenter = calculateCenterPoints(graphs);
-            String[] newCenter = calculateCenterPoints(graphs, this.graphUtil);
+            String[] newCenter = calculateCenterPointsByClusters(pointClusters, this.graphUtil);
             this.iterations--;
             count++;
-            printPoint(count,newCenter);
-            if(!isChange(newCenterPoints, newCenter)) {
+            printPoint(count, newCenter);
+            if (!isChange(newCenterPoints, newCenter)) {
                 this.iterations = 0;
                 System.out.println("中心点一样停止迭代！");
             }
             newCenterPoints = newCenter;
         }
 
-        return graphs;
+//        return graphs;
 
+        return pointClusters;
     }
 
     //计算距离
@@ -88,9 +92,35 @@ public class Kmeans {
         return distance;
     }
 
+    //归类为子图簇
+    public List<GraphUtil> classifyToGraph(Map<Integer, DijkstraResult> distance, GraphUtil graphUtil) {
+        Map<Integer, List<DijkstraResult>> nodes = classifyByPoint(distance, graphUtil);
+        List<GraphUtil> graphCategory = toGraphs(nodes, graphUtil);
+        return graphCategory;
+    }
+
+
+    //归类为结点簇
+    public List<Set<String>> classifyToNodes(Map<Integer, DijkstraResult> distance, GraphUtil graphUtil) {
+        Map<Integer, List<DijkstraResult>> nodes = classifyByPoint(distance, graphUtil);
+        List<Set<String>> pointClusters = new ArrayList<>();
+//        HashMap<String, VNode> nodeMap = graphUtil.getNodeMap();
+        for (Map.Entry<Integer, List<DijkstraResult>> entry : nodes.entrySet()) {
+            List<DijkstraResult> dijkstraResults = entry.getValue();
+            Set<String> vNode = new HashSet<String>();
+            for (DijkstraResult dijkstraResult : dijkstraResults) {
+                vNode.add(dijkstraResult.getSourceData());
+                vNode.add(dijkstraResult.getTargetData());
+            }
+//            String[] vNodeArr = new String[vNode.size()];
+//            vNode.toArray(vNodeArr);
+            pointClusters.add(vNode);
+        }
+        return pointClusters;
+    }
+
     //归类
-    public List<GraphUtil> classify(Map<Integer, DijkstraResult> distance, GraphUtil graphUtil) {
-        List<GraphUtil> graphCategory = new ArrayList<GraphUtil>();
+    public Map<Integer, List<DijkstraResult>> classifyByPoint(Map<Integer, DijkstraResult> distance, GraphUtil graphUtil) {
         Map<Integer, List<DijkstraResult>> nodes = new HashMap<Integer, List<DijkstraResult>>();
         for (Map.Entry<Integer, DijkstraResult> entry : distance.entrySet()) {
             int key = entry.getValue().getSourceId();
@@ -105,9 +135,7 @@ public class Kmeans {
             }
             nodes.put(key, dijkstraResults);
         }
-        graphCategory = toGraphs(nodes, graphUtil);
-
-        return graphCategory;
+        return nodes;
     }
 
 
@@ -129,6 +157,54 @@ public class Kmeans {
         return graphUtils;
     }
 
+    //重新计算中心点
+    public String[] calculateCenterPointsByClusters(List<Set<String>> pointClusters, GraphUtil graphUtil) {
+//        List<Set<String>> pointClusters = new ArrayList<>();
+        HashMap<String, VNode> nodeMap = graphUtil.getNodeMap();
+//        for(Map.Entry<Integer, List<DijkstraResult>> entry : pointGraphs.entrySet()){
+//            List<DijkstraResult> dijkstraResults = entry.getValue();
+//            Set<String> vNode = new HashSet<String>();
+//            for (DijkstraResult dijkstraResult : dijkstraResults) {
+//                vNode.add(dijkstraResult.getSourceData());
+//                vNode.add(dijkstraResult.getTargetData());
+//            }
+////            String[] vNodeArr = new String[vNode.size()];
+////            vNode.toArray(vNodeArr);
+//            pointClusters.add(vNode);
+//        }
+
+        List<String> centerPoints = new ArrayList<String>();
+        for (Set<String> pointCluster : pointClusters) {
+//            VNode[] vNodes = graph.getmVexs();
+            String centerPoint = "";
+            int centerDegree = 0;
+            double weight = 0;
+            for (String pointData : pointCluster) {
+//                String pointData = vNodes[i].data;
+                VNode node = nodeMap.get(pointData);
+                int degree = node.degree;
+                double sumWeight = node.sumWeight;
+
+                if (degree > centerDegree) {
+                    centerDegree = degree;
+                    centerPoint = pointData;
+                    weight = sumWeight;
+                } else if (degree == centerDegree) {
+                    //
+                    if (sumWeight < weight) {
+                        centerDegree = degree;
+                        centerPoint = pointData;
+                        weight = sumWeight;
+                    }
+                }
+            }
+            centerPoints.add(centerPoint);
+
+        }
+        String[] cpArr = new String[centerPoints.size()];
+        centerPoints.toArray(cpArr);
+        return cpArr;
+    }
 
     //重新计算中心点
     public String[] calculateCenterPoints(List<GraphUtil> graphs, GraphUtil graphUtil) {

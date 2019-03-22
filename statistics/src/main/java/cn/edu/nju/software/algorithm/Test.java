@@ -25,6 +25,8 @@ public class Test {
         System.out.println("");
 
         int key = point.length;//中心点个数
+        System.out.println("中心点个数："+key);
+        System.out.println("");
 
         Kmeans kmeans = new Kmeans(pG,key,point);//kmeans算法
         List<Set<String>> graphs = kmeans.run();//运行算法

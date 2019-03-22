@@ -31,18 +31,10 @@ public class Test {
         int i = 1;
         for(GraphUtil graphUtil:graphs){
             System.out.println("第"+i+"类：");
-            printGraph(graphUtil);
+            graphUtil.printGraph();
             i++;
         }
     }
 
-    public static void printGraph(GraphUtil graphUtil){
 
-        VNode[] nodes = graphUtil.getmVexs();
-        for(int i=0;i<nodes.length;i++) {
-            System.out.println(nodes[i].getData());
-
-        }
-
-    }
 }

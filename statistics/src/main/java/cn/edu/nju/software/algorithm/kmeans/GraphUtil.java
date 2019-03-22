@@ -1,36 +1,22 @@
 package cn.edu.nju.software.algorithm.kmeans;
 
-import org.jboss.jandex.Index;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 图处理的工具
+ */
 public class GraphUtil {
     private static double INF = Double.MAX_VALUE;
-
-//    // 邻接表中表对应的链表的顶点
-//    private class ENode {
-//        int ivex;       // 该边所指向的顶点的位置
-//        String data;
-//        int weight;     // 该边的权
-//        ENode nextEdge; // 指向下一条弧的指针
-//    }
-//
-//    // 邻接表中表的顶点
-//    private class VNode {
-//        int ivex;               //顶点位置
-//        String data;          // 顶点信息
-//        ENode firstEdge;    // 指向第一条依附该顶点的弧
-//    }
-
 
     private int mEdgNum;    // 边的数量
     private int mVexNum;    //顶点数
     private VNode[] mVexs;  // 顶点数组
-    private Map<String, Integer> nodeIndexMap;
-    private HashMap<String, VNode> nodeMap = new HashMap<String, VNode>();
+    private Map<String, Integer> nodeIndexMap; //顶点名：顶点下标
+    private HashMap<String, VNode> nodeMap = new HashMap<String, VNode>(); //顶点名：顶点实体
 
     public HashMap<String, VNode> getNodeMap() {
         return nodeMap;
@@ -57,8 +43,6 @@ public class GraphUtil {
         int vlen = vexs.length;
         int elen = edges.length;
 
-//        System.out.println(vlen);
-//        System.out.println(elen);
 
         // 初始化"顶点"
         mVexs = new VNode[vlen];
@@ -76,7 +60,6 @@ public class GraphUtil {
         mVexNum = vlen;
         for (int i = 0; i < elen; i++) {
             // 读取边的起始顶点和结束顶点
-//            System.out.println(i);
             String c1 = edges[i].start;
             String c2 = edges[i].end;
             double weight = edges[i].weight;
@@ -84,8 +67,6 @@ public class GraphUtil {
             // 读取边的起始顶点和结束顶点
 //            int p1 = getPosition(c1);
 //            int p2 = getPosition(c2);
-//            System.out.println("c1  " + c1);
-//            System.out.println("c2  " + c2);
             int p1 ;
             int p2 ;
             if (nodeIndexMap.containsKey(c1))
@@ -96,13 +77,7 @@ public class GraphUtil {
                 p2 = nodeIndexMap.get(c2);
             else
                 continue;
-//            System.out.println("p1  " + p1);
-//            System.out.println("p2  " + p2);
 
-//            if(p1 == -1)
-//                continue;
-//            if(p2 == -1)
-//                continue;
             // 初始化node1
             ENode node1 = new ENode();
             node1.ivex = p2;
@@ -183,6 +158,7 @@ public class GraphUtil {
         return pG;
     }
 
+    //判断数组里面是否包含
     private boolean isContains(String[] nodes, String pointStr) {
         for (int i = 0; i < nodes.length; i++) {
             if (nodes[i] == pointStr)
@@ -222,9 +198,9 @@ public class GraphUtil {
         if (start == end)
             return 0;
 
-        System.out.println("+++++++++++++++++");
-        System.out.println("start :     "+start);
-        System.out.println("end :     "+end);
+//        System.out.println("+++++++++++++++++");
+//        System.out.println("start :     "+start);
+//        System.out.println("end :     "+end);
 //        System.out.println("");
         ENode node = mVexs[start].firstEdge;
         while (node != null) {
@@ -318,9 +294,9 @@ public class GraphUtil {
         }
 
         // 打印dijkstra最短路径的结果
-//        System.out.printf("dijkstra(" + mVexs[vs].data + "): \n");
+        System.out.printf("dijkstra(" + mVexs[vs].data + "): \n");
         for (int i = 0; i < mVexs.length; i++) {
-//            System.out.printf("  shortest(" + mVexs[vs].data + ", " + mVexs[i].data + ")="+dist[i]);
+            System.out.printf("  shortest(" + mVexs[vs].data + ", " + mVexs[i].data + ")="+dist[i]);
             DijkstraResult dijkstraResult = new DijkstraResult();
             dijkstraResult.setSourceData(mVexs[vs].data);
             dijkstraResult.setSourceId(mVexs[vs].ivex);
@@ -330,6 +306,16 @@ public class GraphUtil {
             dijkstraResults.add(dijkstraResult);
         }
         return dijkstraResults;
+    }
+
+
+    public void printGraph(){
+//        VNode[] nodes = graphUtil.getmVexs();
+        for(int i=0;i<mVexs.length;i++) {
+            System.out.println(mVexs[i].getData());
+
+        }
+
     }
 }
 

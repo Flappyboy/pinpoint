@@ -2,6 +2,9 @@ package cn.edu.nju.software.algorithm.kmeans;
 
 import java.util.*;
 
+/**
+ * 基于dijkstra距离的kmeans聚类
+ */
 public class Kmeans {
     private GraphUtil graphUtil;//图
     private int k;//中心点个数

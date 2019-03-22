@@ -3,6 +3,8 @@ package cn.edu.nju.software.algorithm.kmeans;
 import lombok.Getter;
 import lombok.Setter;
 
+// 邻接表中表对应的链表的顶点
+
 @Setter
 @Getter
 public class ENode {

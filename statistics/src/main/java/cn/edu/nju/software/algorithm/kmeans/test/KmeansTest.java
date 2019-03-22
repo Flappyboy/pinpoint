@@ -1,8 +1,13 @@
-package cn.edu.nju.software.algorithm.kmeans;
+package cn.edu.nju.software.algorithm.kmeans.test;
+
+import cn.edu.nju.software.algorithm.kmeans.EData;
+import cn.edu.nju.software.algorithm.kmeans.GraphUtil;
+import cn.edu.nju.software.algorithm.kmeans.Kmeans;
+import cn.edu.nju.software.algorithm.kmeans.VNode;
 
 import java.util.List;
 
-public class KmeansMain {
+public class KmeansTest {
     public static void main(String[] args) throws Exception {
         String[] vexs = {"Aa", "Bb", "Cc", "Dd", "Ee", "Ff", "Gg"};
         EData[] edges = {
@@ -34,18 +39,8 @@ public class KmeansMain {
         int i = 1;
         for(GraphUtil graphUtil:graphs){
             System.out.println("第"+i+"类：");
-            printGraph(graphUtil);
+            graphUtil.printGraph();
             i++;
-        }
-
-    }
-
-    public static void printGraph(GraphUtil graphUtil){
-
-        VNode[] nodes = graphUtil.getmVexs();
-        for(int i=0;i<nodes.length;i++) {
-            System.out.println(nodes[i].data);
-
         }
 
     }

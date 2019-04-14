@@ -32,7 +32,7 @@ public class Generate {
     private Properties properties = new Properties();
 
     @Value("filePath")
-    private String filePath = "E:\\tmp\\pinpoint";
+    private String filePath = "D:\\tmp\\pinpoint";
 
     private String name;
 

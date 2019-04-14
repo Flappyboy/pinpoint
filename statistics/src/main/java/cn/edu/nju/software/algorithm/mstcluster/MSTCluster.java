@@ -43,7 +43,7 @@ public class MSTCluster {
         Collections.reverse(nodes);
 
         ClassNode nodeToRemove = nodes.get(0);
-        nodes.remove(0);
+        nodes.remove(0); 
 
         nodes.forEach(node -> {
             node.deleteNeighborWithId(nodeToRemove.getClassName());

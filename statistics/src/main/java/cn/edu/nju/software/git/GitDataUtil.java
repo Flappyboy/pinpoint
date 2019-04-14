@@ -3,6 +3,7 @@ package cn.edu.nju.software.git;
 import cn.edu.nju.software.git.entity.GitCommitFileEdge;
 import cn.edu.nju.software.git.entity.GitCommitInfo;
 import cn.edu.nju.software.git.entity.GitCommitRetn;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.io.IOException;
 import java.util.*;
@@ -17,6 +18,10 @@ public class GitDataUtil {
         List<GitCommitInfo> gitCommitInfos = gitCommitRetn.getGitCommitInfos();
         HashSet<String> nowFiles = new HashSet<>();
         nowFiles.addAll(new GetAllFiles().getNowAllFiles(path));
+//        Iterator<String> it = nowFiles.iterator();
+//        while (it.hasNext()){
+//            System.out.println(it.next());
+//        }
         for (GitCommitInfo gitCommitInfo : gitCommitInfos) {
             Set<String> files = gitCommitInfo.getFiles();
             for (String file1 : files) {

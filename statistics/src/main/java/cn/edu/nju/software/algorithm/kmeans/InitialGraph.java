@@ -13,6 +13,7 @@ import java.util.List;
 
 public class InitialGraph {
 
+    //获取所有类文件即图中的点
     public static String[] getAllClassNode(String appid){
         List<ClassNode> nodes = new ClassNodeServiceImpl().findByAppid(appid);
         String[] allClassNode = new String[nodes.size()];
@@ -22,6 +23,7 @@ public class InitialGraph {
         return allClassNode;
     }
 
+    //获取所有边
     public static EData[] getAllEdges(String appid, String dynamicAnalysisInfoId, int page, int pageSize, int type){
         List<HashMap<String, String>> statisticEdges = new StaticCallServiceImpl().findEdgeByAppId(appid,page,pageSize,type);
         List<HashMap<String, String>> dynamicEdges = new DynamicCallServiceImpl().findEdgeByAppId(dynamicAnalysisInfoId,page,pageSize,type);
@@ -40,6 +42,7 @@ public class InitialGraph {
         return allEdges;
     }
 
+    //合并静态边和动态边，同时转换为加权无向图
     private static List<HashMap<String, String>> IntegrationEdges(List<HashMap<String, String>> statisticEdges, List<HashMap<String, String>> dynamicEdges){
         for (int i=1; i<statisticEdges.size(); i++){
             String caller = statisticEdges.get(i).get("caller");

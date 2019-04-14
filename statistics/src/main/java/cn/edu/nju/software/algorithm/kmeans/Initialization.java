@@ -20,6 +20,7 @@ import static cn.edu.nju.software.git.GitDataUtil.getCommitFileGraph;
 
 public class Initialization {
 
+    //寻找中心点
     public static String[] findCenter(String path, int splitThreshold, int numServices) throws Exception{
         Map<String, GitCommitFileEdge> map = getCommitFileGraph(GitUtil.getLocalCommit(path), path);
 
@@ -39,6 +40,7 @@ public class Initialization {
         return centerPoints;
     }
 
+    //计算中心点
     private static String calcCenter(Component cmp){
         int max = 0;
         int flag = 0;
@@ -51,4 +53,5 @@ public class Initialization {
         }
         return nodes.get(flag).getClassName();
     }
+
 }

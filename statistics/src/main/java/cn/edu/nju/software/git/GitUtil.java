@@ -277,9 +277,9 @@ public class GitUtil {
 
     public static void main(String[] args) throws IOException, GitAPIException {
         System.out.println(getLocalCommit("/Users/yaya/Documents/mycode/intelliJIdea/journey/"));
-        System.out.println(getRepositoryCommits("yzgqy","journey"));
-        System.out.println(getGitCommitInfo(1,"/Users/yaya/Documents/mycode/intelliJIdea/journey/")
-        );
+//        System.out.println(getRepositoryCommits("yzgqy","journey"));
+//        System.out.println(getGitCommitInfo(1,"/Users/yaya/Documents/mycode/intelliJIdea/journey/")
+//        );
 
     }
 }

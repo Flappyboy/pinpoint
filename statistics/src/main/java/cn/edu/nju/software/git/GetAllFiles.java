@@ -35,8 +35,11 @@ public class GetAllFiles {
             }
             else{
                 String name = f.getPath();
-                String[] temp = name.split("/");
-                String[] cat = catalog.split("/");
+                String name2 = name.replace("\\", "/");
+                String catalog2 = catalog.replace("\\", "/");
+                String[] temp = name2.split("/");
+                String[] cat = catalog2.split("/");
+
                 String path = temp[cat.length];
                 for (int i=cat.length+1; i<temp.length; i++){
                     path += "/"+temp[i];

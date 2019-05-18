@@ -17,14 +17,12 @@ import cn.edu.nju.software.pinpoint.statistics.utils.asm.MethodAdapter;
 import cn.edu.nju.software.pinpoint.statistics.utils.file.FileCompress;
 import cn.edu.nju.software.pinpoint.statistics.utils.louvain.LouvainUtil;
 import org.springframework.asm.ClassReader;
+import org.springframework.cglib.reflect.MethodDelegate;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 //commit数据+静态数据+动态数据
 public class AllDataLouvainCluster {
@@ -56,32 +54,43 @@ public class AllDataLouvainCluster {
         int keyId = 0;
 
 //        放入git数据
-//        for (GitCommitFileEdge e : gEdges) {
-//            keyId = mergeNode(e, nodeMap, keyId);
-//            mergeEdge(e, edgeMap);
-//        }
-        System.out.println(edgeMap.size());
+        for (GitCommitFileEdge e : gEdges) {
+            keyId = mergeNode(e, nodeMap, keyId);
+            mergeEdge(e, edgeMap);
+        }
+//        System.out.println(edgeMap.size());
 //        放入静态数据
         for (GitCommitFileEdge e : sEdges) {
             keyId = mergeNode(e, nodeMap, keyId);
             mergeEdge(e, edgeMap);
         }
-        System.out.println(edgeMap.size());
+//        System.out.println(edgeMap.size());
 //        放入动态数据
-//        for (GitCommitFileEdge e : dEdges) {
-//            keyId = mergeNode(e, nodeMap, keyId);
-//            mergeEdge(e, edgeMap);
-//        }
+        for (GitCommitFileEdge e : dEdges) {
+            keyId = mergeNode(e, nodeMap, keyId);
+            mergeEdge(e, edgeMap);
+        }
 
-        System.out.println(edgeMap.size());
-        System.out.println(keyId);
+//        System.out.println(edgeMap.size());
+//        System.out.println(keyId);
 
         //归一化后的边
-        Normalize4Scale normalize4Scale = new Normalize4Scale();
-        Map<String, NormalizeEdge> newEdgeMap = normalize4Scale.excute(edgeMap);
+//        Normalize4Scale normalize4Scale = new Normalize4Scale();
+//        Map<String, NormalizeEdge> newEdgeMap = normalize4Scale.excute(edgeMap);
+//
+//        System.out.println("归一化后数量： "+newEdgeMap.size());
+//        excutLouvain(nodeMap, newEdgeMap);
 
-        System.out.println("归一化后数量： "+newEdgeMap.size());
-        excutLouvain(nodeMap, newEdgeMap);
+        Map<String,Integer> nodePatitionMap = excutLouvain(nodeMap, edgeMap);
+        PartitionResult partitionResult = new PartitionResult();
+        partitionResult.setEdgeMap(edgeMap);
+        partitionResult.setNodeMap(nodePatitionMap);
+
+        // 稳定性指标
+        Metric metric = new Metric();
+        System.out.println("稳定性："+metric.getStability(partitionResult));
+        // IRN指标
+        System.out.println("num  :"+metric.getIRN(edgeMap));
     }
 
     /**
@@ -91,7 +100,9 @@ public class AllDataLouvainCluster {
      * @param edgeMap
      * @throws Exception
      */
-    public static void excutLouvain(Map<String, Integer> nodeMap, Map<String, NormalizeEdge> edgeMap) throws Exception {
+//    public static void excutLouvain(Map<String, Integer> nodeMap, Map<String, NormalizeEdge> edgeMap) throws Exception {
+    public static Map<String,Integer> excutLouvain(Map<String, Integer> nodeMap, Map<String, GitCommitFileEdge> edgeMap) throws Exception {
+
         String edgePath = "/Users/yaya/Desktop/";
         String edgeFileName = System.currentTimeMillis() + "_edge.txt";
         FileUtil.creatFile(edgePath, edgeFileName);
@@ -99,12 +110,12 @@ public class AllDataLouvainCluster {
         List<String> lines = new ArrayList<>();
         String count = (nodeMap.size() + 1) + " " + edgeMap.size();
         lines.add(count);
-        for (Map.Entry<String, NormalizeEdge> entry : edgeMap.entrySet()) {
+        for (Map.Entry<String, GitCommitFileEdge> entry : edgeMap.entrySet()) {
             System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-            NormalizeEdge edge = entry.getValue();
+            GitCommitFileEdge edge = entry.getValue();
             String source = edge.getSourceName();
             String target = edge.getTargetName();
-            String line = nodeMap.get(source) + " " + nodeMap.get(target) + " " + edge.getWeight();
+            String line = nodeMap.get(source) + " " + nodeMap.get(target) + " " + edge.getCount();
             lines.add(line);
         }
         FileUtil.writeFile(lines, filePath);
@@ -112,7 +123,8 @@ public class AllDataLouvainCluster {
         LouvainUtil.execute(filePath, outputPath);
 
         String classPath = System.currentTimeMillis() + "_community.txt";
-        keyToClass(nodeMap, outputPath, edgePath + classPath);
+        Map<String,Integer> nodePartitionMap = keyToClass(nodeMap, outputPath, edgePath + classPath);
+        return nodePartitionMap;
     }
 
     /**
@@ -123,7 +135,9 @@ public class AllDataLouvainCluster {
      * @param outputPath
      * @throws Exception
      */
-    public static void keyToClass(Map<String, Integer> nodeMap, String inputPath, String outputPath) throws Exception {
+    public static Map<String,Integer> keyToClass(Map<String, Integer> nodeMap, String inputPath, String outputPath) throws Exception {
+        Map<String,Integer> nodePartitionMap = new HashMap<>();
+
         Map<Integer, String> keyMap = new HashMap<>();
         for (Map.Entry<String, Integer> entry : nodeMap.entrySet()) {
             System.out.println(entry.getValue() + "    " + entry.getKey());
@@ -138,10 +152,12 @@ public class AllDataLouvainCluster {
                 String className = keyMap.get(Integer.valueOf(keys[j]));
                 System.out.println(keys[j] + "    " + className);
                 writelines.add(className);
+                nodePartitionMap.put(className,i);
             }
             writelines.add(" ");
         }
         FileUtil.writeFile(writelines, outputPath);
+        return nodePartitionMap;
     }
 
     /**
@@ -270,4 +286,5 @@ public class AllDataLouvainCluster {
         String defaultName = str.substring(index + 1);
         return defaultName;
     }
+
 }
